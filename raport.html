@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Car Service</title>
+
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix />
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix />
+</head>
+<body>
+
+	<h1>Inżynieria Programowania</h1>
+	<h2>Car Service – system obsługi warsztatu samochodowego</h2>
+
+	<h3>Autorzy</h3>
+
+	<ul>
+		<li>Imię Nazwisko</li>
+		<li>Imię Nazwisko</li>
+		<li>Imię Nazwisko</li>
+		<li>Imię Nazwisko</li>
+	</ul>
+
+	<article id="description-polish">
+		<h4>Opis systemu</h4>
+
+		<h5>Podstawowe informacje o systemie</h5>
+		<p>Car Service to webowy system informatyczny wspierający codzienną pracę warsztatu samochodowego. System obejmuje cały proces obsługi klienta: od rezerwacji terminu wizyty, przez przyjęcie samochodu i wykonanie naprawy, aż po poinformowanie klienta o zakończeniu prac, wystawienie faktury i wydanie pojazdu. Dodatkowo system wspiera gospodarkę magazynową części zamiennych oraz zarządzanie pracą warsztatu (grafik, cennik, konta pracowników, raporty).</p>
+		<p>System jest dostępny przez przeglądarkę internetową. Pracownicy warsztatu korzystają z niego na komputerach i tabletach na stanowiskach pracy, a klienci przez stronę internetową na komputerze lub telefonie.</p>
+
+		<h5>Opis modelowanej rzeczywistości</h5>
+		<p>Podstawowym obiektem w systemie jest zlecenie naprawy. Zlecenie powstaje w momencie przyjęcia samochodu do warsztatu i dotyczy jednego pojazdu należącego do jednego klienta. Zlecenie zawiera opis zgłoszonej usterki, datę przyjęcia, przewidywany termin zakończenia, przydzielonego mechanika, aktualny status oraz listę wykonanych napraw i użytych części. W trakcie realizacji zlecenie przechodzi przez kolejne statusy: przyjęte, w trakcie realizacji, oczekuje na części, oczekuje na akceptację klienta, zakończone, wydane klientowi.</p>
+		<p>W ramach zlecenia mechanik wykonuje naprawy. Naprawa to pojedyncza czynność serwisowa (np. wymiana klocków hamulcowych) opisana przez rodzaj czynności, czas pracy, użyte części oraz koszt robocizny wyliczony na podstawie cennika usług. Jeżeli w trakcie pracy mechanik wykryje dodatkową usterkę, system przygotowuje kosztorys dodatkowych prac, który klient musi zaakceptować przed ich wykonaniem.</p>
+		<p>Pojazd opisany jest marką, modelem, rokiem produkcji, numerem VIN, numerem rejestracyjnym i przebiegiem. Pojazd jest przypisany do klienta i posiada historię serwisową, czyli listę wszystkich zakończonych zleceń. Klient opisany jest imieniem, nazwiskiem, numerem telefonu, adresem e-mail oraz preferowanym sposobem otrzymywania powiadomień (SMS lub e-mail). Jeden klient może posiadać wiele pojazdów.</p>
+		<p>Części zamienne przechowywane są w magazynie warsztatu. Każda część ma nazwę, numer katalogowy, producenta, cenę, aktualny stan magazynowy oraz stan minimalny. Mechanik nie pobiera części samodzielnie – składa zamówienie części (zapotrzebowanie) u magazyniera, powiązane z konkretnym zleceniem naprawy. Magazynier wydaje części mechanikowi, a gdy części brakuje, zamawia ją u zewnętrznego dostawcy. Każde wydanie części, przyjęcie dostawy i inwentaryzacja aktualizują stan magazynowy.</p>
+		<p>Na obiektach systemu wykonywane są m.in. następujące operacje: rezerwacja wizyty, utworzenie zlecenia naprawy, przydzielenie zlecenia mechanikowi, wprowadzenie naprawy, zmiana statusu zlecenia, zamówienie i wydanie części, zamówienie części u dostawcy, akceptacja kosztorysu, powiadomienie klienta o zakończeniu naprawy, wystawienie faktury.</p>
+
+		<h5>Użytkownicy systemu</h5>
+		<ul>
+			<li><strong>Klient</strong> – właściciel samochodu korzystający z usług warsztatu. Zakłada konto, dodaje swoje pojazdy, rezerwuje wizyty, śledzi status naprawy, akceptuje kosztorysy dodatkowych prac i przegląda historię serwisową swoich pojazdów.</li>
+			<li><strong>Mechanik</strong> – pracownik wykonujący naprawy. Przegląda przydzielone zlecenia, wprowadza do systemu wykonane naprawy, zamawia części u magazyniera, zmienia status zlecenia i informuje klienta o zakończeniu naprawy.</li>
+			<li><strong>Magazynier</strong> – pracownik odpowiedzialny za magazyn części. Realizuje zamówienia części składane przez mechaników, zamawia brakujące części u dostawców, przyjmuje dostawy, prowadzi katalog części i inwentaryzację.</li>
+			<li><strong>Manager warsztatu</strong> – osoba zarządzająca warsztatem. Potwierdza rezerwacje, tworzy zlecenia naprawy i przydziela je mechanikom, zarządza kontami pracowników, grafikiem pracy i cennikiem, wystawia faktury oraz generuje raporty.</li>
+		</ul>
+		<p>Mechanik, magazynier i manager warsztatu są pracownikami warsztatu, dlatego mają część wspólnych funkcji: logowanie do systemu, przeglądanie grafiku pracy, sprawdzanie dostępności części w magazynie oraz przeglądanie historii serwisowej pojazdu.</p>
+
+		<h5>Funkcjonalność systemu</h5>
+		<p>Typowa obsługa klienta w systemie przebiega następująco:</p>
+		<ol>
+			<li>Klient loguje się do systemu, wybiera pojazd (lub dodaje nowy) i rezerwuje wolny termin wizyty, opisując problem. Manager warsztatu potwierdza rezerwację.</li>
+			<li>W dniu wizyty manager przyjmuje samochód, tworzy zlecenie naprawy i przydziela je wybranemu mechanikowi.</li>
+			<li>Mechanik widzi zlecenie na liście swoich zleceń, zmienia jego status na „w trakcie realizacji”, diagnozuje usterkę i wprowadza do systemu wykonane naprawy (czynności, czas pracy, użyte części).</li>
+			<li>Jeżeli mechanik potrzebuje części, zamawia je u magazyniera z poziomu zlecenia. System sprawdza dostępność części w magazynie. Magazynier wydaje części mechanikowi, a stan magazynowy zmniejsza się automatycznie. Jeżeli części brakuje, magazynier zamawia ją u dostawcy, a zlecenie otrzymuje status „oczekuje na części”.</li>
+			<li>Jeżeli w trakcie naprawy mechanik wykryje dodatkową usterkę, zgłasza ją w systemie. Klient otrzymuje kosztorys dodatkowych prac i akceptuje go lub odrzuca.</li>
+			<li>Po zakończeniu prac mechanik oznacza zlecenie jako zakończone i informuje klienta o wykonaniu naprawy – system wysyła powiadomienie SMS lub e-mail zgodnie z preferencjami klienta.</li>
+			<li>Manager wystawia fakturę, klient odbiera samochód, a zlecenie trafia do historii serwisowej pojazdu.</li>
+		</ol>
+
+		<h5>Wymagania niefunkcjonalne</h5>
+		<ul>
+			<li>System jest aplikacją webową z responsywnym interfejsem, działającą na komputerach, tabletach i telefonach w aktualnych wersjach popularnych przeglądarek.</li>
+			<li>Interfejs jest w języku polskim i jest prosty w obsłudze – mechanik powinien móc wprowadzić naprawę na tablecie w kilku krokach.</li>
+			<li>Czas odpowiedzi systemu na typowe operacje nie przekracza 2 sekund przy 50 jednocześnie pracujących użytkownikach.</li>
+			<li>Dostęp do systemu wymaga zalogowania, a dostępne funkcje zależą od roli użytkownika. Hasła są przechowywane w postaci skrótu, a komunikacja odbywa się przez HTTPS. Dane osobowe klientów są przetwarzane zgodnie z RODO.</li>
+			<li>Powiadomienie o zakończeniu naprawy trafia do klienta w ciągu 1 minuty od oznaczenia zlecenia jako zakończone.</li>
+			<li>System jest dostępny w 99% czasu pracy warsztatu, a kopia zapasowa bazy danych wykonywana jest codziennie.</li>
+		</ul>
+	</article>
+
+
+	<article id="description-english">
+		<h4>System description</h4>
+
+		<h5>Basic information</h5>
+		<p>Car Service is a web-based information system that supports the daily work of a car repair workshop. The system covers the whole customer service process: from booking a service appointment, through receiving the car and carrying out the repair, to informing the client that the work is finished, issuing an invoice and handing the vehicle back. In addition, the system supports spare parts warehouse management and the management of the workshop itself (work schedule, price list, employee accounts, reports).</p>
+		<p>The system is available through a web browser. Workshop employees use it on computers and tablets at their workstations, and clients use it through a website on a computer or a phone.</p>
+
+		<h5>Description of the modelled reality</h5>
+		<p>The basic object in the system is the repair order. A repair order is created when a car is received at the workshop and concerns one vehicle belonging to one client. It contains a description of the reported fault, the date of receipt, the expected completion date, the assigned mechanic, the current status and a list of performed repairs and used parts. During its lifetime the order goes through the following statuses: received, in progress, waiting for parts, waiting for client approval, completed, handed over to the client.</p>
+		<p>Within a repair order the mechanic performs repairs. A repair is a single service activity (e.g. replacing brake pads) described by the type of work, labour time, used parts and labour cost calculated from the service price list. If the mechanic finds an additional fault during the work, the system prepares a cost estimate for the additional work, which the client has to accept before it is carried out.</p>
+		<p>A vehicle is described by its make, model, production year, VIN, registration number and mileage. A vehicle is assigned to a client and has a service history, i.e. the list of all completed repair orders. A client is described by first name, last name, phone number, e-mail address and preferred notification channel (SMS or e-mail). One client can own many vehicles.</p>
+		<p>Spare parts are stored in the workshop warehouse. Each part has a name, catalogue number, manufacturer, price, current stock level and minimum stock level. The mechanic does not take parts on their own – they place a part request with the storekeeper, linked to a specific repair order. The storekeeper issues the parts to the mechanic, and when a part is missing, orders it from an external supplier. Every part issue, delivery receipt and stock inventory updates the stock level.</p>
+		<p>The main operations performed on the system objects are: booking an appointment, creating a repair order, assigning a repair order to a mechanic, entering a repair, changing the order status, requesting and issuing parts, ordering parts from a supplier, accepting a cost estimate, notifying the client about a completed repair and issuing an invoice.</p>
+
+		<h5>System users</h5>
+		<ul>
+			<li><strong>Client</strong> – a car owner using the workshop services. Creates an account, adds their vehicles, books appointments, tracks the repair status, accepts cost estimates for additional work and views the service history of their vehicles.</li>
+			<li><strong>Mechanic</strong> – an employee who carries out repairs. Views assigned repair orders, enters performed repairs into the system, orders parts from the storekeeper, changes the order status and notifies the client that the repair is completed.</li>
+			<li><strong>Storekeeper</strong> – an employee responsible for the parts warehouse. Handles part requests placed by mechanics, orders missing parts from suppliers, receives deliveries, maintains the parts catalogue and carries out stock inventories.</li>
+			<li><strong>Workshop manager</strong> – the person who manages the workshop. Confirms appointments, creates repair orders and assigns them to mechanics, manages employee accounts, the work schedule and the price list, issues invoices and generates reports.</li>
+		</ul>
+		<p>The mechanic, the storekeeper and the workshop manager are all workshop employees, so they share some functions: logging in, viewing the work schedule, checking part availability in the warehouse and viewing a vehicle's service history.</p>
+
+		<h5>System functionality</h5>
+		<p>A typical client service in the system goes as follows:</p>
+		<ol>
+			<li>The client logs in, selects a vehicle (or adds a new one) and books a free appointment slot, describing the problem. The workshop manager confirms the booking.</li>
+			<li>On the day of the visit the manager receives the car, creates a repair order and assigns it to a mechanic.</li>
+			<li>The mechanic sees the order on their list, changes its status to "in progress", diagnoses the fault and enters the performed repairs into the system (activities, labour time, used parts).</li>
+			<li>If the mechanic needs parts, they order them from the storekeeper directly from the repair order. The system checks part availability in the warehouse. The storekeeper issues the parts to the mechanic and the stock level is decreased automatically. If a part is missing, the storekeeper orders it from a supplier and the repair order gets the status "waiting for parts".</li>
+			<li>If the mechanic finds an additional fault during the repair, they report it in the system. The client receives a cost estimate for the additional work and accepts or rejects it.</li>
+			<li>When the work is finished, the mechanic marks the order as completed and notifies the client – the system sends an SMS or e-mail notification according to the client's preferences.</li>
+			<li>The manager issues an invoice, the client collects the car and the repair order is added to the vehicle's service history.</li>
+		</ol>
+
+		<h5>Non-functional requirements</h5>
+		<ul>
+			<li>The system is a web application with a responsive interface that works on computers, tablets and phones in current versions of popular browsers.</li>
+			<li>The user interface is in Polish and is easy to use – a mechanic should be able to enter a repair on a tablet in a few steps.</li>
+			<li>The response time for typical operations does not exceed 2 seconds with 50 concurrent users.</li>
+			<li>Access to the system requires logging in, and the available functions depend on the user's role. Passwords are stored as hashes and all communication uses HTTPS. Clients' personal data is processed in accordance with GDPR.</li>
+			<li>The notification about a completed repair reaches the client within 1 minute of the order being marked as completed.</li>
+			<li>The system is available 99% of the workshop's working hours and the database is backed up daily.</li>
+		</ul>
+	</article>
+
+	<article id="dictionary-polish">
+		<h4>Słownik pojęć</h4>
+		<ul>
+			<li>
+				<strong>Klient</strong>
+				Właściciel samochodu korzystający z usług warsztatu. Posiada konto w systemie, może mieć wiele pojazdów, rezerwuje wizyty i otrzymuje powiadomienia o stanie naprawy.
+			</li>
+			<li>
+				<strong>Pracownik</strong>
+				Osoba zatrudniona w warsztacie i posiadająca konto pracownicze w systemie. Na diagramie przypadków użycia jest to aktor abstrakcyjny, grupujący funkcje wspólne dla mechanika, magazyniera i managera warsztatu.
+			</li>
+			<li>
+				<strong>Mechanik</strong>
+				Pracownik wykonujący naprawy pojazdów w ramach przydzielonych mu zleceń naprawy.
+			</li>
+			<li>
+				<strong>Magazynier</strong>
+				Pracownik odpowiedzialny za magazyn części – wydaje części mechanikom, zamawia je u dostawców i kontroluje stany magazynowe.
+			</li>
+			<li>
+				<strong>Manager warsztatu</strong>
+				Pracownik zarządzający warsztatem – organizuje pracę, przydziela zlecenia, zarządza pracownikami, cennikiem i rozliczeniami.
+			</li>
+			<li>
+				<strong>Pojazd</strong>
+				Samochód klienta opisany marką, modelem, rokiem produkcji, numerem VIN, numerem rejestracyjnym i przebiegiem. Posiada historię serwisową.
+			</li>
+			<li>
+				<strong>Rezerwacja wizyty</strong>
+				Zarezerwowany przez klienta termin przyjęcia pojazdu do warsztatu wraz z opisem problemu. Rezerwacja wymaga potwierdzenia przez managera warsztatu.
+			</li>
+			<li>
+				<strong>Zlecenie naprawy</strong>
+				Podstawowy obiekt systemu. Dokument tworzony przy przyjęciu pojazdu do warsztatu, zawierający opis usterki, przydzielonego mechanika, status, wykonane naprawy i użyte części.
+			</li>
+			<li>
+				<strong>Status zlecenia</strong>
+				Etap realizacji zlecenia naprawy: przyjęte, w trakcie realizacji, oczekuje na części, oczekuje na akceptację klienta, zakończone, wydane klientowi.
+			</li>
+			<li>
+				<strong>Naprawa</strong>
+				Pojedyncza czynność serwisowa wykonana przez mechanika w ramach zlecenia naprawy, opisana rodzajem czynności, czasem pracy i użytymi częściami.
+			</li>
+			<li>
+				<strong>Dodatkowa usterka</strong>
+				Usterka wykryta przez mechanika w trakcie naprawy, nieobjęta pierwotnym zleceniem. Jej usunięcie wymaga akceptacji kosztorysu przez klienta.
+			</li>
+			<li>
+				<strong>Kosztorys</strong>
+				Wycena prac i części przedstawiana klientowi do akceptacji przed wykonaniem dodatkowych napraw.
+			</li>
+			<li>
+				<strong>Część zamienna</strong>
+				Element samochodu używany podczas napraw. Opisana nazwą, numerem katalogowym, producentem, ceną oraz stanem magazynowym.
+			</li>
+			<li>
+				<strong>Magazyn</strong>
+				Miejsce przechowywania części zamiennych w warsztacie, którym zarządza magazynier.
+			</li>
+			<li>
+				<strong>Stan magazynowy</strong>
+				Liczba sztuk danej części dostępnych w magazynie. Zmienia się przy wydaniu części, przyjęciu dostawy i inwentaryzacji.
+			</li>
+			<li>
+				<strong>Stan minimalny</strong>
+				Liczba sztuk części, poniżej której część jest oznaczana jako brakująca i powinna zostać zamówiona u dostawcy.
+			</li>
+			<li>
+				<strong>Zamówienie części</strong>
+				Wewnętrzne zapotrzebowanie składane przez mechanika u magazyniera, powiązane z konkretnym zleceniem naprawy.
+			</li>
+			<li>
+				<strong>Dostawca</strong>
+				Zewnętrzna firma sprzedająca warsztatowi części zamienne.
+			</li>
+			<li>
+				<strong>Zamówienie u dostawcy</strong>
+				Zamówienie brakujących części składane przez magazyniera u dostawcy.
+			</li>
+			<li>
+				<strong>Dostawa</strong>
+				Partia części otrzymana od dostawcy, przyjmowana do magazynu przez magazyniera.
+			</li>
+			<li>
+				<strong>Inwentaryzacja</strong>
+				Spis faktycznego stanu części w magazynie i korekta stanów w systemie w przypadku rozbieżności.
+			</li>
+			<li>
+				<strong>Powiadomienie</strong>
+				Wiadomość SMS lub e-mail wysyłana klientowi, np. o zakończeniu naprawy.
+			</li>
+			<li>
+				<strong>Historia serwisowa</strong>
+				Lista wszystkich zakończonych zleceń naprawy danego pojazdu wraz z wykonanymi naprawami, użytymi częściami i fakturami.
+			</li>
+			<li>
+				<strong>Cennik usług</strong>
+				Lista stawek za robociznę i usługi warsztatu, na podstawie której liczone są kosztorysy i faktury.
+			</li>
+			<li>
+				<strong>Faktura</strong>
+				Dokument rozliczeniowy wystawiany klientowi za zakończone zlecenie naprawy.
+			</li>
+			<li>
+				<strong>Grafik pracy</strong>
+				Plan dni i godzin pracy pracowników warsztatu, ustalany przez managera warsztatu.
+			</li>
+			<li>
+				<strong>Raport</strong>
+				Zestawienie danych o pracy warsztatu, np. przychodów, liczby napraw, obciążenia mechaników czy zużycia części.
+			</li>
+		</ul>
+	</article>
+
+	<article id="dictionary-english">
+		<h4>Dictionary</h4>
+		<ul>
+			<li>
+				<strong>Client</strong>
+				A car owner using the workshop services. Has an account in the system, can own many vehicles, books appointments and receives notifications about the repair.
+			</li>
+			<li>
+				<strong>Employee</strong>
+				A person employed at the workshop who has an employee account in the system. On the use case diagram it is an abstract actor that groups the functions shared by the mechanic, the storekeeper and the workshop manager.
+			</li>
+			<li>
+				<strong>Mechanic</strong>
+				An employee who repairs vehicles within the repair orders assigned to them.
+			</li>
+			<li>
+				<strong>Storekeeper</strong>
+				An employee responsible for the parts warehouse – issues parts to mechanics, orders them from suppliers and controls stock levels.
+			</li>
+			<li>
+				<strong>Workshop manager</strong>
+				An employee who manages the workshop – organises the work, assigns repair orders, manages employees, the price list and billing.
+			</li>
+			<li>
+				<strong>Vehicle</strong>
+				A client's car described by make, model, production year, VIN, registration number and mileage. Has a service history.
+			</li>
+			<li>
+				<strong>Service appointment</strong>
+				A date and time booked by the client for bringing the vehicle to the workshop, together with a description of the problem. It has to be confirmed by the workshop manager.
+			</li>
+			<li>
+				<strong>Repair order</strong>
+				The basic object of the system. A document created when a vehicle is received at the workshop, containing the fault description, assigned mechanic, status, performed repairs and used parts.
+			</li>
+			<li>
+				<strong>Repair order status</strong>
+				The stage of a repair order: received, in progress, waiting for parts, waiting for client approval, completed, handed over to the client.
+			</li>
+			<li>
+				<strong>Repair</strong>
+				A single service activity performed by a mechanic within a repair order, described by the type of work, labour time and used parts.
+			</li>
+			<li>
+				<strong>Additional fault</strong>
+				A fault found by the mechanic during the repair that is not covered by the original repair order. Fixing it requires the client to accept a cost estimate.
+			</li>
+			<li>
+				<strong>Cost estimate</strong>
+				A quote for work and parts presented to the client for approval before additional repairs are carried out.
+			</li>
+			<li>
+				<strong>Spare part</strong>
+				A car component used during repairs. Described by name, catalogue number, manufacturer, price and stock level.
+			</li>
+			<li>
+				<strong>Warehouse</strong>
+				The place in the workshop where spare parts are stored, managed by the storekeeper.
+			</li>
+			<li>
+				<strong>Stock level</strong>
+				The number of units of a given part available in the warehouse. It changes when parts are issued, deliveries are received and inventories are carried out.
+			</li>
+			<li>
+				<strong>Minimum stock level</strong>
+				The number of units below which a part is marked as running out and should be ordered from a supplier.
+			</li>
+			<li>
+				<strong>Part request</strong>
+				An internal request for parts placed by a mechanic with the storekeeper, linked to a specific repair order.
+			</li>
+			<li>
+				<strong>Supplier</strong>
+				An external company that sells spare parts to the workshop.
+			</li>
+			<li>
+				<strong>Supplier order</strong>
+				An order for missing parts placed by the storekeeper with a supplier.
+			</li>
+			<li>
+				<strong>Delivery</strong>
+				A batch of parts received from a supplier and accepted into the warehouse by the storekeeper.
+			</li>
+			<li>
+				<strong>Stock inventory</strong>
+				Counting the actual quantity of parts in the warehouse and correcting the stock levels in the system if they differ.
+			</li>
+			<li>
+				<strong>Notification</strong>
+				An SMS or e-mail message sent to the client, e.g. about a completed repair.
+			</li>
+			<li>
+				<strong>Service history</strong>
+				The list of all completed repair orders of a given vehicle with performed repairs, used parts and invoices.
+			</li>
+			<li>
+				<strong>Service price list</strong>
+				The list of labour and service rates used to calculate cost estimates and invoices.
+			</li>
+			<li>
+				<strong>Invoice</strong>
+				A billing document issued to the client for a completed repair order.
+			</li>
+			<li>
+				<strong>Work schedule</strong>
+				The plan of working days and hours of the workshop employees, set by the workshop manager.
+			</li>
+			<li>
+				<strong>Report</strong>
+				A summary of workshop data, e.g. revenue, number of repairs, mechanics' workload or parts usage.
+			</li>
+		</ul>
+	</article>
+
+	<article id="user-stories-polish">
+		<h4>User Stories (po polsku)</h4>
+
+		<h5>Mechanik</h5>
+		<p>Jako mechanik chcę przeglądać listę przydzielonych mi zleceń naprawy w taki sposób, aby wiedzieć, którymi samochodami mam się zająć i w jakiej kolejności.</p>
+		<p>Jako mechanik chcę wprowadzać do systemu wykonane naprawy (opis czynności, czas pracy, użyte części) w taki sposób, aby koszt naprawy był policzony poprawnie, a historia serwisowa pojazdu była kompletna.</p>
+		<p>Jako mechanik chcę zmieniać status zlecenia naprawy (np. „w trakcie realizacji”, „oczekuje na części”, „zakończone”) w taki sposób, aby klient i manager warsztatu zawsze widzieli aktualny postęp prac.</p>
+		<p>Jako mechanik chcę zamawiać części u magazyniera bezpośrednio z poziomu zlecenia naprawy w taki sposób, aby nie odchodzić od stanowiska pracy, a zamówione części były przypisane do właściwej naprawy.</p>
+		<p>Jako mechanik chcę informować klienta, że naprawa jego samochodu została wykonana, w taki sposób, aby klient od razu otrzymał powiadomienie SMS lub e-mail i mógł odebrać pojazd.</p>
+		<p>Jako mechanik chcę zgłaszać dodatkową usterkę wykrytą w trakcie naprawy w taki sposób, aby klient mógł zaakceptować rozszerzenie zakresu prac i kosztów, zanim je wykonam.</p>
+		<p>Jako mechanik chcę przeglądać historię serwisową pojazdu w taki sposób, aby przy diagnozie wykorzystać informacje o wcześniejszych naprawach.</p>
+
+		<h5>Magazynier</h5>
+		<p>Jako magazynier chcę przeglądać zamówienia części złożone przez mechaników w taki sposób, aby wiedzieć, które części i do jakich zleceń mam przygotować.</p>
+		<p>Jako magazynier chcę wydawać mechanikowi zamówione części i oznaczać zamówienie jako zrealizowane w taki sposób, aby stan magazynowy zmniejszał się automatycznie.</p>
+		<p>Jako magazynier chcę zamawiać u dostawców części, których brakuje w magazynie, w taki sposób, aby zamówienia mechaników mogły zostać zrealizowane jak najszybciej.</p>
+		<p>Jako magazynier chcę rejestrować przyjęcie dostawy części w taki sposób, aby stan magazynowy w systemie był zgodny z rzeczywistością.</p>
+		<p>Jako magazynier chcę widzieć listę części, których stan spadł poniżej stanu minimalnego, w taki sposób, aby uzupełnić je, zanim zabraknie ich do napraw.</p>
+		<p>Jako magazynier chcę dodawać nowe części do katalogu i edytować ich dane (nazwa, numer katalogowy, cena, stan minimalny) w taki sposób, aby katalog części był zawsze aktualny.</p>
+		<p>Jako magazynier chcę przeprowadzać inwentaryzację magazynu w taki sposób, aby wykryć i skorygować rozbieżności między stanem w systemie a stanem faktycznym.</p>
+
+		<h5>Klient</h5>
+		<p>Jako klient chcę założyć konto w systemie warsztatu w taki sposób, aby móc korzystać z usług warsztatu przez internet.</p>
+		<p>Jako klient chcę logować się do swojego konta w taki sposób, aby mieć dostęp do moich pojazdów, rezerwacji i napraw.</p>
+		<p>Jako klient chcę dodać do konta swój samochód (marka, model, numer VIN, numer rejestracyjny) w taki sposób, aby nie podawać tych danych przy każdej wizycie.</p>
+		<p>Jako klient chcę zarezerwować termin wizyty w warsztacie przez internet w taki sposób, aby widzieć tylko wolne terminy i nie musieć dzwonić do warsztatu.</p>
+		<p>Jako klient chcę śledzić status naprawy mojego samochodu w taki sposób, aby wiedzieć, na jakim etapie są prace i kiedy auto będzie gotowe.</p>
+		<p>Jako klient chcę akceptować lub odrzucać kosztorys dodatkowych prac w taki sposób, aby mieć kontrolę nad kosztami naprawy.</p>
+		<p>Jako klient chcę wybrać sposób otrzymywania powiadomień (SMS lub e-mail) w taki sposób, aby informacja o zakończeniu naprawy docierała do mnie tak, jak mi wygodnie.</p>
+		<p>Jako klient chcę przeglądać historię napraw moich samochodów wraz z fakturami w taki sposób, aby wiedzieć, co i kiedy było naprawiane oraz ile za to zapłaciłem.</p>
+
+		<h5>Manager warsztatu</h5>
+		<p>Jako manager warsztatu chcę przeglądać i potwierdzać rezerwacje wizyt złożone przez klientów w taki sposób, aby dopasować je do dostępności mechaników.</p>
+		<p>Jako manager warsztatu chcę tworzyć zlecenie naprawy przy przyjęciu samochodu do warsztatu w taki sposób, aby wszystkie prace przy pojeździe były rejestrowane w jednym miejscu.</p>
+		<p>Jako manager warsztatu chcę przydzielać zlecenia naprawy mechanikom w taki sposób, aby praca była równomiernie rozłożona między pracowników.</p>
+		<p>Jako manager warsztatu chcę zarządzać kontami pracowników (dodawać, edytować, blokować) w taki sposób, aby dostęp do systemu miały tylko uprawnione osoby.</p>
+		<p>Jako manager warsztatu chcę układać grafik pracy pracowników w taki sposób, aby na każdej zmianie pracowała odpowiednia liczba mechaników i magazynier.</p>
+		<p>Jako manager warsztatu chcę zarządzać cennikiem usług w taki sposób, aby kosztorysy i faktury były liczone według aktualnych stawek.</p>
+		<p>Jako manager warsztatu chcę wystawiać fakturę za zakończone zlecenie naprawy w taki sposób, aby klient mógł zapłacić przy odbiorze samochodu.</p>
+		<p>Jako manager warsztatu chcę generować raporty (przychody, liczba napraw, obciążenie mechaników, zużycie części) w taki sposób, aby podejmować decyzje na podstawie danych.</p>
+
+		<h5>Pracownik (wspólne dla mechanika, magazyniera i managera warsztatu)</h5>
+		<p>Jako pracownik warsztatu chcę logować się do systemu własnym loginem i hasłem w taki sposób, aby mieć dostęp tylko do funkcji przypisanych do mojej roli.</p>
+		<p>Jako pracownik warsztatu chcę przeglądać swój grafik pracy w taki sposób, aby wiedzieć, w jakie dni i w jakich godzinach pracuję.</p>
+		<p>Jako pracownik warsztatu chcę sprawdzać dostępność części w magazynie w taki sposób, aby wiedzieć, czy naprawę można rozpocząć od razu.</p>
+	</article>
+
+
+	<article id="user-stories-english">
+		<h4>User Stories (in english)</h4>
+
+		<h5>Mechanic</h5>
+		<p>As a mechanic I want to view the list of repair orders assigned to me so that I know which cars I have to work on and in what order.</p>
+		<p>As a mechanic I want to enter performed repairs into the system (description of work, labour time, used parts) so that the repair cost is calculated correctly and the vehicle's service history is complete.</p>
+		<p>As a mechanic I want to change the status of a repair order (e.g. "in progress", "waiting for parts", "completed") so that the client and the workshop manager always see the current progress of the work.</p>
+		<p>As a mechanic I want to order parts from the storekeeper directly from the repair order so that I do not have to leave my workstation and the ordered parts are linked to the right repair.</p>
+		<p>As a mechanic I want to inform the client that the repair of their car has been completed so that the client immediately receives an SMS or e-mail notification and can collect the vehicle.</p>
+		<p>As a mechanic I want to report an additional fault found during the repair so that the client can accept the extended scope and cost of the work before I carry it out.</p>
+		<p>As a mechanic I want to view the service history of a vehicle so that I can use information about previous repairs during diagnosis.</p>
+
+		<h5>Storekeeper</h5>
+		<p>As a storekeeper I want to view the part requests placed by mechanics so that I know which parts I have to prepare and for which repair orders.</p>
+		<p>As a storekeeper I want to issue the requested parts to the mechanic and mark the request as fulfilled so that the stock level is decreased automatically.</p>
+		<p>As a storekeeper I want to order parts that are missing in the warehouse from suppliers so that mechanics' requests can be fulfilled as soon as possible.</p>
+		<p>As a storekeeper I want to register the receipt of a parts delivery so that the stock level in the system matches reality.</p>
+		<p>As a storekeeper I want to see the list of parts whose stock has dropped below the minimum level so that I can restock them before they run out.</p>
+		<p>As a storekeeper I want to add new parts to the catalogue and edit their data (name, catalogue number, price, minimum stock level) so that the parts catalogue is always up to date.</p>
+		<p>As a storekeeper I want to carry out a stock inventory so that I can find and correct differences between the stock in the system and the actual stock.</p>
+
+		<h5>Client</h5>
+		<p>As a client I want to create an account in the workshop system so that I can use the workshop services online.</p>
+		<p>As a client I want to log in to my account so that I have access to my vehicles, appointments and repairs.</p>
+		<p>As a client I want to add my car to my account (make, model, VIN, registration number) so that I do not have to provide this data at every visit.</p>
+		<p>As a client I want to book a workshop appointment online so that I see only free slots and do not have to call the workshop.</p>
+		<p>As a client I want to track the repair status of my car so that I know at what stage the work is and when the car will be ready.</p>
+		<p>As a client I want to accept or reject the cost estimate for additional work so that I stay in control of the repair costs.</p>
+		<p>As a client I want to choose how I receive notifications (SMS or e-mail) so that the information about a completed repair reaches me in the way that suits me best.</p>
+		<p>As a client I want to view the repair history of my cars together with invoices so that I know what was repaired, when, and how much I paid for it.</p>
+
+		<h5>Workshop manager</h5>
+		<p>As a workshop manager I want to view and confirm appointments booked by clients so that I can match them with the availability of mechanics.</p>
+		<p>As a workshop manager I want to create a repair order when a car is received at the workshop so that all work on the vehicle is recorded in one place.</p>
+		<p>As a workshop manager I want to assign repair orders to mechanics so that the work is evenly distributed among employees.</p>
+		<p>As a workshop manager I want to manage employee accounts (add, edit, block) so that only authorised people have access to the system.</p>
+		<p>As a workshop manager I want to create the employees' work schedule so that every shift has the right number of mechanics and a storekeeper.</p>
+		<p>As a workshop manager I want to manage the service price list so that cost estimates and invoices are calculated with current rates.</p>
+		<p>As a workshop manager I want to issue an invoice for a completed repair order so that the client can pay when collecting the car.</p>
+		<p>As a workshop manager I want to generate reports (revenue, number of repairs, mechanics' workload, parts usage) so that I can make decisions based on data.</p>
+
+		<h5>Employee (shared by the mechanic, the storekeeper and the workshop manager)</h5>
+		<p>As a workshop employee I want to log in to the system with my own login and password so that I have access only to the functions assigned to my role.</p>
+		<p>As a workshop employee I want to view my work schedule so that I know on which days and at what hours I work.</p>
+		<p>As a workshop employee I want to check part availability in the warehouse so that I know whether a repair can be started right away.</p>
+	</article>
+
+
+	<article id="use-case-diagram">
+		<h4>Diagram przypadków użycia</h4>
+		<p class ="uml">
+			@startuml
+			left to right direction
+
+			actor Client
+			actor Employee
+			actor Mechanic
+			actor Storekeeper
+			actor "Workshop Manager" as Manager
+
+			Employee &lt;|-- Mechanic
+			Employee &lt;|-- Storekeeper
+			Employee &lt;|-- Manager
+
+			Employee -- (Log in)
+			Employee -- (View work schedule)
+			Employee -- (Check part availability)
+			Employee -- (View vehicle service history)
+
+			Client -- (Register account)
+			Client -- (Log in)
+			Client -- (Add vehicle)
+			Client -- (Book service appointment)
+			Client -- (Track repair status)
+			Client -- (Accept cost estimate)
+			Client -- (Set notification preferences)
+			Client -- (View vehicle service history)
+
+			Mechanic -- (View assigned repair orders)
+			Mechanic -- (Enter repair)
+			Mechanic -- (Update repair order status)
+			Mechanic -- (Order parts from storekeeper)
+			Mechanic -- (Notify client about completed repair)
+
+			Storekeeper -- (View part requests)
+			Storekeeper -- (Issue parts to mechanic)
+			Storekeeper -- (Order parts from supplier)
+			Storekeeper -- (Receive parts delivery)
+			Storekeeper -- (View low stock parts)
+			Storekeeper -- (Manage parts catalog)
+			Storekeeper -- (Carry out stock inventory)
+
+			Manager -- (Manage appointments)
+			Manager -- (Create repair order)
+			Manager -- (Assign repair order to mechanic)
+			Manager -- (Manage employee accounts)
+			Manager -- (Create work schedule)
+			Manager -- (Manage service price list)
+			Manager -- (Issue invoice)
+			Manager -- (Generate reports)
+
+			(Order parts from storekeeper) ..&gt; (Check part availability) : &lt;&lt;include&gt;&gt;
+			(Enter repair) &lt;.. (Report additional fault) : &lt;&lt;extend&gt;&gt;
+			(Book service appointment) &lt;.. (Add vehicle) : &lt;&lt;extend&gt;&gt;
+			(Issue parts to mechanic) &lt;.. (Order parts from supplier) : &lt;&lt;extend&gt;&gt;
+			(Issue parts to mechanic) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
+			(Receive parts delivery) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
+			(Carry out stock inventory) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
+
+			@enduml
+		</p>
+	</article>
+
+</body>
+</html>
