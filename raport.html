@@ -445,6 +445,8 @@
 
 	<article id="use-case-diagram">
 		<h4>Diagram przypadków użycia</h4>
+
+		<h5>Wersja w języku angielskim</h5>
 		<p class ="uml">
 			@startuml
 			left to right direction
@@ -503,6 +505,103 @@
 			(Issue parts to mechanic) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
 			(Receive parts delivery) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
 			(Carry out stock inventory) ..&gt; (Update stock level) : &lt;&lt;include&gt;&gt;
+
+			@enduml
+		</p>
+
+		<h5>Wersja w języku polskim</h5>
+		<!-- Polskie znaki zapisane jako &amp;#NNN; - plantuml-drawer.js usuwa znaki diakrytyczne z tekstu diagramu -->
+		<p class ="uml">
+			@startuml
+			left to right direction
+
+			actor Klient
+			actor Pracownik
+			actor Mechanik
+			actor Magazynier
+			actor "Manager warsztatu" as Manager
+
+			usecase "Zaloguj si&amp;#281;" as Login
+			usecase "Przegl&amp;#261;daj grafik pracy" as ViewSchedule
+			usecase "Sprawd&amp;#378; dost&amp;#281;pno&amp;#347;&amp;#263; cz&amp;#281;&amp;#347;ci" as CheckPart
+			usecase "Przegl&amp;#261;daj histori&amp;#281; serwisow&amp;#261; pojazdu" as ServiceHistory
+			usecase "Za&amp;#322;&amp;#243;&amp;#380; konto" as Register
+			usecase "Dodaj pojazd" as AddVehicle
+			usecase "Zarezerwuj wizyt&amp;#281;" as BookAppointment
+			usecase "&amp;#346;led&amp;#378; status naprawy" as TrackStatus
+			usecase "Zaakceptuj kosztorys" as AcceptEstimate
+			usecase "Ustaw preferencje powiadomie&amp;#324;" as NotificationPrefs
+			usecase "Przegl&amp;#261;daj przydzielone zlecenia" as ViewOrders
+			usecase "Wprowad&amp;#378; napraw&amp;#281;" as EnterRepair
+			usecase "Zmie&amp;#324; status zlecenia" as UpdateStatus
+			usecase "Zam&amp;#243;w cz&amp;#281;&amp;#347;ci u magazyniera" as OrderFromStorekeeper
+			usecase "Powiadom klienta o wykonaniu naprawy" as NotifyClient
+			usecase "Zg&amp;#322;o&amp;#347; dodatkow&amp;#261; usterk&amp;#281;" as ReportFault
+			usecase "Przegl&amp;#261;daj zam&amp;#243;wienia cz&amp;#281;&amp;#347;ci" as ViewPartRequests
+			usecase "Wydaj cz&amp;#281;&amp;#347;ci mechanikowi" as IssueParts
+			usecase "Zam&amp;#243;w cz&amp;#281;&amp;#347;ci u dostawcy" as OrderFromSupplier
+			usecase "Przyjmij dostaw&amp;#281; cz&amp;#281;&amp;#347;ci" as ReceiveDelivery
+			usecase "Przegl&amp;#261;daj cz&amp;#281;&amp;#347;ci poni&amp;#380;ej stanu minimalnego" as LowStock
+			usecase "Zarz&amp;#261;dzaj katalogiem cz&amp;#281;&amp;#347;ci" as ManageCatalog
+			usecase "Przeprowad&amp;#378; inwentaryzacj&amp;#281;" as Inventory
+			usecase "Aktualizuj stan magazynowy" as UpdateStock
+			usecase "Zarz&amp;#261;dzaj rezerwacjami" as ManageAppointments
+			usecase "Utw&amp;#243;rz zlecenie naprawy" as CreateOrder
+			usecase "Przydziel zlecenie mechanikowi" as AssignOrder
+			usecase "Zarz&amp;#261;dzaj kontami pracownik&amp;#243;w" as ManageAccounts
+			usecase "U&amp;#322;&amp;#243;&amp;#380; grafik pracy" as CreateSchedule
+			usecase "Zarz&amp;#261;dzaj cennikiem us&amp;#322;ug" as ManagePriceList
+			usecase "Wystaw faktur&amp;#281;" as IssueInvoice
+			usecase "Generuj raporty" as GenerateReports
+
+			Pracownik &lt;|-- Mechanik
+			Pracownik &lt;|-- Magazynier
+			Pracownik &lt;|-- Manager
+
+			Pracownik -- Login
+			Pracownik -- ViewSchedule
+			Pracownik -- CheckPart
+			Pracownik -- ServiceHistory
+
+			Klient -- Register
+			Klient -- Login
+			Klient -- AddVehicle
+			Klient -- BookAppointment
+			Klient -- TrackStatus
+			Klient -- AcceptEstimate
+			Klient -- NotificationPrefs
+			Klient -- ServiceHistory
+
+			Mechanik -- ViewOrders
+			Mechanik -- EnterRepair
+			Mechanik -- UpdateStatus
+			Mechanik -- OrderFromStorekeeper
+			Mechanik -- NotifyClient
+
+			Magazynier -- ViewPartRequests
+			Magazynier -- IssueParts
+			Magazynier -- OrderFromSupplier
+			Magazynier -- ReceiveDelivery
+			Magazynier -- LowStock
+			Magazynier -- ManageCatalog
+			Magazynier -- Inventory
+
+			Manager -- ManageAppointments
+			Manager -- CreateOrder
+			Manager -- AssignOrder
+			Manager -- ManageAccounts
+			Manager -- CreateSchedule
+			Manager -- ManagePriceList
+			Manager -- IssueInvoice
+			Manager -- GenerateReports
+
+			OrderFromStorekeeper ..&gt; CheckPart : &lt;&lt;include&gt;&gt;
+			EnterRepair &lt;.. ReportFault : &lt;&lt;extend&gt;&gt;
+			BookAppointment &lt;.. AddVehicle : &lt;&lt;extend&gt;&gt;
+			IssueParts &lt;.. OrderFromSupplier : &lt;&lt;extend&gt;&gt;
+			IssueParts ..&gt; UpdateStock : &lt;&lt;include&gt;&gt;
+			ReceiveDelivery ..&gt; UpdateStock : &lt;&lt;include&gt;&gt;
+			Inventory ..&gt; UpdateStock : &lt;&lt;include&gt;&gt;
 
 			@enduml
 		</p>
