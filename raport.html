@@ -1,331 +1,400 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Car Service</title>
+<head>
+  <meta charset="UTF-8" />
+  <title>Car Service</title>
 
-    <script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
-    <script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
-    <script
-      src="https://kronos.tu.kielce.pl/uml/vendor/prism.js"
-      type="text/javascript"
-    ></script>
-    <script
-      src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js"
-      type="text/javascript"
-    ></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+  <script
+          src="https://kronos.tu.kielce.pl/uml/vendor/prism.js"
+          type="text/javascript"
+  ></script>
+  <script
+          src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js"
+          type="text/javascript"
+  ></script>
 
-    <link
-      rel="stylesheet"
-      href="https://kronos.tu.kielce.pl/uml/vendor/prism.css"
-      data-noprefix
-    />
-    <link
-      rel="stylesheet"
-      href="https://kronos.tu.kielce.pl/uml/css/raport.css"
-      data-noprefix
-    />
-  </head>
-  <body>
-    <h1>Inżynieria Programowania</h1>
-    <h2>Car Service – system obsługi warsztatu samochodowego</h2>
+  <link
+          rel="stylesheet"
+          href="https://kronos.tu.kielce.pl/uml/vendor/prism.css"
+          data-noprefix
+  />
+  <link
+          rel="stylesheet"
+          href="https://kronos.tu.kielce.pl/uml/css/raport.css"
+          data-noprefix
+  />
+</head>
+<body>
+<h1>Inżynieria Programowania</h1>
+<h2>Car Service – system obsługi warsztatu samochodowego</h2>
 
-    <h3>Autorzy</h3>
+<h3>Autorzy</h3>
 
-    <ul>
-      <li>Jakub Banasiewicz</li>
-      <li>Łukasz Bera</li>
-      <li>Kacper Bednarz</li>
-      <li>Dawid Woźniak</li>
-    </ul>
+<ul>
+  <li>Jakub Banasiewicz</li>
+  <li>Łukasz Bera</li>
+  <li>Kacper Bednarz</li>
+  <li>Dawid Woźniak</li>
+</ul>
 
-    <article id="description-polish">
-      <h4>Opis systemu</h4>
+<article id="description-polish">
+  <h4>Opis systemu</h4>
 
-      <p>
-        Car Service to obiektowy, wielowątkowy system informatyczny działający w
-        architekturze klient-serwer, wspierający codzienną pracę warsztatu
-        samochodowego. System obsługuje pełny proces realizacji usług
-        serwisowych: od założenia konta i rezerwacji terminu wizyty przez
-        klienta, przez przyjęcie samochodu, utworzenie zlecenia i wykonanie
-        naprawy przez mechanika, aż po wystawienie faktury oraz rozliczenie
-        zlecenia przez managera warsztatu.
-      </p>
+  <p>
+    Car Service to obiektowy, wielowątkowy system informatyczny działający w
+    architekturze klient-serwer, wspierający codzienną pracę warsztatu
+    samochodowego. System obsługuje pełny proces realizacji usług
+    serwisowych: od założenia konta i rezerwacji terminu wizyty przez
+    klienta, przez przyjęcie samochodu, utworzenie zlecenia, wydanie części
+    z magazynu i wykonanie naprawy przez mechanika, aż po wystawienie
+    faktury oraz rozliczenie zlecenia przez managera warsztatu.
+  </p>
 
-      <p>
-        Podstawowym obiektem w systemie jest zlecenie naprawy. Powstaje ono na
-        podstawie potwierdzonej rezerwacji w momencie przyjęcia samochodu do
-        warsztatu i dotyczy jednego pojazdu przypisanego do konkretnego klienta.
-        Zlecenie naprawy zawiera opis zgłoszonej usterki, datę przyjęcia,
-        przydzielonego mechanika, aktualny status oraz listę wykonanych napraw
-        wraz z przypisanymi częściami zamiennymi. W trakcie obsługi zlecenie
-        przechodzi przez kolejne statusy: przyjęte, w trakcie realizacji,
-        oczekuje na akceptację kosztorysu, zakończone oraz rozliczone.
-      </p>
+  <p>
+    Podstawowym obiektem w systemie jest zlecenie naprawy. Powstaje ono na
+    podstawie potwierdzonej rezerwacji w momencie przyjęcia samochodu do
+    warsztatu i dotyczy jednego pojazdu przypisanego do konkretnego klienta.
+    Zlecenie naprawy zawiera opis zgłoszonej usterki, datę przyjęcia,
+    przydzielonego mechanika, aktualny status oraz listę wykonanych napraw
+    wraz z przypisanymi częściami zamiennymi. W trakcie obsługi zlecenie
+    przechodzi przez kolejne statusy: przyjęte, w trakcie realizacji,
+    oczekuje na części, oczekuje na akceptację kosztorysu, zakończone oraz
+    rozliczone.
+  </p>
 
-      <p>
-        Pojazd w systemie opisany jest marką, modelem, rokiem produkcji, numerem
-        VIN, numerem rejestracyjnym oraz aktualnym przebiegiem. Każdy pojazd
-        jest przypisany do właściciela (klienta) i posiada swoją historię
-        serwisową, czyli wykaz wszystkich dotychczas zrealizowanych zleceń i
-        napraw. W ramach pojedynczego zlecenia mechanik rejestruje naprawy
-        (poszczególne czynności serwisowe, czas pracy oraz zużyte części z
-        katalogu). Jeżeli w trakcie diagnostyki lub pracy mechanik wykryje
-        dodatkową usterkę, tworzy w systemie kosztorys dodatkowych prac, który
-        klient może zaakceptować lub odrzucić przed kontynuowaniem naprawy.
-      </p>
+  <p>
+    Pojazd w systemie opisany jest marką, modelem, rokiem produkcji, numerem
+    VIN, numerem rejestracyjnym oraz aktualnym przebiegiem. Każdy pojazd
+    jest przypisany do właściciela (klienta) i posiada swoją historię
+    serwisową. W ramach pojedynczego zlecenia mechanik zamawia potrzebne
+    części u magazyniera oraz rejestruje wykonane naprawy (czynności
+    serwisowe, czas pracy i zużyte części). Jeżeli w trakcie diagnostyki lub
+    pracy mechanik wykryje dodatkową usterkę, tworzy w systemie kosztorys
+    dodatkowych prac, który klient może zaakceptować lub odrzucić przed
+    kontynuowaniem naprawy.
+  </p>
 
-      <p>
-        W systemie wyróżniono trzech użytkowników (aktorów): Klienta, Mechanika
-        oraz Managera warsztatu. Klient korzysta z systemu w celu rejestracji
-        swoich pojazdów, rezerwacji terminów wizyt, śledzenia postępu prac oraz
-        akceptacji ewentualnych kosztorysów dodatkowych napraw. Mechanik
-        wykorzystuje system do przeglądania przydzielonych mu zleceń,
-        sprawdzania historii serwisowej pojazdów, rejestrowania wykonanych
-        napraw i użytych części, zgłaszania dodatkowych usterek oraz
-        aktualizowania statusu zlecenia. Manager warsztatu zarządza pracą
-        serwisu: potwierdza rezerwacje i tworzy zlecenia naprawy, przydziela je
-        mechanikom, aktualizuje cennik usług i katalog części zamiennych,
-        wystawia faktury za zrealizowane zlecenia oraz generuje raporty
-        podsumowujące pracę warsztatu. Manager warsztatu posiada również
-        uprawnienia mechanika, dzięki czemu w razie potrzeby może wykonywać i
-        nadzorować operacje warsztatowe.
-      </p>
+  <p>
+    Części zamienne przechowywane są w magazynie warsztatu i opisane nazwą,
+    numerem katalogowym, producentem, ceną oraz aktualnym stanem
+    magazynowym. Mechanik zgłasza zapotrzebowanie na części przypisane do
+    konkretnego zlecenia naprawy, natomiast magazynier weryfikuje ich
+    dostępność, wydaje je mechanikowi, a w razie braków zamawia części u
+    dostawców i rejestruje przyjęcie dostaw do magazynu.
+  </p>
 
-      <p>
-        Założenia niefunkcjonalne systemu obejmują pracę w architekturze
-        klient-serwer z centralną bazą danych oraz obsługę wielu wątków po
-        stronie serwera, co umożliwia jednoczesną, bezkonfliktową pracę wielu
-        klientów i pracowników warsztatu w czasie rzeczywistym. System zapewnia
-        kontrolę dostępu opartą na rolach po uwierzytelnieniu użytkownika,
-        spójność danych podczas równoczesnej edycji zleceń, czas odpowiedzi
-        interfejsu poniżej 2 sekund dla standardowych operacji oraz przejrzysty,
-        responsywny interfejs użytkownika dostosowany do komputerów
-        stacjonarnych, tabletów warsztatowych i urządzeń mobilnych.
-      </p>
-    </article>
+  <p>
+    W systemie wyróżniono czterech użytkowników (aktorów): Klienta,
+    Mechanika, Magazyniera oraz Managera warsztatu. Klient rejestruje swoje
+    pojazdy, rezerwuje terminy wizyt, śledzi status naprawy oraz akceptuje
+    ewentualne kosztorysy dodatkowych prac. Mechanik przegląda przydzielone
+    mu zlecenia, zamawia części u magazyniera, rejestruje wykonane naprawy,
+    zgłasza dodatkowe usterki oraz aktualizuje status zlecenia. Magazynier
+    obsługuje zapotrzebowania na części od mechaników, sprawdza stany
+    magazynowe, wydaje części, zamawia brakujący asortyment u dostawców oraz
+    przyjmuje dostawy. Manager warsztatu potwierdza rezerwacje i tworzy
+    zlecenia naprawy, przydziela je mechanikom, zarządza cennikiem usług,
+    wystawia faktury za zrealizowane zlecenia oraz generuje raporty z pracy
+    warsztatu. Manager warsztatu posiada również uprawnienia mechanika,
+    dzięki czemu może nadzorować i wykonywać operacje warsztatowe.
+  </p>
 
-    <article id="dictionary-polish">
-      <h4>Słownik pojęć</h4>
-      <ul>
-        <li>
-          <strong>Klient</strong>
-          Właściciel pojazdu korzystający z usług warsztatu. Posiada konto w
-          systemie, rejestruje swoje samochody, umawia wizyty, śledzi status
-          zlecenia oraz decyduje o akceptacji kosztorysu dodatkowych napraw.
-        </li>
-        <li>
-          <strong>Mechanik</strong>
-          Pracownik warsztatu realizujący naprawy pojazdów. Przegląda
-          przydzielone mu zlecenia i historię serwisową aut, wprowadza wykonane
-          czynności serwisowe, zgłasza dodatkowe usterki i zmienia statusy
-          zleceń.
-        </li>
-        <li>
-          <strong>Manager warsztatu</strong>
-          Kierownik zarządzający pracą warsztatu. Tworzy zlecenia naprawy na
-          podstawie rezerwacji, przydziela je mechanikom, zarządza cennikiem i
-          katalogiem części, wystawia faktury oraz generuje raporty. Dziedziczy
-          również uprawnienia mechanika.
-        </li>
-        <li>
-          <strong>Pojazd</strong>
-          Samochód należący do klienta, opisany marką, modelem, rokiem
-          produkcji, numerem VIN, numerem rejestracyjnym oraz przebiegiem.
-          Posiada przypisaną historię serwisową.
-        </li>
-        <li>
-          <strong>Rezerwacja wizyty</strong>
-          Zgłoszenie chęci oddania pojazdu do warsztatu w wybranym terminie wraz
-          z wstępnym opisem usterki, składane przez klienta w systemie.
-        </li>
-        <li>
-          <strong>Zlecenie naprawy</strong>
-          Główny obiekt w systemie tworzony przez managera warsztatu przy
-          przyjęciu pojazdu. Skupia informacje o pojeździe, kliencie,
-          przydzielonym mechaniku, statusie prac, wykonanych naprawach i
-          naliczonych kosztach.
-        </li>
-        <li>
-          <strong>Status zlecenia</strong>
-          Informacja określająca bieżący etap realizacji zlecenia naprawy (np.
-          przyjęte, w trakcie realizacji, oczekuje na akceptację kosztorysu,
-          zakończone, rozliczone).
-        </li>
-        <li>
-          <strong>Naprawa</strong>
-          Pojedyncza czynność serwisowa wykonana przez mechanika w ramach
-          zlecenia naprawy, określająca rodzaj usługi, czas pracy oraz użyte
-          części zamienne.
-        </li>
-        <li>
-          <strong>Dodatkowa usterka</strong>
-          Nieprzewidziana awaria wykryta przez mechanika podczas diagnostyki lub
-          naprawy pojazdu, wykraczająca poza pierwotny zakres zlecenia.
-        </li>
-        <li>
-          <strong>Kosztorys</strong>
-          Wycena usunięcia dodatkowej usterki (obejmująca koszt robocizny i
-          części), która wymaga akceptacji klienta przed przystąpieniem do prac.
-        </li>
-        <li>
-          <strong>Katalog części i cennik usług</strong>
-          Zbiór dostępnych w warsztacie części zamiennych oraz stawek za usługi
-          serwisowe, zarządzany przez managera i wykorzystywany do automatycznej
-          wyceny napraw.
-        </li>
-        <li>
-          <strong>Historia serwisowa</strong>
-          Zestawienie wszystkich dotychczasowych zleceń naprawy i czynności
-          serwisowych wykonanych dla danego pojazdu w warsztacie.
-        </li>
-        <li>
-          <strong>Faktura</strong>
-          Dokument rozliczeniowy generowany przez managera warsztatu po
-          zakończeniu zlecenia naprawy, podsumowujący koszt robocizny oraz
-          zużytych części.
-        </li>
-        <li>
-          <strong>Raport</strong>
-          Zestawienie statystyczne i finansowe generowane przez managera
-          warsztatu, obejmujące m.in. liczbę zrealizowanych zleceń oraz
-          przychody w wybranym okresie.
-        </li>
-      </ul>
-    </article>
+  <p>
+    Założenia niefunkcjonalne systemu obejmują pracę w architekturze
+    klient-serwer z centralną bazą danych oraz obsługę wielu wątków po
+    stronie serwera, co umożliwia jednoczesną, bezkonfliktową pracę wielu
+    klientów i pracowników warsztatu w czasie rzeczywistym. System zapewnia
+    kontrolę dostępu opartą na rolach po uwierzytelnieniu użytkownika,
+    spójność danych podczas równoczesnej edycji zleceń i stanów
+    magazynowych, czas odpowiedzi interfejsu poniżej 2 sekund dla
+    standardowych operacji oraz przejrzysty, responsywny interfejs
+    użytkownika dostosowany do komputerów stacjonarnych, tabletów
+    warsztatowych i urządzeń mobilnych.
+  </p>
+</article>
 
-    <article id="user-stories-polish">
-      <h4>User Stories</h4>
+<article id="dictionary-polish">
+  <h4>Słownik pojęć</h4>
+  <ul>
+    <li>
+      <strong>Klient</strong>
+      Właściciel pojazdu korzystający z usług warsztatu. Posiada konto w
+      systemie, rejestruje swoje samochody, umawia wizyty, śledzi status
+      zlecenia oraz decyduje o akceptacji kosztorysu dodatkowych napraw.
+    </li>
+    <li>
+      <strong>Mechanik</strong>
+      Pracownik warsztatu realizujący naprawy pojazdów. Przegląda
+      przydzielone mu zlecenia, zamawia części u magazyniera, wprowadza
+      wykonane czynności serwisowe, zgłasza dodatkowe usterki i zmienia
+      statusy zleceń.
+    </li>
+    <li>
+      <strong>Magazynier</strong>
+      Pracownik odpowiedzialny za magazyn części zamiennych. Obsługuje
+      zamówienia od mechaników, sprawdza dostępność części, wydaje je do
+      zleceń, zamawia brakujące pozycje u dostawców i przyjmuje dostawy.
+    </li>
+    <li>
+      <strong>Manager warsztatu</strong>
+      Kierownik zarządzający pracą warsztatu. Tworzy zlecenia naprawy na
+      podstawie rezerwacji, przydziela je mechanikom, zarządza cennikiem
+      usług, wystawia faktury oraz generuje raporty. Dziedziczy również
+      uprawnienia mechanika.
+    </li>
+    <li>
+      <strong>Pojazd</strong>
+      Samochód należący do klienta, opisany marką, modelem, rokiem
+      produkcji, numerem VIN, numerem rejestracyjnym oraz przebiegiem.
+      Posiada przypisaną historię serwisową.
+    </li>
+    <li>
+      <strong>Rezerwacja wizyty</strong>
+      Zgłoszenie chęci oddania pojazdu do warsztatu w wybranym terminie wraz
+      z wstępnym opisem usterki, składane przez klienta w systemie.
+    </li>
+    <li>
+      <strong>Zlecenie naprawy</strong>
+      Główny obiekt w systemie tworzony przez managera warsztatu przy
+      przyjęciu pojazdu. Skupia informacje o pojeździe, kliencie,
+      przydzielonym mechaniku, statusie prac, wykonanych naprawach i
+      naliczonych kosztach.
+    </li>
+    <li>
+      <strong>Status zlecenia</strong>
+      Informacja określająca bieżący etap realizacji zlecenia naprawy (np.
+      przyjęte, w trakcie realizacji, oczekuje na części, oczekuje na
+      akceptację kosztorysu, zakończone, rozliczone).
+    </li>
+    <li>
+      <strong>Naprawa</strong>
+      Pojedyncza czynność serwisowa wykonana przez mechanika w ramach
+      zlecenia naprawy, określająca rodzaj usługi, czas pracy oraz użyte
+      części zamienne.
+    </li>
+    <li>
+      <strong>Dodatkowa usterka</strong>
+      Nieprzewidziana awaria wykryta przez mechanika podczas diagnostyki lub
+      naprawy pojazdu, wykraczająca poza pierwotny zakres zlecenia.
+    </li>
+    <li>
+      <strong>Kosztorys</strong>
+      Wycena usunięcia dodatkowej usterki (obejmująca koszt robocizny i
+      części), która wymaga akceptacji klienta przed przystąpieniem do prac.
+    </li>
+    <li>
+      <strong>Część zamienna</strong>
+      Element eksploatacyjny lub konstrukcyjny pojazdu przechowywany w
+      magazynie warsztatu, opisany nazwą, numerem katalogowym, ceną oraz
+      aktualnym stanem magazynowym.
+    </li>
+    <li>
+      <strong>Zamówienie części</strong>
+      Wewnętrzne zapotrzebowanie na części zamienne składane przez mechanika
+      u magazyniera w ramach realizowanego zlecenia naprawy.
+    </li>
+    <li>
+      <strong>Dostawa części</strong>
+      Partia części zamiennych zamówiona u zewnętrznego dostawcy i
+      przyjmowana na stan magazynu przez magazyniera.
+    </li>
+    <li>
+      <strong>Cennik usług</strong>
+      Zbiór stawek za poszczególne usługi serwisowe i robociznę, zarządzany
+      przez managera warsztatu i wykorzystywany do wyceny zleceń.
+    </li>
+    <li>
+      <strong>Faktura</strong>
+      Dokument rozliczeniowy generowany przez managera warsztatu po
+      zakończeniu zlecenia naprawy, podsumowujący koszt robocizny oraz
+      zużytych części.
+    </li>
+    <li>
+      <strong>Raport</strong>
+      Zestawienie statystyczne i finansowe generowane przez managera
+      warsztatu, obejmujące m.in. liczbę zrealizowanych zleceń, zużycie
+      części oraz przychody w wybranym okresie.
+    </li>
+  </ul>
+</article>
 
-      <h5>Klient</h5>
-      <p>
-        Jako klient chcę założyć konto oraz zalogować się do systemu w taki
-        sposób, aby mieć zdalny dostęp do usług warsztatu i swoich zleceń.
-      </p>
-      <p>
-        Jako klient chcę dodać swój pojazd do konta w taki sposób, aby nie
-        podawać szczegółowych danych samochodu przy każdej kolejnej wizycie.
-      </p>
-      <p>
-        Jako klient chcę zarezerwować termin wizyty w warsztacie w taki sposób,
-        aby wybrać dogodną datę i opisać usterkę bez konieczności dzwonienia.
-      </p>
-      <p>
-        Jako klient chcę śledzić status zlecenia naprawy mojego pojazdu w taki
-        sposób, aby wiedzieć, na jakim etapie są prace i kiedy auto będzie
-        gotowe do odbioru.
-      </p>
-      <p>
-        Jako klient chcę akceptować lub odrzucać kosztorys dodatkowych prac w
-        taki sposób, aby mieć pełną kontrolę nad końcowym kosztem naprawy.
-      </p>
+<article id="user-stories-polish">
+  <h4>User Stories</h4>
 
-      <h5>Mechanik</h5>
-      <p>
-        Jako mechanik chcę przeglądać listę przydzielonych mi zleceń naprawy w
-        taki sposób, aby wiedzieć, którymi pojazdami mam się zająć i w jakiej
-        kolejności.
-      </p>
-      <p>
-        Jako mechanik chcę przeglądać historię serwisową pojazdu w taki sposób,
-        aby podczas diagnozy wykorzystać informacje o wcześniejszych naprawach.
-      </p>
-      <p>
-        Jako mechanik chcę wprowadzać do systemu wykonane naprawy oraz użyte
-        części w taki sposób, aby koszt zlecenia został automatycznie wyliczony,
-        a historia pojazdu zaktualizowana.
-      </p>
-      <p>
-        Jako mechanik chcę zgłaszać dodatkową usterkę wykrytą w trakcie prac w
-        taki sposób, aby wygenerować kosztorys do akceptacji przez klienta przed
-        rozszerzeniem naprawy.
-      </p>
-      <p>
-        Jako mechanik chcę zmieniać status zlecenia naprawy w taki sposób, aby
-        klient oraz manager warsztatu widzieli aktualny postęp prac.
-      </p>
+  <h5>Klient</h5>
+  <p>
+    Jako klient chcę założyć konto oraz zalogować się do systemu w taki
+    sposób, aby mieć zdalny dostęp do usług warsztatu i swoich zleceń.
+  </p>
+  <p>
+    Jako klient chcę dodać swój pojazd do konta w taki sposób, aby nie
+    podawać szczegółowych danych samochodu przy każdej kolejnej wizycie.
+  </p>
+  <p>
+    Jako klient chcę zarezerwować termin wizyty w warsztacie w taki sposób,
+    aby wybrać dogodną datę i opisać usterkę bez konieczności dzwonienia.
+  </p>
+  <p>
+    Jako klient chcę śledzić status zlecenia naprawy mojego pojazdu w taki
+    sposób, aby wiedzieć, na jakim etapie są prace i kiedy auto będzie
+    gotowe do odbioru.
+  </p>
+  <p>
+    Jako klient chcę akceptować lub odrzucać kosztorys dodatkowych prac w
+    taki sposób, aby mieć pełną kontrolę nad końcowym kosztem naprawy.
+  </p>
 
-      <h5>Manager warsztatu</h5>
-      <p>
-        Jako manager warsztatu chcę potwierdzać rezerwacje wizyt i tworzyć na
-        ich podstawie zlecenia naprawy w taki sposób, aby formalnie zarejestrować
-        przyjęcie pojazdu do serwisu.
-      </p>
-      <p>
-        Jako manager warsztatu chcę przydzielać zlecenia naprawy mechanikom w
-        taki sposób, aby praca w warsztacie była równomiernie rozłożona.
-      </p>
-      <p>
-        Jako manager warsztatu chcę zarządzać katalogiem części i cennikiem
-        usług w taki sposób, aby kosztorysy oraz faktury były wyliczane według
-        aktualnych stawek.
-      </p>
-      <p>
-        Jako manager warsztatu chcę wystawiać fakturę za zakończone zlecenie
-        naprawy w taki sposób, aby rozliczyć klienta przy odbiorze pojazdu.
-      </p>
-      <p>
-        Jako manager warsztatu chcę generować raporty z pracy warsztatu w taki
-        sposób, aby monitorować przychody oraz liczbę zrealizowanych napraw.
-      </p>
-    </article>
+  <h5>Mechanik</h5>
+  <p>
+    Jako mechanik chcę przeglądać listę przydzielonych mi zleceń naprawy
+    wraz z historią pojazdu w taki sposób, aby wiedzieć, którymi
+    samochodami mam się zająć i jakie naprawy przechodziły wcześniej.
+  </p>
+  <p>
+    Jako mechanik chcę zamawiać potrzebne części zamienne u magazyniera w
+    taki sposób, aby zostały one przygotowane i przypisane do realizowanego
+    zlecenia naprawy.
+  </p>
+  <p>
+    Jako mechanik chcę wprowadzać do systemu wykonane naprawy oraz czas
+    pracy w taki sposób, aby koszt zlecenia został automatycznie wyliczony.
+  </p>
+  <p>
+    Jako mechanik chcę zgłaszać dodatkową usterkę wykrytą w trakcie prac w
+    taki sposób, aby wygenerować kosztorys do akceptacji przez klienta przed
+    rozszerzeniem naprawy.
+  </p>
+  <p>
+    Jako mechanik chcę zmieniać status zlecenia naprawy w taki sposób, aby
+    klient oraz manager warsztatu widzieli aktualny postęp prac.
+  </p>
 
-    <article id="use-case-diagram">
-      <h4>Diagram przypadków użycia</h4>
-      <p class="uml">
-        @startuml
-        left to right direction
+  <h5>Magazynier</h5>
+  <p>
+    Jako magazynier chcę przeglądać zamówienia części złożone przez
+    mechaników w taki sposób, aby wiedzieć, jakie elementy muszę
+    przygotować do aktualnych zleceń.
+  </p>
+  <p>
+    Jako magazynier chcę sprawdzać dostępność i stan magazynowy części w
+    taki sposób, aby szybko zweryfikować, czy dany element znajduje się w
+    warsztacie.
+  </p>
+  <p>
+    Jako magazynier chcę wydawać zamówione części mechanikowi w taki sposób,
+    aby przypisać je do zlecenia i automatycznie pomniejszyć stan
+    magazynowy.
+  </p>
+  <p>
+    Jako magazynier chcę zamawiać brakujące części zamienne u dostawcy w
+    taki sposób, aby uzupełnić braki magazynowe i umożliwić dokończenie
+    napraw.
+  </p>
+  <p>
+    Jako magazynier chcę rejestrować przyjęcie dostawy części do magazynu w
+    taki sposób, aby zaktualizować stany magazynowe oraz katalog części w
+    systemie.
+  </p>
 
-        actor Klient
-        actor Mechanik
-        actor "Manager warsztatu" as Manager
+  <h5>Manager warsztatu</h5>
+  <p>
+    Jako manager warsztatu chcę potwierdzać rezerwacje wizyt i tworzyć na
+    ich podstawie zlecenia naprawy w taki sposób, aby formalnie
+    zarejestrować przyjęcie pojazdu do serwisu.
+  </p>
+  <p>
+    Jako manager warsztatu chcę przydzielać zlecenia naprawy mechanikom w
+    taki sposób, aby praca w warsztacie była równomiernie rozłożona.
+  </p>
+  <p>
+    Jako manager warsztatu chcę zarządzać cennikiem usług serwisowych w taki
+    sposób, aby kosztorysy oraz faktury były wyliczane według aktualnych
+    stawek.
+  </p>
+  <p>
+    Jako manager warsztatu chcę wystawiać fakturę za zakończone zlecenie
+    naprawy w taki sposób, aby rozliczyć klienta przy odbiorze pojazdu.
+  </p>
+  <p>
+    Jako manager warsztatu chcę generować raporty z pracy warsztatu w taki
+    sposób, aby monitorować przychody oraz liczbę zrealizowanych napraw.
+  </p>
+</article>
 
-        usecase "Załóż konto i zaloguj się" as UC_Auth
-        usecase "Dodaj pojazd" as UC_AddVehicle
-        usecase "Zarezerwuj wizytę" as UC_Book
-        usecase "Śledź status zlecenia naprawy" as UC_TrackStatus
-        usecase "Zaakceptuj kosztorys dodatkowych prac" as UC_AcceptEstimate
+<article id="use-case-diagram">
+  <h4>Diagram przypadków użycia</h4>
+  <p class="uml">
+    @startuml
+    left to right direction
 
-        usecase "Przeglądaj przydzielone zlecenia" as UC_ViewOrders
-        usecase "Przeglądaj historię serwisową pojazdu" as UC_History
-        usecase "Wprowadź wykonaną naprawę" as UC_EnterRepair
-        usecase "Zgłoś dodatkową usterkę" as UC_ReportFault
-        usecase "Zmień status zlecenia naprawy" as UC_ChangeStatus
+    actor Klient
+    actor Mechanik
+    actor Magazynier
+    actor "Manager warsztatu" as Manager
 
-        usecase "Utwórz zlecenie naprawy z rezerwacji" as UC_CreateOrder
-        usecase "Przydziel zlecenie mechanikowi" as UC_AssignMechanic
-        usecase "Zarządzaj katalogiem części i cennikiem" as UC_ManageCatalog
-        usecase "Wystaw fakturę" as UC_Invoice
-        usecase "Generuj raporty warsztatu" as UC_Reports
+    usecase "Załóż konto i zaloguj się" as UC_Auth
+    usecase "Dodaj pojazd" as UC_AddVehicle
+    usecase "Zarezerwuj wizytę" as UC_Book
+    usecase "Śledź status zlecenia naprawy" as UC_TrackStatus
+    usecase "Zaakceptuj kosztorys dodatkowych prac" as UC_AcceptEstimate
 
-        Mechanik <|-- Manager
+    usecase "Przeglądaj przydzielone zlecenia" as UC_ViewOrders
+    usecase "Zamów części u magazyniera" as UC_RequestParts
+    usecase "Wprowadź wykonaną naprawę" as UC_EnterRepair
+    usecase "Zgłoś dodatkową usterkę" as UC_ReportFault
+    usecase "Zmień status zlecenia naprawy" as UC_ChangeStatus
 
-        Klient -- UC_Auth
-        Klient -- UC_AddVehicle
-        Klient -- UC_Book
-        Klient -- UC_TrackStatus
-        Klient -- UC_AcceptEstimate
+    usecase "Przeglądaj zamówienia części" as UC_ViewPartRequests
+    usecase "Sprawdź dostępność części" as UC_CheckStock
+    usecase "Wydaj części mechanikowi" as UC_IssueParts
+    usecase "Zamów części u dostawcy" as UC_OrderSupplier
+    usecase "Przyjmij dostawę części" as UC_ReceiveDelivery
 
-        Mechanik -- UC_ViewOrders
-        Mechanik -- UC_History
-        Mechanik -- UC_EnterRepair
-        Mechanik -- UC_ReportFault
-        Mechanik -- UC_ChangeStatus
+    usecase "Utwórz zlecenie naprawy z rezerwacji" as UC_CreateOrder
+    usecase "Przydziel zlecenie mechanikowi" as UC_AssignMechanic
+    usecase "Zarządzaj cennikiem usług" as UC_ManagePrices
+    usecase "Wystaw fakturę" as UC_Invoice
+    usecase "Generuj raporty warsztatu" as UC_Reports
 
-        Manager -- UC_CreateOrder
-        Manager -- UC_AssignMechanic
-        Manager -- UC_ManageCatalog
-        Manager -- UC_Invoice
-        Manager -- UC_Reports
+    Mechanik <|-- Manager
 
-        UC_Book <.. UC_AddVehicle : <<extend>>
-        UC_TrackStatus <.. UC_AcceptEstimate : <<extend>>
-        UC_EnterRepair <.. UC_ReportFault : <<extend>>
-        UC_CreateOrder ..> UC_AssignMechanic : <<include>>
-        UC_Invoice ..> UC_ChangeStatus : <<include>>
+    Klient -- UC_Auth
+    Klient -- UC_AddVehicle
+    Klient -- UC_Book
+    Klient -- UC_TrackStatus
+    Klient -- UC_AcceptEstimate
 
-        @enduml
-      </p>
-    </article>
-  </body>
+    Mechanik -- UC_ViewOrders
+    Mechanik -- UC_RequestParts
+    Mechanik -- UC_EnterRepair
+    Mechanik -- UC_ReportFault
+    Mechanik -- UC_ChangeStatus
+
+    Magazynier -- UC_ViewPartRequests
+    Magazynier -- UC_CheckStock
+    Magazynier -- UC_IssueParts
+    Magazynier -- UC_OrderSupplier
+    Magazynier -- UC_ReceiveDelivery
+
+    Manager -- UC_CreateOrder
+    Manager -- UC_AssignMechanic
+    Manager -- UC_ManagePrices
+    Manager -- UC_Invoice
+    Manager -- UC_Reports
+
+    UC_Book <.. UC_AddVehicle : <<extend>>
+    UC_TrackStatus <.. UC_AcceptEstimate : <<extend>>
+      UC_EnterRepair <.. UC_ReportFault : <<extend>>
+        UC_CheckStock <.. UC_OrderSupplier : <<extend>>
+
+          UC_IssueParts ..> UC_CheckStock : <<include>>
+            UC_CreateOrder ..> UC_AssignMechanic : <<include>>
+              UC_Invoice ..> UC_ChangeStatus : <<include>>
+
+                @enduml
+  </p>
+</article>
+</body>
 </html>
