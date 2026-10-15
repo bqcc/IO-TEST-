@@ -115,6 +115,80 @@
   </p>
 </article>
 
+<article id="description-english">
+  <h4>System description</h4>
+
+  <p>
+    Car Service is an object-oriented, multi-threaded information system
+    operating in a client-server architecture that supports the daily
+    operations of an automotive repair shop. The system covers the entire
+    service process: from account creation and appointment booking by the
+    client, through vehicle intake, repair order creation, spare parts
+    issuance from the warehouse, and repair execution by the mechanic, up to
+    invoice generation and order settlement by the workshop manager.
+  </p>
+
+  <p>
+    The core entity in the system is the repair order. It is created based
+    on a confirmed appointment when a vehicle is accepted into the workshop
+    and applies to a single vehicle assigned to a specific client. The
+    repair order contains a description of the reported fault, acceptance
+    date, assigned mechanic, current status, and a list of performed repairs
+    along with assigned spare parts. During processing, the order transitions
+    through successive statuses: accepted, in progress, waiting for parts,
+    waiting for estimate approval, completed, and settled.
+  </p>
+
+  <p>
+    A vehicle in the system is described by its make, model, production
+    year, VIN, registration number, and current mileage. Each vehicle is
+    assigned to an owner (client) and has its own service history. Within a
+    single repair order, the mechanic requests necessary parts from the
+    storekeeper and records completed repairs (service activities, working
+    time, and used parts). If the mechanic detects an additional fault
+    during diagnostics or repair work, they create a cost estimate for
+    additional work in the system, which the client can accept or reject
+    before the repair continues.
+  </p>
+
+  <p>
+    Spare parts are stored in the workshop warehouse and are described by
+    name, catalog number, manufacturer, price, and current stock level. The
+    mechanic submits a part request linked to a specific repair order, while
+    the storekeeper verifies availability, issues the parts to the mechanic,
+    and in case of shortages, orders parts from suppliers and records
+    incoming deliveries into the warehouse.
+  </p>
+
+  <p>
+    There are four users (actors) in the system: Client, Mechanic,
+    Storekeeper, and Workshop Manager. The Client registers their vehicles,
+    books appointments, tracks repair status, and approves cost estimates
+    for additional work. The Mechanic views assigned repair orders, requests
+    parts from the storekeeper, records performed repairs, reports
+    additional faults, and updates the order status. The Storekeeper handles
+    part requests from mechanics, checks stock levels, issues parts, orders
+    missing items from suppliers, and receives deliveries. The Workshop
+    Manager confirms appointments and creates repair orders, assigns them to
+    mechanics, manages the service price list, issues invoices for completed
+    orders, and generates workshop performance reports. The Workshop Manager
+    also inherits the privileges of a mechanic, allowing them to supervise
+    and perform workshop operations.
+  </p>
+
+  <p>
+    Non-functional requirements of the system include operating in a
+    client-server architecture with a central database and multi-threaded
+    server-side processing, enabling simultaneous, conflict-free work by
+    multiple clients and workshop employees in real time. The system
+    provides role-based access control after user authentication, data
+    consistency during concurrent editing of orders and stock levels, an
+    interface response time of under 2 seconds for standard operations, and
+    a clear, responsive user interface adapted to desktop computers,
+    workshop tablets, and mobile devices.
+  </p>
+</article>
+
 <article id="dictionary-polish">
   <h4>Słownik pojęć</h4>
   <ul>
@@ -220,8 +294,112 @@
   </ul>
 </article>
 
+<article id="dictionary-english">
+  <h4>Dictionary</h4>
+  <ul>
+    <li>
+      <strong>Client</strong>
+      The vehicle owner using the workshop's services. Has an account in the
+      system, registers their cars, books appointments, tracks order status,
+      and decides on accepting cost estimates for additional repairs.
+    </li>
+    <li>
+      <strong>Mechanic</strong>
+      A workshop employee performing vehicle repairs. Views assigned orders,
+      requests parts from the storekeeper, enters completed service
+      activities, reports additional faults, and updates order statuses.
+    </li>
+    <li>
+      <strong>Storekeeper</strong>
+      An employee responsible for the spare parts warehouse. Handles part
+      requests from mechanics, checks part availability, issues parts for
+      orders, orders missing items from suppliers, and receives deliveries.
+    </li>
+    <li>
+      <strong>Workshop Manager</strong>
+      A manager overseeing workshop operations. Creates repair orders based
+      on appointments, assigns them to mechanics, manages the service price
+      list, issues invoices, and generates reports. Also inherits mechanic
+      privileges.
+    </li>
+    <li>
+      <strong>Vehicle</strong>
+      A car belonging to a client, described by make, model, production
+      year, VIN, registration number, and mileage. Has an assigned service
+      history.
+    </li>
+    <li>
+      <strong>Appointment Booking</strong>
+      A request to leave a vehicle at the workshop on a selected date along
+      with an initial fault description, submitted by the client in the
+      system.
+    </li>
+    <li>
+      <strong>Repair Order</strong>
+      The main entity in the system created by the workshop manager upon
+      vehicle intake. Combines information about the vehicle, client,
+      assigned mechanic, work status, performed repairs, and calculated
+      costs.
+    </li>
+    <li>
+      <strong>Order Status</strong>
+      Information defining the current stage of repair order execution (e.g.,
+      accepted, in progress, waiting for parts, waiting for estimate
+      approval, completed, settled).
+    </li>
+    <li>
+      <strong>Repair</strong>
+      A single service activity performed by a mechanic within a repair
+      order, specifying the service type, working time, and used spare
+      parts.
+    </li>
+    <li>
+      <strong>Additional Fault</strong>
+      An unforeseen malfunction detected by the mechanic during vehicle
+      diagnostics or repair, exceeding the original scope of the order.
+    </li>
+    <li>
+      <strong>Cost Estimate</strong>
+      A valuation for fixing an additional fault (including labor and parts
+      costs), which requires client approval before work begins.
+    </li>
+    <li>
+      <strong>Spare Part</strong>
+      A consumable or structural vehicle component stored in the workshop
+      warehouse, described by name, catalog number, price, and current stock
+      level.
+    </li>
+    <li>
+      <strong>Part Request</strong>
+      An internal request for spare parts submitted by a mechanic to the
+      storekeeper within an active repair order.
+    </li>
+    <li>
+      <strong>Parts Delivery</strong>
+      A batch of spare parts ordered from an external supplier and received
+      into warehouse stock by the storekeeper.
+    </li>
+    <li>
+      <strong>Service Price List</strong>
+      A collection of rates for individual service activities and labor,
+      managed by the workshop manager and used for order valuation.
+    </li>
+    <li>
+      <strong>Invoice</strong>
+      A billing document generated by the workshop manager after completion
+      of a repair order, summarizing the cost of labor and used parts.
+    </li>
+    <li>
+      <strong>Report</strong>
+      A statistical and financial summary generated by the workshop manager,
+      covering the number of completed orders, parts usage, and revenue in a
+      selected period.
+    </li>
+  </ul>
+</article>
+
 <article id="user-stories-polish">
-  <h4>User Stories</h4>
+  <h4>User Stories (po polsku)</h4>
 
   <h5>Klient</h5>
   <p>
@@ -323,60 +501,162 @@
   </p>
 </article>
 
+<article id="user-stories-english">
+  <h4>User Stories (in english)</h4>
+
+  <h5>Client</h5>
+  <p>
+    As a client I want to create an account and log in to the system so that
+    I can have remote access to workshop services and my orders.
+  </p>
+  <p>
+    As a client I want to add my vehicle to my account so that I do not have
+    to provide detailed car information at every subsequent visit.
+  </p>
+  <p>
+    As a client I want to book an appointment at the workshop so that I can
+    choose a convenient date and describe the fault without having to call.
+  </p>
+  <p>
+    As a client I want to track the status of my vehicle's repair order so
+    that I know what stage the work is at and when the car will be ready for
+    pickup.
+  </p>
+  <p>
+    As a client I want to accept or reject the cost estimate for additional
+    work so that I have full control over the final repair cost.
+  </p>
+
+  <h5>Mechanic</h5>
+  <p>
+    As a mechanic I want to view the list of repair orders assigned to me
+    along with the vehicle history so that I know which cars to work on and
+    what repairs they have undergone previously.
+  </p>
+  <p>
+    As a mechanic I want to request necessary spare parts from the
+    storekeeper so that they are prepared and assigned to the active repair
+    order.
+  </p>
+  <p>
+    As a mechanic I want to enter completed repairs and working time into
+    the system so that the order cost is automatically calculated.
+  </p>
+  <p>
+    As a mechanic I want to report an additional fault detected during work
+    so that a cost estimate is generated for client approval before
+    expanding the repair.
+  </p>
+  <p>
+    As a mechanic I want to change the status of the repair order so that
+    the client and the workshop manager can see the current progress of work.
+  </p>
+
+  <h5>Storekeeper</h5>
+  <p>
+    As a storekeeper I want to view part requests submitted by mechanics so
+    that I know which items I need to prepare for current orders.
+  </p>
+  <p>
+    As a storekeeper I want to check the availability and stock level of
+    parts so that I can quickly verify whether a given item is in the
+    workshop.
+  </p>
+  <p>
+    As a storekeeper I want to issue requested parts to the mechanic so that
+    they are assigned to the order and the stock level is automatically
+    reduced.
+  </p>
+  <p>
+    As a storekeeper I want to order missing spare parts from a supplier so
+    that I can replenish stock shortages and enable the completion of
+    repairs.
+  </p>
+  <p>
+    As a storekeeper I want to record the receipt of a parts delivery into
+    the warehouse so that stock levels and the parts catalog are updated in
+    the system.
+  </p>
+
+  <h5>Workshop Manager</h5>
+  <p>
+    As a workshop manager I want to confirm appointment bookings and create
+    repair orders based on them so that vehicle intake into the service is
+    formally registered.
+  </p>
+  <p>
+    As a workshop manager I want to assign repair orders to mechanics so
+    that work in the workshop is evenly distributed.
+  </p>
+  <p>
+    As a workshop manager I want to manage the service price list so that
+    cost estimates and invoices are calculated according to current rates.
+  </p>
+  <p>
+    As a workshop manager I want to issue an invoice for a completed repair
+    order so that I can settle the payment with the client upon vehicle
+    pickup.
+  </p>
+  <p>
+    As a workshop manager I want to generate workshop performance reports so
+    that I can monitor revenue and the number of completed repairs.
+  </p>
+</article>
+
 <article id="use-case-diagram">
   <h4>Diagram przypadków użycia</h4>
   <p class="uml">
     @startuml
     left to right direction
 
-    actor Klient
-    actor Mechanik
-    actor Magazynier
-    actor "Manager warsztatu" as Manager
+    actor Client
+    actor Mechanic
+    actor Storekeeper
+    actor "Workshop Manager" as Manager
 
-    usecase "Załóż konto i zaloguj się" as UC_Auth
-    usecase "Dodaj pojazd" as UC_AddVehicle
-    usecase "Zarezerwuj wizytę" as UC_Book
-    usecase "Śledź status zlecenia naprawy" as UC_TrackStatus
-    usecase "Zaakceptuj kosztorys dodatkowych prac" as UC_AcceptEstimate
+    usecase "Create account and log in" as UC_Auth
+    usecase "Add vehicle" as UC_AddVehicle
+    usecase "Book appointment" as UC_Book
+    usecase "Track repair order status" as UC_TrackStatus
+    usecase "Accept additional work estimate" as UC_AcceptEstimate
 
-    usecase "Przeglądaj przydzielone zlecenia" as UC_ViewOrders
-    usecase "Zamów części u magazyniera" as UC_RequestParts
-    usecase "Wprowadź wykonaną naprawę" as UC_EnterRepair
-    usecase "Zgłoś dodatkową usterkę" as UC_ReportFault
-    usecase "Zmień status zlecenia naprawy" as UC_ChangeStatus
+    usecase "View assigned orders" as UC_ViewOrders
+    usecase "Request parts from storekeeper" as UC_RequestParts
+    usecase "Record completed repair" as UC_EnterRepair
+    usecase "Report additional fault" as UC_ReportFault
+    usecase "Change repair order status" as UC_ChangeStatus
 
-    usecase "Przeglądaj zamówienia części" as UC_ViewPartRequests
-    usecase "Sprawdź dostępność części" as UC_CheckStock
-    usecase "Wydaj części mechanikowi" as UC_IssueParts
-    usecase "Zamów części u dostawcy" as UC_OrderSupplier
-    usecase "Przyjmij dostawę części" as UC_ReceiveDelivery
+    usecase "View part requests" as UC_ViewPartRequests
+    usecase "Check part availability" as UC_CheckStock
+    usecase "Issue parts to mechanic" as UC_IssueParts
+    usecase "Order parts from supplier" as UC_OrderSupplier
+    usecase "Receive parts delivery" as UC_ReceiveDelivery
 
-    usecase "Utwórz zlecenie naprawy z rezerwacji" as UC_CreateOrder
-    usecase "Przydziel zlecenie mechanikowi" as UC_AssignMechanic
-    usecase "Zarządzaj cennikiem usług" as UC_ManagePrices
-    usecase "Wystaw fakturę" as UC_Invoice
-    usecase "Generuj raporty warsztatu" as UC_Reports
+    usecase "Create repair order from booking" as UC_CreateOrder
+    usecase "Assign order to mechanic" as UC_AssignMechanic
+    usecase "Manage service price list" as UC_ManagePrices
+    usecase "Issue invoice" as UC_Invoice
+    usecase "Generate workshop reports" as UC_Reports
 
-    Mechanik <|-- Manager
+    Mechanic <|-- Manager
 
-    Klient -- UC_Auth
-    Klient -- UC_AddVehicle
-    Klient -- UC_Book
-    Klient -- UC_TrackStatus
-    Klient -- UC_AcceptEstimate
+    Client -- UC_Auth
+    Client -- UC_AddVehicle
+    Client -- UC_Book
+    Client -- UC_TrackStatus
+    Client -- UC_AcceptEstimate
 
-    Mechanik -- UC_ViewOrders
-    Mechanik -- UC_RequestParts
-    Mechanik -- UC_EnterRepair
-    Mechanik -- UC_ReportFault
-    Mechanik -- UC_ChangeStatus
+    Mechanic -- UC_ViewOrders
+    Mechanic -- UC_RequestParts
+    Mechanic -- UC_EnterRepair
+    Mechanic -- UC_ReportFault
+    Mechanic -- UC_ChangeStatus
 
-    Magazynier -- UC_ViewPartRequests
-    Magazynier -- UC_CheckStock
-    Magazynier -- UC_IssueParts
-    Magazynier -- UC_OrderSupplier
-    Magazynier -- UC_ReceiveDelivery
+    Storekeeper -- UC_ViewPartRequests
+    Storekeeper -- UC_CheckStock
+    Storekeeper -- UC_IssueParts
+    Storekeeper -- UC_OrderSupplier
+    Storekeeper -- UC_ReceiveDelivery
 
     Manager -- UC_CreateOrder
     Manager -- UC_AssignMechanic
