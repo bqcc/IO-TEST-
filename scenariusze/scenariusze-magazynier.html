@@ -1,0 +1,662 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<title>Scenariusze – Magazynier</title>
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix="">
+</head>
+<body>
+
+	<article id="use-case-scenarios-polish">
+		<h4>Scenariusze przypadków użycia</h4>
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Kacper
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Bednarz
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Sprawdź dostępność części
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier musi być zalogowany do systemu
+						</li>
+						<li>
+							Katalog części musi zawierać co najmniej jedną część
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier zna aktualny stan magazynowy wybranej części
+						</li>
+						<li>
+							Stan magazynowy w systemie nie uległ zmianie
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Magazynier wybiera opcję Sprawdź dostępność części
+						</li>
+						<li>
+							System wyświetla wyszukiwarkę części
+						</li>
+						<li>
+							Magazynier wpisuje nazwę lub numer katalogowy części
+						</li>
+						<li>
+							System wyświetla listę części pasujących do zapytania
+						</li>
+						<li>
+							Magazynier wybiera część z listy
+						</li>
+						<li>
+							System wyświetla szczegóły części (nazwa, numer katalogowy, producent, cena)
+						</li>
+						<li>
+							System wyświetla aktualny stan magazynowy części oraz ilość zarezerwowaną dla zleceń naprawy
+						</li>
+						<li>
+							System oznacza część jako dostępną
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">4</span>
+							<span class="condition">Brak części pasujących do zapytania</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku wyników</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Magazynier wybiera opcję Zmień zapytanie</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">3</span>
+						</li>
+						<li>
+							<span class="number">8</span>
+							<span class="condition">Stan magazynowy części wynosi zero</span>
+							<span class="reaction-additional">System oznacza część jako niedostępną; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">8</span>
+							<span class="condition">Dostępna ilość części jest mniejsza niż ilość zamówiona przez mechanika</span>
+							<span class="reaction-additional">System wyświetla brakującą ilość; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Kacper
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Bednarz
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Wydaj części mechanikowi
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier musi być zalogowany do systemu
+						</li>
+						<li>
+							Musi istnieć co najmniej jedno niezrealizowane zamówienie części złożone przez mechanika
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Części zostały wydane mechanikowi i przypisane do zlecenia naprawy
+						</li>
+						<li>
+							Stan magazynowy części został pomniejszony o wydaną ilość
+						</li>
+						<li>
+							Zamówienie części zostało oznaczone jako zrealizowane
+						</li>
+						<li>
+							Mechanik został poinformowany o wydaniu części
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Magazynier wybiera opcję Zamówienia części
+						</li>
+						<li>
+							System wyświetla listę niezrealizowanych zamówień części od mechaników
+						</li>
+						<li>
+							Magazynier wybiera zamówienie z listy
+						</li>
+						<li>
+							System wyświetla szczegóły zamówienia (zlecenie naprawy, mechanik, części, ilości)
+						</li>
+						<li>
+							Magazynier wybiera opcję Wydaj części
+						</li>
+						<li>
+							System sprawdza dostępność zamówionych części (przypadek użycia Sprawdź dostępność części)
+						</li>
+						<li>
+							System wyświetla podsumowanie wydania
+						</li>
+						<li>
+							Magazynier potwierdza wydanie części
+						</li>
+						<li>
+							System przypisuje wydane części do zlecenia naprawy
+						</li>
+						<li>
+							System pomniejsza stan magazynowy części
+						</li>
+						<li>
+							System oznacza zamówienie części jako zrealizowane
+						</li>
+						<li>
+							System informuje mechanika o wydaniu części
+						</li>
+						<li>
+							System wyświetla potwierdzenie wydania
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">2</span>
+							<span class="condition">Brak niezrealizowanych zamówień części</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku zamówień</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">6</span>
+							<span class="condition">Zamówiona część jest niedostępna w magazynie</span>
+							<span class="reaction-additional">System oznacza zamówienie jako oczekujące i zmienia status zlecenia na „oczekuje na części”; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">6</span>
+							<span class="condition">Dostępna ilość części jest mniejsza niż zamówiona</span>
+							<span class="reaction-additional">System proponuje częściowe wydanie, a pozostała ilość zostaje w zamówieniu jako oczekująca</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">7</span>
+						</li>
+						<li>
+							<span class="number">8</span>
+							<span class="condition">Magazynier wybiera opcję Anuluj</span>
+							<span class="reaction-additional">System nie wydaje części</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Zlecenie naprawy zostało w międzyczasie zakończone lub rozliczone</span>
+							<span class="reaction-additional">System anuluje zamówienie części i nie zmienia stanu magazynowego</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Kacper
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Bednarz
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Zamów części u dostawcy
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier musi być zalogowany do systemu
+						</li>
+						<li>
+							Część musi być niedostępna lub jej ilość w magazynie musi być niewystarczająca (przypadek użycia Sprawdź dostępność części)
+						</li>
+						<li>
+							W systemie musi być zarejestrowany co najmniej jeden dostawca
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Zamówienie u dostawcy zostało zapisane ze statusem „wysłane”
+						</li>
+						<li>
+							Zamówienie zostało wysłane do dostawcy
+						</li>
+						<li>
+							Brakujące części zostały oznaczone jako zamówione u dostawcy
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Magazynier wybiera opcję Zamów u dostawcy w szczegółach brakującej części
+						</li>
+						<li>
+							System wyświetla formularz zamówienia z listą dostawców oferujących część
+						</li>
+						<li>
+							Magazynier wybiera dostawcę i podaje ilość części
+						</li>
+						<li>
+							Magazynier wysyła formularz
+						</li>
+						<li>
+							System dokonuje walidacji formularza
+						</li>
+						<li>
+							System wyświetla podsumowanie zamówienia (cena, przewidywany termin dostawy)
+						</li>
+						<li>
+							Magazynier potwierdza zamówienie
+						</li>
+						<li>
+							System zapisuje zamówienie u dostawcy ze statusem „wysłane”
+						</li>
+						<li>
+							System wysyła zamówienie do dostawcy
+						</li>
+						<li>
+							System oznacza brakujące części jako zamówione u dostawcy
+						</li>
+						<li>
+							System wyświetla potwierdzenie złożenia zamówienia
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">2</span>
+							<span class="condition">Żaden dostawca nie oferuje wybranej części</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku dostawcy</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">4</span>
+							<span class="condition">Magazynier wybiera opcję Anuluj zamiast wysłania formularza</span>
+							<span class="reaction-additional">System nie tworzy zamówienia</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Nie wybrano dostawcy lub podana ilość jest niepoprawna</span>
+							<span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Podana ilość jest mniejsza niż minimalna ilość zamówienia u dostawcy</span>
+							<span class="reaction-additional">System wyświetla minimalną ilość zamówienia</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">7</span>
+							<span class="condition">Magazynier wybiera opcję Popraw</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Wysłanie zamówienia do dostawcy nie powiodło się</span>
+							<span class="reaction-additional">System zapisuje zamówienie do ponownej wysyłki</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">10</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Kacper
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Bednarz
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Przyjmij dostawę części
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier musi być zalogowany do systemu
+						</li>
+						<li>
+							Musi istnieć zamówienie u dostawcy ze statusem „wysłane”
+						</li>
+						<li>
+							Dostawa części musi dotrzeć do warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Dostawa została zarejestrowana w systemie
+						</li>
+						<li>
+							Stany magazynowe dostarczonych części zostały zwiększone
+						</li>
+						<li>
+							Status zamówienia u dostawcy został zaktualizowany
+						</li>
+						<li>
+							Oczekujące zamówienia mechaników na dostarczone części zostały oznaczone jako gotowe do wydania
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Magazynier
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Magazynier wybiera opcję Przyjmij dostawę
+						</li>
+						<li>
+							System wyświetla listę zamówień u dostawców ze statusem „wysłane”
+						</li>
+						<li>
+							Magazynier wybiera zamówienie, którego dotyczy dostawa
+						</li>
+						<li>
+							System wyświetla listę zamówionych części i ich ilości
+						</li>
+						<li>
+							Magazynier wpisuje ilości faktycznie dostarczonych części
+						</li>
+						<li>
+							Magazynier zatwierdza przyjęcie dostawy
+						</li>
+						<li>
+							System dokonuje walidacji wpisanych ilości
+						</li>
+						<li>
+							System zwiększa stany magazynowe dostarczonych części
+						</li>
+						<li>
+							System zmienia status zamówienia u dostawcy na „zrealizowane”
+						</li>
+						<li>
+							System oznacza oczekujące zamówienia mechaników na dostarczone części jako gotowe do wydania
+						</li>
+						<li>
+							System wyświetla potwierdzenie przyjęcia dostawy
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">2</span>
+							<span class="condition">Brak zamówień u dostawców ze statusem „wysłane”</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku oczekujących zamówień</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Część dostarczonych części jest uszkodzona lub niezgodna z zamówieniem</span>
+							<span class="reaction-additional">Magazynier oznacza je jako reklamowane i system nie wlicza ich do stanu magazynowego</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+						<li>
+							<span class="number">6</span>
+							<span class="condition">Magazynier wybiera opcję Anuluj</span>
+							<span class="reaction-additional">System nie rejestruje dostawy</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">7</span>
+							<span class="condition">Wpisana ilość jest niepoprawna (ujemna lub większa niż zamówiona)</span>
+							<span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Dostarczono mniej części niż zamówiono</span>
+							<span class="reaction-additional">System zmienia status zamówienia na „częściowo zrealizowane” i pozostawia brakującą ilość jako oczekującą</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">10</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</article>
+</body></html>
