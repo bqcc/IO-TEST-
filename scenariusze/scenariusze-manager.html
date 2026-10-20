@@ -1,0 +1,685 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<title>Scenariusze – Manager warsztatu</title>
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix="">
+</head>
+<body>
+
+	<article id="use-case-scenarios-polish">
+		<h4>Scenariusze przypadków użycia</h4>
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Dawid
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Woźniak
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Utwórz zlecenie naprawy na podstawie rezerwacji
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu musi być zalogowany do systemu
+						</li>
+						<li>
+							Musi istnieć rezerwacja wizyty na bieżący dzień
+						</li>
+						<li>
+							Klient musi dostarczyć pojazd do warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Zlecenie naprawy zostało utworzone ze statusem „przyjęte” i powiązane z klientem oraz pojazdem
+						</li>
+						<li>
+							Zlecenie zostało przydzielone mechanikowi
+						</li>
+						<li>
+							Rezerwacja została oznaczona jako zrealizowana
+						</li>
+						<li>
+							Zlecenie jest widoczne dla klienta w systemie
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Manager wybiera opcję Rezerwacje
+						</li>
+						<li>
+							System wyświetla listę rezerwacji na bieżący dzień
+						</li>
+						<li>
+							Manager wybiera rezerwację klienta, który dostarczył pojazd
+						</li>
+						<li>
+							System wyświetla szczegóły rezerwacji (klient, pojazd, termin, opis usterki)
+						</li>
+						<li>
+							Manager wybiera opcję Utwórz zlecenie
+						</li>
+						<li>
+							System wyświetla formularz zlecenia naprawy wypełniony danymi z rezerwacji
+						</li>
+						<li>
+							Manager uzupełnia formularz (aktualny przebieg, opis usterki po oględzinach pojazdu)
+						</li>
+						<li>
+							Manager przydziela zlecenie mechanikowi (przypadek użycia Przydziel zlecenie mechanikowi)
+						</li>
+						<li>
+							Manager zapisuje zlecenie
+						</li>
+						<li>
+							System dokonuje walidacji formularza
+						</li>
+						<li>
+							System tworzy zlecenie naprawy ze statusem „przyjęte” i datą przyjęcia
+						</li>
+						<li>
+							System oznacza rezerwację jako zrealizowaną
+						</li>
+						<li>
+							System wyświetla potwierdzenie utworzenia zlecenia
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">3</span>
+							<span class="condition">Na liście nie ma rezerwacji klienta, który dostarczył pojazd</span>
+							<span class="reaction-additional">System nie pozwala utworzyć zlecenia bez rezerwacji</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Rezerwacja nie została jeszcze potwierdzona</span>
+							<span class="reaction-additional">Manager potwierdza rezerwację, a system zmienia jej status na „potwierdzona”</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Manager wybiera opcję Anuluj zamiast zapisania zlecenia</span>
+							<span class="reaction-additional">System nie tworzy zlecenia</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">10</span>
+							<span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+							<span class="reaction-additional">System zaznacza brakujące pola</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+						<li>
+							<span class="number">10</span>
+							<span class="condition">Podany przebieg jest mniejszy niż ostatnio zapisany przebieg pojazdu</span>
+							<span class="reaction-additional">System wyświetla komunikat o błędnym przebiegu</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+						<li>
+							<span class="number">10</span>
+							<span class="condition">Zlecenie nie zostało przydzielone żadnemu mechanikowi</span>
+							<span class="reaction-additional">System wyświetla komunikat o konieczności przydzielenia mechanika</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">8</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Dawid
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Woźniak
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Przydziel zlecenie mechanikowi
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu musi być zalogowany do systemu
+						</li>
+						<li>
+							Musi istnieć zlecenie naprawy, które nie zostało zakończone ani rozliczone
+						</li>
+						<li>
+							W warsztacie musi być zatrudniony co najmniej jeden mechanik
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Zlecenie naprawy zostało przypisane do wybranego mechanika
+						</li>
+						<li>
+							Zlecenie jest widoczne na liście zleceń mechanika
+						</li>
+						<li>
+							Mechanik został poinformowany o nowym zleceniu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Manager wybiera opcję Przydziel mechanika w szczegółach zlecenia
+						</li>
+						<li>
+							System wyświetla listę mechaników wraz z liczbą aktualnie realizowanych przez nich zleceń
+						</li>
+						<li>
+							Manager wybiera mechanika z listy
+						</li>
+						<li>
+							Manager zatwierdza przydział
+						</li>
+						<li>
+							System sprawdza dostępność mechanika w dniu realizacji zlecenia
+						</li>
+						<li>
+							System przypisuje zlecenie do mechanika
+						</li>
+						<li>
+							System dodaje zlecenie do listy zleceń mechanika
+						</li>
+						<li>
+							System informuje mechanika o nowym zleceniu
+						</li>
+						<li>
+							System wyświetla potwierdzenie przydziału
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">2</span>
+							<span class="condition">Żaden mechanik nie jest dostępny w dniu realizacji zlecenia</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku dostępnych mechaników</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">4</span>
+							<span class="condition">Manager wybiera opcję Anuluj</span>
+							<span class="reaction-additional">System nie zmienia przydziału</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Wybrany mechanik jest nieobecny w dniu realizacji zlecenia</span>
+							<span class="reaction-additional">System wyświetla komunikat o nieobecności mechanika</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Wybrany mechanik ma już bardzo dużo zleceń w realizacji</span>
+							<span class="reaction-additional">System wyświetla ostrzeżenie o dużym obciążeniu mechanika</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">6</span>
+							<span class="condition">Zlecenie miało wcześniej przydzielonego innego mechanika</span>
+							<span class="reaction-additional">System usuwa zlecenie z listy poprzedniego mechanika i informuje go o zmianie przydziału</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">7</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Dawid
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Woźniak
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Zarządzaj cennikiem usług
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu musi być zalogowany do systemu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Nowa usługa wraz ze stawką została dodana do cennika usług
+						</li>
+						<li>
+							Nowa stawka jest stosowana przy wyliczaniu kosztorysów i faktur
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Manager wybiera opcję Cennik usług
+						</li>
+						<li>
+							System wyświetla listę usług serwisowych wraz ze stawkami
+						</li>
+						<li>
+							Manager wybiera opcję Dodaj usługę
+						</li>
+						<li>
+							System wyświetla formularz usługi
+						</li>
+						<li>
+							Manager wypełnia formularz (nazwa usługi, opis, stawka za roboczogodzinę lub cena stała, szacowany czas wykonania)
+						</li>
+						<li>
+							Manager zapisuje formularz
+						</li>
+						<li>
+							System dokonuje walidacji formularza
+						</li>
+						<li>
+							System zapisuje usługę w cenniku wraz z datą obowiązywania stawki
+						</li>
+						<li>
+							System wyświetla zaktualizowany cennik usług
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">3</span>
+							<span class="condition">Manager wybiera opcję Edytuj przy istniejącej usłudze</span>
+							<span class="reaction-additional">System wyświetla formularz wypełniony aktualnymi danymi usługi</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">5</span>
+						</li>
+						<li>
+							<span class="number">3</span>
+							<span class="condition">Manager wybiera opcję Usuń przy istniejącej usłudze</span>
+							<span class="reaction-additional">System oznacza usługę jako nieaktywną, przez co nie jest ona dostępna w nowych naprawach i kosztorysach</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">6</span>
+							<span class="condition">Manager wybiera opcję Anuluj zamiast zapisania formularza</span>
+							<span class="reaction-additional">System nie zapisuje zmian</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">7</span>
+							<span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+							<span class="reaction-additional">System zaznacza brakujące pola</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">7</span>
+							<span class="condition">Podana stawka jest niepoprawna (zerowa lub ujemna)</span>
+							<span class="reaction-additional">System wyświetla komunikat o błędnej stawce</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">7</span>
+							<span class="condition">Usługa o podanej nazwie już istnieje w cenniku</span>
+							<span class="reaction-additional">System wyświetla komunikat o istniejącej usłudze</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">8</span>
+							<span class="condition">Edytowana usługa jest użyta w otwartych zleceniach lub kosztorysach</span>
+							<span class="reaction-additional">System stosuje nową stawkę tylko w nowych naprawach i kosztorysach</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">9</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table border="1">
+			<tbody>
+			<tr>
+				<th>Author name:</th>
+				<td style="width: 15cm;">
+					Dawid
+				</td>
+			</tr>
+			<tr>
+				<th>Author surname:</th>
+				<td style="width: 15cm;">
+					Woźniak
+				</td>
+			</tr>
+			<tr>
+				<th>Author group:</th>
+				<td style="width: 15cm;">
+					Grupa
+				</td>
+			</tr>
+			<tr>
+				<th>Subject:</th>
+				<td style="width: 15cm;">
+					System obsługi warsztatu samochodowego (Car Service)
+				</td>
+			</tr>
+			<tr>
+				<th>Use Case:</th>
+				<td style="width: 15cm;">
+					Wystaw fakturę
+				</td>
+			</tr>
+			<tr>
+				<th>Language:</th>
+				<td style="width: 15cm;">
+					Polish
+				</td>
+			</tr>
+			<tr>
+				<th>Preconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu musi być zalogowany do systemu
+						</li>
+						<li>
+							Zlecenie naprawy musi mieć status „zakończone”
+						</li>
+						<li>
+							Zlecenie musi zawierać co najmniej jedną wykonaną naprawę
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Postconditions:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Faktura została wystawiona i powiązana ze zleceniem naprawy
+						</li>
+						<li>
+							Status zlecenia został zmieniony na „rozliczone”
+						</li>
+						<li>
+							Faktura jest dostępna dla klienta w systemie
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Actors:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							Manager warsztatu
+						</li>
+					</ul>
+				</td>
+			</tr>
+			<tr>
+				<th>Main flow:</th>
+				<td style="width: 15cm;">
+					<ol>
+						<li>
+							Manager wybiera opcję Zlecenia do rozliczenia
+						</li>
+						<li>
+							System wyświetla listę zleceń naprawy o statusie „zakończone”
+						</li>
+						<li>
+							Manager wybiera zlecenie z listy
+						</li>
+						<li>
+							System wyświetla podsumowanie kosztów zlecenia (robocizna według cennika, użyte części, zaakceptowane kosztorysy)
+						</li>
+						<li>
+							Manager wybiera opcję Wystaw fakturę
+						</li>
+						<li>
+							System wyświetla formularz faktury wypełniony danymi klienta i pozycjami zlecenia
+						</li>
+						<li>
+							Manager uzupełnia dane faktury (forma płatności, opcjonalnie NIP firmy klienta)
+						</li>
+						<li>
+							Manager zatwierdza fakturę
+						</li>
+						<li>
+							System dokonuje walidacji danych faktury
+						</li>
+						<li>
+							System generuje fakturę z kolejnym numerem
+						</li>
+						<li>
+							System zmienia status zlecenia na „rozliczone” (przypadek użycia Zmień status zlecenia naprawy)
+						</li>
+						<li>
+							System udostępnia fakturę klientowi
+						</li>
+						<li>
+							System wyświetla fakturę do wydruku
+						</li>
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>Alternate flow:</th>
+				<td style="width: 15cm;">
+					<ul>
+						<li>
+							<span class="number">2</span>
+							<span class="condition">Brak zleceń o statusie „zakończone”</span>
+							<span class="reaction-additional">System wyświetla komunikat o braku zleceń do rozliczenia</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
+						</li>
+						<li>
+							<span class="number">5</span>
+							<span class="condition">Pozycja zlecenia nie ma ceny (usługa bez stawki w cenniku lub część bez ceny)</span>
+							<span class="reaction-additional">System wskazuje pozycje bez ceny i nie pozwala wystawić faktury</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">2</span>
+						</li>
+						<li>
+							<span class="number">8</span>
+							<span class="condition">Manager wybiera opcję Anuluj zamiast zatwierdzenia faktury</span>
+							<span class="reaction-additional">System nie wystawia faktury</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">4</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+							<span class="reaction-additional">System zaznacza brakujące pola</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+						<li>
+							<span class="number">9</span>
+							<span class="condition">Podany numer NIP jest niepoprawny</span>
+							<span class="reaction-additional">System wyświetla komunikat o błędnym numerze NIP</span>
+							<span class="reaction-type">GOTO</span>
+							<span class="reaction-goto">6</span>
+						</li>
+					</ul>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</article>
+</body></html>
