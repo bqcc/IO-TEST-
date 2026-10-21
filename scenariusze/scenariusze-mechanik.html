@@ -24,7 +24,7 @@
 			<tr>
 				<th>Author group:</th>
 				<td style="width: 15cm;">
-					Grupa
+					Group 1
 				</td>
 			</tr>
 			<tr>
@@ -196,7 +196,7 @@
 			<tr>
 				<th>Author group:</th>
 				<td style="width: 15cm;">
-					Grupa
+					Group 1
 				</td>
 			</tr>
 			<tr>
@@ -378,7 +378,7 @@
 			<tr>
 				<th>Author group:</th>
 				<td style="width: 15cm;">
-					Grupa
+					Group 1
 				</td>
 			</tr>
 			<tr>
@@ -512,6 +512,7 @@
 						<li>
 							<span class="number">8</span>
 							<span class="condition">Mechanik wybiera opcję Popraw</span>
+							<span class="reaction-additional"></span>
 							<span class="reaction-type">GOTO</span>
 							<span class="reaction-goto">2</span>
 						</li>
@@ -538,7 +539,7 @@
 			<tr>
 				<th>Author group:</th>
 				<td style="width: 15cm;">
-					Grupa
+					Group 1
 				</td>
 			</tr>
 			<tr>
@@ -581,9 +582,6 @@
 						</li>
 						<li>
 							Zmiana statusu jest widoczna dla klienta i managera warsztatu
-						</li>
-						<li>
-							Klient otrzymał powiadomienie o zmianie statusu, a przy statusie „zakończone” – informację, że naprawa została wykonana i pojazd jest gotowy do odbioru
 						</li>
 					</ul>
 				</td>
@@ -636,9 +634,6 @@
 							System zapisuje nowy status wraz z datą zmiany
 						</li>
 						<li>
-							System wysyła klientowi powiadomienie o zmianie statusu (przy statusie „zakończone” – informację o wykonaniu naprawy i możliwości odbioru pojazdu)
-						</li>
-						<li>
 							System wyświetla potwierdzenie zmiany statusu
 						</li>
 					</ol>
@@ -682,13 +677,6 @@
 							<span class="reaction-additional">System wyświetla komunikat o oczekującym kosztorysie</span>
 							<span class="reaction-type">GOTO</span>
 							<span class="reaction-goto">6</span>
-						</li>
-						<li>
-							<span class="number">11</span>
-							<span class="condition">Wysłanie powiadomienia do klienta nie powiodło się</span>
-							<span class="reaction-additional">System zapisuje powiadomienie do ponownej wysyłki</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">12</span>
 						</li>
 					</ul>
 				</td>
