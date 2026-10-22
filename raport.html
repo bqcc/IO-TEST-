@@ -676,5 +676,2660 @@
                 @enduml
   </p>
 </article>
+<article id="use-case-scenarios-polish">
+  <h4>Scenariusze przypadków użycia</h4>
+  <!--  Klient - Jakub Banasiewicz  -->
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Jakub
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Banasiewicz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Dodaj pojazd
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient musi być zalogowany do systemu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Pojazd został zapisany w systemie i przypisany do konta klienta
+          </li>
+          <li>
+            Pojazd jest dostępny do wyboru podczas rezerwacji wizyty
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Klient wybiera opcję Moje pojazdy
+          </li>
+          <li>
+            System wyświetla listę pojazdów przypisanych do konta klienta
+          </li>
+          <li>
+            Klient wybiera opcję Dodaj pojazd
+          </li>
+          <li>
+            System wyświetla formularz danych pojazdu
+          </li>
+          <li>
+            Klient wypełnia formularz (marka, model, rok produkcji, numer VIN, numer rejestracyjny, przebieg)
+          </li>
+          <li>
+            Klient wysyła formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System sprawdza, czy pojazd o podanym numerze VIN nie jest już zarejestrowany w systemie
+          </li>
+          <li>
+            System zapisuje pojazd i przypisuje go do konta klienta
+          </li>
+          <li>
+            System wyświetla zaktualizowaną listę pojazdów klienta
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Klient wybiera opcję Anuluj zamiast wysłania formularza</span>
+            <span class="reaction-additional">System nie zapisuje pojazdu</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Numer VIN jest niepoprawny (nie składa się z 17 znaków)</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnym numerze VIN</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Rok produkcji lub przebieg jest niepoprawny (np. rok z przyszłości, ujemny przebieg)</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Pojazd o podanym numerze VIN jest już przypisany do konta klienta</span>
+            <span class="reaction-additional">System informuje, że pojazd został już dodany</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Pojazd o podanym numerze VIN jest przypisany do innego klienta</span>
+            <span class="reaction-additional">System informuje o konieczności kontaktu z warsztatem</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Jakub
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Banasiewicz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zarezerwuj wizytę
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient musi być zalogowany do systemu
+          </li>
+          <li>
+            W kalendarzu warsztatu musi być co najmniej jeden wolny termin
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Rezerwacja wizyty została zapisana ze statusem „oczekuje na potwierdzenie”
+          </li>
+          <li>
+            Wybrany termin został zablokowany w kalendarzu warsztatu
+          </li>
+          <li>
+            Rezerwacja jest widoczna dla managera warsztatu do potwierdzenia
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Klient wybiera opcję Zarezerwuj wizytę
+          </li>
+          <li>
+            System wyświetla listę pojazdów klienta
+          </li>
+          <li>
+            Klient wybiera pojazd z listy
+          </li>
+          <li>
+            System wyświetla kalendarz z wolnymi terminami
+          </li>
+          <li>
+            Klient wybiera termin wizyty
+          </li>
+          <li>
+            System wyświetla formularz opisu usterki
+          </li>
+          <li>
+            Klient wpisuje opis usterki
+          </li>
+          <li>
+            Klient wysyła formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System sprawdza, czy wybrany termin jest nadal wolny
+          </li>
+          <li>
+            System zapisuje rezerwację ze statusem „oczekuje na potwierdzenie” i blokuje termin
+          </li>
+          <li>
+            System przekazuje rezerwację managerowi warsztatu do potwierdzenia
+          </li>
+          <li>
+            System wyświetla potwierdzenie złożenia rezerwacji
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Klient nie ma przypisanego żadnego pojazdu</span>
+            <span class="reaction-additional">Klient dodaje pojazd (przypadek użycia Dodaj pojazd)</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Klient wybiera opcję Dodaj nowy pojazd</span>
+            <span class="reaction-additional">Klient dodaje pojazd (przypadek użycia Dodaj pojazd)</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Wybrany pojazd ma już aktywną rezerwację lub otwarte zlecenie naprawy</span>
+            <span class="reaction-additional">System informuje o istniejącej rezerwacji lub zleceniu</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Brak wolnych terminów w wyświetlanym tygodniu</span>
+            <span class="reaction-additional">Klient przechodzi do kolejnego tygodnia</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Klient wybiera opcję Anuluj zamiast wysłania formularza</span>
+            <span class="reaction-additional">System nie tworzy rezerwacji</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Opis usterki nie został wpisany</span>
+            <span class="reaction-additional">System zaznacza brakujące pole</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">10</span>
+            <span class="condition">Wybrany termin został w międzyczasie zajęty przez innego klienta</span>
+            <span class="reaction-additional">System informuje, że termin jest już niedostępny</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Jakub
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Banasiewicz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Śledź status zlecenia naprawy
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient musi być zalogowany do systemu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient zapoznał się z aktualnym statusem i historią zlecenia naprawy
+          </li>
+          <li>
+            Stan zlecenia w systemie nie uległ zmianie
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Klient wybiera opcję Moje zlecenia
+          </li>
+          <li>
+            System wyświetla listę zleceń naprawy klienta wraz z aktualnymi statusami
+          </li>
+          <li>
+            Klient wybiera zlecenie z listy
+          </li>
+          <li>
+            System wyświetla szczegóły zlecenia (pojazd, status, przydzielony mechanik, wykonane naprawy, bieżący koszt)
+          </li>
+          <li>
+            Klient wybiera opcję Historia statusów
+          </li>
+          <li>
+            System wyświetla historię zmian statusu zlecenia wraz z datami i komentarzami mechanika
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Klient nie ma żadnych zleceń naprawy</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Zlecenie ma status „oczekuje na akceptację kosztorysu”</span>
+            <span class="reaction-additional">Klient przechodzi do kosztorysu (przypadek użycia Zaakceptuj kosztorys dodatkowych prac)</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Zlecenie ma status „zakończone”</span>
+            <span class="reaction-additional">System wyświetla informację, że pojazd jest gotowy do odbioru</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">5</span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Klient wybiera opcję Wróć do listy</span>
+            <span class="reaction-additional"></span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Jakub
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Banasiewicz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zaakceptuj kosztorys dodatkowych prac
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient musi być zalogowany do systemu
+          </li>
+          <li>
+            Zlecenie naprawy klienta musi mieć status „oczekuje na akceptację kosztorysu”
+          </li>
+          <li>
+            Mechanik musi utworzyć kosztorys dodatkowych prac
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Decyzja klienta została zapisana w zleceniu naprawy
+          </li>
+          <li>
+            Prace z kosztorysu zostały dodane do zlecenia, a koszt zlecenia został przeliczony
+          </li>
+          <li>
+            Status zlecenia został zmieniony na „w trakcie realizacji”
+          </li>
+          <li>
+            Mechanik został poinformowany o decyzji klienta
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Klient
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Klient wybiera opcję Zobacz kosztorys w szczegółach zlecenia
+          </li>
+          <li>
+            System wyświetla kosztorys (opis usterki, usługi, części, koszt robocizny, koszt części, koszt łączny)
+          </li>
+          <li>
+            Klient wybiera opcję Akceptuj
+          </li>
+          <li>
+            System prosi o potwierdzenie decyzji
+          </li>
+          <li>
+            Klient potwierdza decyzję
+          </li>
+          <li>
+            System sprawdza, czy kosztorys nie został w międzyczasie zmieniony
+          </li>
+          <li>
+            System zapisuje akceptację kosztorysu
+          </li>
+          <li>
+            System dodaje prace z kosztorysu do zlecenia i przelicza koszt zlecenia
+          </li>
+          <li>
+            System zmienia status zlecenia na „w trakcie realizacji”
+          </li>
+          <li>
+            System informuje mechanika o akceptacji kosztorysu
+          </li>
+          <li>
+            System wyświetla potwierdzenie akceptacji
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Klient wybiera opcję Odrzuć</span>
+            <span class="reaction-additional">System zapisuje odrzucenie kosztorysu, zmienia status zlecenia na „w trakcie realizacji” i informuje mechanika, że dodatkowe prace nie zostaną wykonane</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Klient wybiera opcję Wróć bez podejmowania decyzji</span>
+            <span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Klient rezygnuje z potwierdzenia decyzji</span>
+            <span class="reaction-additional"></span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Kosztorys został w międzyczasie zmieniony przez mechanika</span>
+            <span class="reaction-additional">System wyświetla informację o zmianie kosztorysu</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <br />
+
+  <!--  Mechanik - Łukasz Bera  -->
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Łukasz
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bera
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zamów części u magazyniera
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik musi być zalogowany do systemu
+          </li>
+          <li>
+            Mechanikowi musi być przydzielone zlecenie naprawy o statusie „w trakcie realizacji”
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Zamówienie części zostało utworzone i przypisane do zlecenia naprawy
+          </li>
+          <li>
+            Zamówienie jest widoczne dla magazyniera na liście zamówień do realizacji
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik
+          </li>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Mechanik wybiera opcję Moje zlecenia
+          </li>
+          <li>
+            System wyświetla listę zleceń naprawy przydzielonych mechanikowi
+          </li>
+          <li>
+            Mechanik wybiera zlecenie z listy
+          </li>
+          <li>
+            System wyświetla szczegóły zlecenia
+          </li>
+          <li>
+            Mechanik wybiera opcję Zamów części
+          </li>
+          <li>
+            System wyświetla katalog części z wyszukiwarką
+          </li>
+          <li>
+            Mechanik wyszukuje potrzebne części, wybiera je i podaje ilość
+          </li>
+          <li>
+            Mechanik wysyła zamówienie
+          </li>
+          <li>
+            System dokonuje walidacji zamówienia
+          </li>
+          <li>
+            System tworzy zamówienie części i przypisuje je do zlecenia naprawy
+          </li>
+          <li>
+            System przekazuje zamówienie magazynierowi
+          </li>
+          <li>
+            System wyświetla potwierdzenie złożenia zamówienia
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Zlecenie ma status „zakończone” lub „rozliczone”</span>
+            <span class="reaction-additional">System informuje, że do zlecenia nie można zamawiać części</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Szukanej części nie ma w katalogu</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku wyników</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Mechanik wybiera opcję Anuluj zamiast wysłania zamówienia</span>
+            <span class="reaction-additional">System nie tworzy zamówienia</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Nie wybrano żadnej części lub podana ilość jest niepoprawna</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Ta sama część została już zamówiona do tego zlecenia i nie została jeszcze wydana</span>
+            <span class="reaction-additional">System wyświetla informację o istniejącym zamówieniu</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Łukasz
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bera
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Wprowadź wykonaną naprawę
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik musi być zalogowany do systemu
+          </li>
+          <li>
+            Mechanikowi musi być przydzielone zlecenie naprawy o statusie „w trakcie realizacji”
+          </li>
+          <li>
+            Cennik usług musi zawierać co najmniej jedną usługę
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Naprawa (rodzaj usługi, opis czynności, czas pracy, użyte części) została zapisana w zleceniu naprawy
+          </li>
+          <li>
+            Koszt zlecenia został automatycznie przeliczony na podstawie cennika usług i użytych części
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik
+          </li>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Mechanik wybiera opcję Moje zlecenia
+          </li>
+          <li>
+            System wyświetla listę zleceń naprawy przydzielonych mechanikowi
+          </li>
+          <li>
+            Mechanik wybiera zlecenie z listy
+          </li>
+          <li>
+            System wyświetla szczegóły zlecenia wraz z historią serwisową pojazdu
+          </li>
+          <li>
+            Mechanik wybiera opcję Dodaj naprawę
+          </li>
+          <li>
+            System wyświetla formularz naprawy z listą usług z cennika oraz listą części wydanych do zlecenia
+          </li>
+          <li>
+            Mechanik wybiera rodzaj usługi, wpisuje opis czynności i czas pracy oraz zaznacza użyte części
+          </li>
+          <li>
+            Mechanik zapisuje formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System zapisuje naprawę w zleceniu
+          </li>
+          <li>
+            System przelicza koszt zlecenia na podstawie cennika usług i użytych części
+          </li>
+          <li>
+            System wyświetla zaktualizowane zlecenie wraz z kosztem
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Zlecenie ma status inny niż „w trakcie realizacji”</span>
+            <span class="reaction-additional">System informuje, że do zlecenia nie można dodać naprawy</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Mechanik wykrył dodatkową usterkę</span>
+            <span class="reaction-additional">Mechanik zgłasza usterkę (przypadek użycia Zgłoś dodatkową usterkę)</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Potrzebna część nie została jeszcze wydana do zlecenia</span>
+            <span class="reaction-additional">System wyświetla informację o konieczności zamówienia części u magazyniera</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Mechanik wybiera opcję Anuluj zamiast zapisania formularza</span>
+            <span class="reaction-additional">System nie zapisuje naprawy</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Czas pracy jest niepoprawny (np. zerowy lub ujemny)</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Łukasz
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bera
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zgłoś dodatkową usterkę
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik musi być zalogowany do systemu
+          </li>
+          <li>
+            Mechanik musi wprowadzać naprawę w zleceniu o statusie „w trakcie realizacji” (przypadek użycia Wprowadź wykonaną naprawę)
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Dodatkowa usterka została zapisana w zleceniu naprawy
+          </li>
+          <li>
+            Kosztorys dodatkowych prac został utworzony i udostępniony klientowi do akceptacji
+          </li>
+          <li>
+            Status zlecenia został zmieniony na „oczekuje na akceptację kosztorysu”
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik
+          </li>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Mechanik wybiera opcję Zgłoś dodatkową usterkę w formularzu naprawy
+          </li>
+          <li>
+            System wyświetla formularz zgłoszenia usterki
+          </li>
+          <li>
+            Mechanik wpisuje opis usterki oraz wybiera potrzebne usługi z cennika i części
+          </li>
+          <li>
+            Mechanik wysyła formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System wylicza kosztorys (koszt robocizny i części) na podstawie cennika usług
+          </li>
+          <li>
+            System wyświetla podgląd kosztorysu
+          </li>
+          <li>
+            Mechanik zatwierdza kosztorys
+          </li>
+          <li>
+            System zapisuje usterkę i kosztorys w zleceniu naprawy
+          </li>
+          <li>
+            System zmienia status zlecenia na „oczekuje na akceptację kosztorysu”
+          </li>
+          <li>
+            System udostępnia kosztorys klientowi do akceptacji
+          </li>
+          <li>
+            System wyświetla potwierdzenie zgłoszenia usterki
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Mechanik wybiera opcję Anuluj zamiast wysłania formularza</span>
+            <span class="reaction-additional">System nie zapisuje zgłoszenia i wraca do formularza naprawy</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Opis usterki nie został wpisany lub nie wybrano żadnej usługi</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Wybrana usługa nie ma aktualnej stawki w cenniku</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku stawki</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Mechanik wybiera opcję Popraw</span>
+            <span class="reaction-additional"></span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Łukasz
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bera
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zmień status zlecenia naprawy
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik musi być zalogowany do systemu
+          </li>
+          <li>
+            Mechanikowi musi być przydzielone zlecenie naprawy
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Status zlecenia naprawy został zmieniony i zapisany wraz z datą zmiany
+          </li>
+          <li>
+            Zmiana statusu jest widoczna dla klienta i managera warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Mechanik
+          </li>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Mechanik wybiera opcję Moje zlecenia
+          </li>
+          <li>
+            System wyświetla listę zleceń naprawy przydzielonych mechanikowi
+          </li>
+          <li>
+            Mechanik wybiera zlecenie z listy
+          </li>
+          <li>
+            System wyświetla szczegóły zlecenia wraz z aktualnym statusem
+          </li>
+          <li>
+            Mechanik wybiera opcję Zmień status
+          </li>
+          <li>
+            System wyświetla listę statusów dozwolonych dla bieżącego etapu zlecenia
+          </li>
+          <li>
+            Mechanik wybiera nowy status i opcjonalnie dodaje komentarz
+          </li>
+          <li>
+            Mechanik zatwierdza zmianę
+          </li>
+          <li>
+            System sprawdza, czy zmiana statusu jest dozwolona
+          </li>
+          <li>
+            System zapisuje nowy status wraz z datą zmiany
+          </li>
+          <li>
+            System wyświetla potwierdzenie zmiany statusu
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Zlecenie ma status „rozliczone”</span>
+            <span class="reaction-additional">System informuje, że zmiana statusu nie jest możliwa</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Mechanik wybiera opcję Anuluj</span>
+            <span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Wybrano status „zakończone”, ale w zleceniu nie zapisano żadnej naprawy</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku wykonanych napraw</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Wybrano status „zakończone”, ale kosztorys dodatkowych prac oczekuje na decyzję klienta</span>
+            <span class="reaction-additional">System wyświetla komunikat o oczekującym kosztorysie</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <br />
+
+  <!--  Magazynier - Kacper Bednarz  -->
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Kacper
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bednarz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Sprawdź dostępność części
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier musi być zalogowany do systemu
+          </li>
+          <li>
+            Katalog części musi zawierać co najmniej jedną część
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier zna aktualny stan magazynowy wybranej części
+          </li>
+          <li>
+            Stan magazynowy w systemie nie uległ zmianie
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Magazynier wybiera opcję Sprawdź dostępność części
+          </li>
+          <li>
+            System wyświetla wyszukiwarkę części
+          </li>
+          <li>
+            Magazynier wpisuje nazwę lub numer katalogowy części
+          </li>
+          <li>
+            System wyświetla listę części pasujących do zapytania
+          </li>
+          <li>
+            Magazynier wybiera część z listy
+          </li>
+          <li>
+            System wyświetla szczegóły części (nazwa, numer katalogowy, producent, cena)
+          </li>
+          <li>
+            System wyświetla aktualny stan magazynowy części oraz ilość zarezerwowaną dla zleceń naprawy
+          </li>
+          <li>
+            System oznacza część jako dostępną
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Brak części pasujących do zapytania</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku wyników</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Magazynier wybiera opcję Zmień zapytanie</span>
+            <span class="reaction-additional"></span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">3</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Stan magazynowy części wynosi zero</span>
+            <span class="reaction-additional">System oznacza część jako niedostępną; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Dostępna ilość części jest mniejsza niż ilość zamówiona przez mechanika</span>
+            <span class="reaction-additional">System wyświetla brakującą ilość; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Kacper
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bednarz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Wydaj części mechanikowi
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier musi być zalogowany do systemu
+          </li>
+          <li>
+            Musi istnieć co najmniej jedno niezrealizowane zamówienie części złożone przez mechanika
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Części zostały wydane mechanikowi i przypisane do zlecenia naprawy
+          </li>
+          <li>
+            Stan magazynowy części został pomniejszony o wydaną ilość
+          </li>
+          <li>
+            Zamówienie części zostało oznaczone jako zrealizowane
+          </li>
+          <li>
+            Mechanik został poinformowany o wydaniu części
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Magazynier wybiera opcję Zamówienia części
+          </li>
+          <li>
+            System wyświetla listę niezrealizowanych zamówień części od mechaników
+          </li>
+          <li>
+            Magazynier wybiera zamówienie z listy
+          </li>
+          <li>
+            System wyświetla szczegóły zamówienia (zlecenie naprawy, mechanik, części, ilości)
+          </li>
+          <li>
+            Magazynier wybiera opcję Wydaj części
+          </li>
+          <li>
+            System sprawdza dostępność zamówionych części (przypadek użycia Sprawdź dostępność części)
+          </li>
+          <li>
+            System wyświetla podsumowanie wydania
+          </li>
+          <li>
+            Magazynier potwierdza wydanie części
+          </li>
+          <li>
+            System przypisuje wydane części do zlecenia naprawy
+          </li>
+          <li>
+            System pomniejsza stan magazynowy części
+          </li>
+          <li>
+            System oznacza zamówienie części jako zrealizowane
+          </li>
+          <li>
+            System informuje mechanika o wydaniu części
+          </li>
+          <li>
+            System wyświetla potwierdzenie wydania
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Brak niezrealizowanych zamówień części</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zamówień</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Zamówiona część jest niedostępna w magazynie</span>
+            <span class="reaction-additional">System oznacza zamówienie jako oczekujące i zmienia status zlecenia na „oczekuje na części”; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Dostępna ilość części jest mniejsza niż zamówiona</span>
+            <span class="reaction-additional">System proponuje częściowe wydanie, a pozostała ilość zostaje w zamówieniu jako oczekująca</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">7</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Magazynier wybiera opcję Anuluj</span>
+            <span class="reaction-additional">System nie wydaje części</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Zlecenie naprawy zostało w międzyczasie zakończone lub rozliczone</span>
+            <span class="reaction-additional">System anuluje zamówienie części i nie zmienia stanu magazynowego</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Kacper
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bednarz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zamów części u dostawcy
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier musi być zalogowany do systemu
+          </li>
+          <li>
+            Część musi być niedostępna lub jej ilość w magazynie musi być niewystarczająca (przypadek użycia Sprawdź dostępność części)
+          </li>
+          <li>
+            W systemie musi być zarejestrowany co najmniej jeden dostawca
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Zamówienie u dostawcy zostało zapisane ze statusem „wysłane”
+          </li>
+          <li>
+            Zamówienie zostało wysłane do dostawcy
+          </li>
+          <li>
+            Brakujące części zostały oznaczone jako zamówione u dostawcy
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Magazynier wybiera opcję Zamów u dostawcy w szczegółach brakującej części
+          </li>
+          <li>
+            System wyświetla formularz zamówienia z listą dostawców oferujących część
+          </li>
+          <li>
+            Magazynier wybiera dostawcę i podaje ilość części
+          </li>
+          <li>
+            Magazynier wysyła formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System wyświetla podsumowanie zamówienia (cena, przewidywany termin dostawy)
+          </li>
+          <li>
+            Magazynier potwierdza zamówienie
+          </li>
+          <li>
+            System zapisuje zamówienie u dostawcy ze statusem „wysłane”
+          </li>
+          <li>
+            System wysyła zamówienie do dostawcy
+          </li>
+          <li>
+            System oznacza brakujące części jako zamówione u dostawcy
+          </li>
+          <li>
+            System wyświetla potwierdzenie złożenia zamówienia
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Żaden dostawca nie oferuje wybranej części</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku dostawcy</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Magazynier wybiera opcję Anuluj zamiast wysłania formularza</span>
+            <span class="reaction-additional">System nie tworzy zamówienia</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Nie wybrano dostawcy lub podana ilość jest niepoprawna</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Podana ilość jest mniejsza niż minimalna ilość zamówienia u dostawcy</span>
+            <span class="reaction-additional">System wyświetla minimalną ilość zamówienia</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Magazynier wybiera opcję Popraw</span>
+            <span class="reaction-additional"></span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Wysłanie zamówienia do dostawcy nie powiodło się</span>
+            <span class="reaction-additional">System zapisuje zamówienie do ponownej wysyłki</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">10</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Kacper
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Bednarz
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Przyjmij dostawę części
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier musi być zalogowany do systemu
+          </li>
+          <li>
+            Musi istnieć zamówienie u dostawcy ze statusem „wysłane”
+          </li>
+          <li>
+            Dostawa części musi dotrzeć do warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Dostawa została zarejestrowana w systemie
+          </li>
+          <li>
+            Stany magazynowe dostarczonych części zostały zwiększone
+          </li>
+          <li>
+            Status zamówienia u dostawcy został zaktualizowany
+          </li>
+          <li>
+            Oczekujące zamówienia mechaników na dostarczone części zostały oznaczone jako gotowe do wydania
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Magazynier
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Magazynier wybiera opcję Przyjmij dostawę
+          </li>
+          <li>
+            System wyświetla listę zamówień u dostawców ze statusem „wysłane”
+          </li>
+          <li>
+            Magazynier wybiera zamówienie, którego dotyczy dostawa
+          </li>
+          <li>
+            System wyświetla listę zamówionych części i ich ilości
+          </li>
+          <li>
+            Magazynier wpisuje ilości faktycznie dostarczonych części
+          </li>
+          <li>
+            Magazynier zatwierdza przyjęcie dostawy
+          </li>
+          <li>
+            System dokonuje walidacji wpisanych ilości
+          </li>
+          <li>
+            System zwiększa stany magazynowe dostarczonych części
+          </li>
+          <li>
+            System zmienia status zamówienia u dostawcy na „zrealizowane”
+          </li>
+          <li>
+            System oznacza oczekujące zamówienia mechaników na dostarczone części jako gotowe do wydania
+          </li>
+          <li>
+            System wyświetla potwierdzenie przyjęcia dostawy
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Brak zamówień u dostawców ze statusem „wysłane”</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku oczekujących zamówień</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Część dostarczonych części jest uszkodzona lub niezgodna z zamówieniem</span>
+            <span class="reaction-additional">Magazynier oznacza je jako reklamowane i system nie wlicza ich do stanu magazynowego</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Magazynier wybiera opcję Anuluj</span>
+            <span class="reaction-additional">System nie rejestruje dostawy</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Wpisana ilość jest niepoprawna (ujemna lub większa niż zamówiona)</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnych danych</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Dostarczono mniej części niż zamówiono</span>
+            <span class="reaction-additional">System zmienia status zamówienia na „częściowo zrealizowane” i pozostawia brakującą ilość jako oczekującą</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">10</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <br />
+
+  <!--  Manager warsztatu - Dawid Woźniak  -->
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Dawid
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Woźniak
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Utwórz zlecenie naprawy na podstawie rezerwacji
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu musi być zalogowany do systemu
+          </li>
+          <li>
+            Musi istnieć rezerwacja wizyty na bieżący dzień
+          </li>
+          <li>
+            Klient musi dostarczyć pojazd do warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Zlecenie naprawy zostało utworzone ze statusem „przyjęte” i powiązane z klientem oraz pojazdem
+          </li>
+          <li>
+            Zlecenie zostało przydzielone mechanikowi
+          </li>
+          <li>
+            Rezerwacja została oznaczona jako zrealizowana
+          </li>
+          <li>
+            Zlecenie jest widoczne dla klienta w systemie
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Manager wybiera opcję Rezerwacje
+          </li>
+          <li>
+            System wyświetla listę rezerwacji na bieżący dzień
+          </li>
+          <li>
+            Manager wybiera rezerwację klienta, który dostarczył pojazd
+          </li>
+          <li>
+            System wyświetla szczegóły rezerwacji (klient, pojazd, termin, opis usterki)
+          </li>
+          <li>
+            Manager wybiera opcję Utwórz zlecenie
+          </li>
+          <li>
+            System wyświetla formularz zlecenia naprawy wypełniony danymi z rezerwacji
+          </li>
+          <li>
+            Manager uzupełnia formularz (aktualny przebieg, opis usterki po oględzinach pojazdu)
+          </li>
+          <li>
+            Manager przydziela zlecenie mechanikowi (przypadek użycia Przydziel zlecenie mechanikowi)
+          </li>
+          <li>
+            Manager zapisuje zlecenie
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System tworzy zlecenie naprawy ze statusem „przyjęte” i datą przyjęcia
+          </li>
+          <li>
+            System oznacza rezerwację jako zrealizowaną
+          </li>
+          <li>
+            System wyświetla potwierdzenie utworzenia zlecenia
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Na liście nie ma rezerwacji klienta, który dostarczył pojazd</span>
+            <span class="reaction-additional">System nie pozwala utworzyć zlecenia bez rezerwacji</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Rezerwacja nie została jeszcze potwierdzona</span>
+            <span class="reaction-additional">Manager potwierdza rezerwację, a system zmienia jej status na „potwierdzona”</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Manager wybiera opcję Anuluj zamiast zapisania zlecenia</span>
+            <span class="reaction-additional">System nie tworzy zlecenia</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">10</span>
+            <span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">10</span>
+            <span class="condition">Podany przebieg jest mniejszy niż ostatnio zapisany przebieg pojazdu</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnym przebiegu</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">10</span>
+            <span class="condition">Zlecenie nie zostało przydzielone żadnemu mechanikowi</span>
+            <span class="reaction-additional">System wyświetla komunikat o konieczności przydzielenia mechanika</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">8</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Dawid
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Woźniak
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Przydziel zlecenie mechanikowi
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu musi być zalogowany do systemu
+          </li>
+          <li>
+            Musi istnieć zlecenie naprawy, które nie zostało zakończone ani rozliczone
+          </li>
+          <li>
+            W warsztacie musi być zatrudniony co najmniej jeden mechanik
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Zlecenie naprawy zostało przypisane do wybranego mechanika
+          </li>
+          <li>
+            Zlecenie jest widoczne na liście zleceń mechanika
+          </li>
+          <li>
+            Mechanik został poinformowany o nowym zleceniu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Manager wybiera opcję Przydziel mechanika w szczegółach zlecenia
+          </li>
+          <li>
+            System wyświetla listę mechaników wraz z liczbą aktualnie realizowanych przez nich zleceń
+          </li>
+          <li>
+            Manager wybiera mechanika z listy
+          </li>
+          <li>
+            Manager zatwierdza przydział
+          </li>
+          <li>
+            System sprawdza dostępność mechanika w dniu realizacji zlecenia
+          </li>
+          <li>
+            System przypisuje zlecenie do mechanika
+          </li>
+          <li>
+            System dodaje zlecenie do listy zleceń mechanika
+          </li>
+          <li>
+            System informuje mechanika o nowym zleceniu
+          </li>
+          <li>
+            System wyświetla potwierdzenie przydziału
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Żaden mechanik nie jest dostępny w dniu realizacji zlecenia</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku dostępnych mechaników</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">4</span>
+            <span class="condition">Manager wybiera opcję Anuluj</span>
+            <span class="reaction-additional">System nie zmienia przydziału</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Wybrany mechanik jest nieobecny w dniu realizacji zlecenia</span>
+            <span class="reaction-additional">System wyświetla komunikat o nieobecności mechanika</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Wybrany mechanik ma już bardzo dużo zleceń w realizacji</span>
+            <span class="reaction-additional">System wyświetla ostrzeżenie o dużym obciążeniu mechanika</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Zlecenie miało wcześniej przydzielonego innego mechanika</span>
+            <span class="reaction-additional">System usuwa zlecenie z listy poprzedniego mechanika i informuje go o zmianie przydziału</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">7</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Dawid
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Woźniak
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Zarządzaj cennikiem usług
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu musi być zalogowany do systemu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Nowa usługa wraz ze stawką została dodana do cennika usług
+          </li>
+          <li>
+            Nowa stawka jest stosowana przy wyliczaniu kosztorysów i faktur
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Manager wybiera opcję Cennik usług
+          </li>
+          <li>
+            System wyświetla listę usług serwisowych wraz ze stawkami
+          </li>
+          <li>
+            Manager wybiera opcję Dodaj usługę
+          </li>
+          <li>
+            System wyświetla formularz usługi
+          </li>
+          <li>
+            Manager wypełnia formularz (nazwa usługi, opis, stawka za roboczogodzinę lub cena stała, szacowany czas wykonania)
+          </li>
+          <li>
+            Manager zapisuje formularz
+          </li>
+          <li>
+            System dokonuje walidacji formularza
+          </li>
+          <li>
+            System zapisuje usługę w cenniku wraz z datą obowiązywania stawki
+          </li>
+          <li>
+            System wyświetla zaktualizowany cennik usług
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Manager wybiera opcję Edytuj przy istniejącej usłudze</span>
+            <span class="reaction-additional">System wyświetla formularz wypełniony aktualnymi danymi usługi</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">5</span>
+          </li>
+          <li>
+            <span class="number">3</span>
+            <span class="condition">Manager wybiera opcję Usuń przy istniejącej usłudze</span>
+            <span class="reaction-additional">System oznacza usługę jako nieaktywną, przez co nie jest ona dostępna w nowych naprawach i kosztorysach</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">6</span>
+            <span class="condition">Manager wybiera opcję Anuluj zamiast zapisania formularza</span>
+            <span class="reaction-additional">System nie zapisuje zmian</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Podana stawka jest niepoprawna (zerowa lub ujemna)</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnej stawce</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">7</span>
+            <span class="condition">Usługa o podanej nazwie już istnieje w cenniku</span>
+            <span class="reaction-additional">System wyświetla komunikat o istniejącej usłudze</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Edytowana usługa jest użyta w otwartych zleceniach lub kosztorysach</span>
+            <span class="reaction-additional">System stosuje nową stawkę tylko w nowych naprawach i kosztorysach</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">9</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <table border="1">
+    <tbody>
+    <tr>
+      <th>Author name:</th>
+      <td style="width: 15cm;">
+        Dawid
+      </td>
+    </tr>
+    <tr>
+      <th>Author surname:</th>
+      <td style="width: 15cm;">
+        Woźniak
+      </td>
+    </tr>
+    <tr>
+      <th>Author group:</th>
+      <td style="width: 15cm;">
+        Group 1
+      </td>
+    </tr>
+    <tr>
+      <th>Subject:</th>
+      <td style="width: 15cm;">
+        System obsługi warsztatu samochodowego (Car Service)
+      </td>
+    </tr>
+    <tr>
+      <th>Use Case:</th>
+      <td style="width: 15cm;">
+        Wystaw fakturę
+      </td>
+    </tr>
+    <tr>
+      <th>Language:</th>
+      <td style="width: 15cm;">
+        Polish
+      </td>
+    </tr>
+    <tr>
+      <th>Preconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu musi być zalogowany do systemu
+          </li>
+          <li>
+            Zlecenie naprawy musi mieć status „zakończone”
+          </li>
+          <li>
+            Zlecenie musi zawierać co najmniej jedną wykonaną naprawę
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Postconditions:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Faktura została wystawiona i powiązana ze zleceniem naprawy
+          </li>
+          <li>
+            Status zlecenia został zmieniony na „rozliczone”
+          </li>
+          <li>
+            Faktura jest dostępna dla klienta w systemie
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Actors:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            Manager warsztatu
+          </li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <th>Main flow:</th>
+      <td style="width: 15cm;">
+        <ol>
+          <li>
+            Manager wybiera opcję Zlecenia do rozliczenia
+          </li>
+          <li>
+            System wyświetla listę zleceń naprawy o statusie „zakończone”
+          </li>
+          <li>
+            Manager wybiera zlecenie z listy
+          </li>
+          <li>
+            System wyświetla podsumowanie kosztów zlecenia (robocizna według cennika, użyte części, zaakceptowane kosztorysy)
+          </li>
+          <li>
+            Manager wybiera opcję Wystaw fakturę
+          </li>
+          <li>
+            System wyświetla formularz faktury wypełniony danymi klienta i pozycjami zlecenia
+          </li>
+          <li>
+            Manager uzupełnia dane faktury (forma płatności, opcjonalnie NIP firmy klienta)
+          </li>
+          <li>
+            Manager zatwierdza fakturę
+          </li>
+          <li>
+            System dokonuje walidacji danych faktury
+          </li>
+          <li>
+            System generuje fakturę z kolejnym numerem
+          </li>
+          <li>
+            System zmienia status zlecenia na „rozliczone” (przypadek użycia Zmień status zlecenia naprawy)
+          </li>
+          <li>
+            System udostępnia fakturę klientowi
+          </li>
+          <li>
+            System wyświetla fakturę do wydruku
+          </li>
+        </ol>
+      </td>
+    </tr>
+    <tr>
+      <th>Alternate flow:</th>
+      <td style="width: 15cm;">
+        <ul>
+          <li>
+            <span class="number">2</span>
+            <span class="condition">Brak zleceń o statusie „zakończone”</span>
+            <span class="reaction-additional">System wyświetla komunikat o braku zleceń do rozliczenia</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
+          </li>
+          <li>
+            <span class="number">5</span>
+            <span class="condition">Pozycja zlecenia nie ma ceny (usługa bez stawki w cenniku lub część bez ceny)</span>
+            <span class="reaction-additional">System wskazuje pozycje bez ceny i nie pozwala wystawić faktury</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">2</span>
+          </li>
+          <li>
+            <span class="number">8</span>
+            <span class="condition">Manager wybiera opcję Anuluj zamiast zatwierdzenia faktury</span>
+            <span class="reaction-additional">System nie wystawia faktury</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">4</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Nie wszystkie wymagane pola zostały wypełnione</span>
+            <span class="reaction-additional">System zaznacza brakujące pola</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+          <li>
+            <span class="number">9</span>
+            <span class="condition">Podany numer NIP jest niepoprawny</span>
+            <span class="reaction-additional">System wyświetla komunikat o błędnym numerze NIP</span>
+            <span class="reaction-type">GOTO</span>
+            <span class="reaction-goto">6</span>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</article>
 </body>
 </html>
