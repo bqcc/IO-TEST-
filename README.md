@@ -10,6 +10,8 @@ Autorzy: Jakub Banasiewicz, Łukasz Bera, Kacper Bednarz, Dawid Woźniak
 
 ## Scenariusze przypadków użycia
 
+Złączone: [scenariusze.html](https://bqcc.github.io/IO-TEST-/scenariusze/scenariusze.html)
+
 | Aktor | Autor | Scenariusze |
 |---|---|---|
 | Klient | Jakub Banasiewicz | [scenariusze-klient.html](https://bqcc.github.io/IO-TEST-/scenariusze/scenariusze-klient.html) |
