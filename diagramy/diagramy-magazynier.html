@@ -1,0 +1,196 @@
+<html><head>
+	<meta charset="UTF-8">
+	<title>Diagramy aktywności – Magazynier</title>
+
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix="">
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix="">
+</head>
+<body>
+
+	<article id="activity-diagrams">
+		<h4>Diagramy aktywności</h4>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Wydaj części mechanikowi" (scenariusze/scenariusze-magazynier.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 2  (Sa niezrealizowane zamowienia?) : END FLOW: galaz nie -> stop
+		    krok 6  (Czesc niedostepna w magazynie?) : END FLOW: wyjscie z petli -> (Wydanie potwierdzone?) nie -> stop
+		    krok 6  (Dostepna ilosc mniejsza niz zamowiona?) : GOTO 7: przejscie do (Wyswietl podsumowanie wydania)
+		    krok 8  (Magazynier anuluje?) : GOTO 4: petla (Powrot do szczegolow zamowienia?)
+		    krok 9  (Zlecenie zakonczone lub rozliczone w miedzyczasie?) : END FLOW: galaz tak -> stop
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Wydaj części mechanikowi</h5>
+			<p class="author">Kacper Bednarz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Zamowienia czesci";
+				:Wyswietl liste niezrealizowanych zamowien;
+				if (Sa niezrealizowane zamowienia?) then (tak)
+				  :Wybierz zamowienie z listy;
+				  repeat
+				    :Wyswietl szczegoly zamowienia;
+				    :Wybierz opcje "Wydaj czesci";
+				    :Sprawdz dostepnosc czesci (przypadek uzycia "Sprawdz dostepnosc czesci");
+				    if (Czesc niedostepna w magazynie?) then (tak)
+				      :Oznacz zamowienie jako oczekujace;
+				      :Zmien status zlecenia na "oczekuje na czesci";
+				      note right: Magazynier moze zamowic czesc\n(przypadek uzycia "Zamow czesci u dostawcy")
+				    else (nie)
+				      if (Dostepna ilosc mniejsza niz zamowiona?) then (tak)
+				        :Zaproponuj czesciowe wydanie;
+				      else (nie)
+				      endif
+				      :Wyswietl podsumowanie wydania;
+				      if (Magazynier anuluje?) then (tak)
+				        :Nie wydawaj czesci;
+				      else (nie)
+				        :Potwierdz wydanie czesci;
+				      endif
+				    endif
+				  repeat while (Powrot do szczegolow zamowienia?) is (tak) not (nie)
+				  if (Wydanie potwierdzone?) then (tak)
+				    if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
+				      :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
+				    else (nie)
+				      :Przypisz wydane czesci do zlecenia naprawy;
+				      :Pomniejsz stan magazynowy czesci;
+				      :Oznacz zamowienie czesci jako zrealizowane;
+				      :Poinformuj mechanika o wydaniu czesci;
+				      :Wyswietl potwierdzenie wydania;
+				    endif
+				  else (nie, czesc niedostepna)
+				  endif
+				else (nie)
+				  :Wyswietl komunikat o braku zamowien;
+				endif
+				stop
+				@enduml
+			</p>
+		</section>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Zamów części u dostawcy" (scenariusze/scenariusze-magazynier.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 2  (Brak dostawcy oferujacego czesc?) : END FLOW: wyjscie z petli -> (Zamowienie potwierdzone?) nie -> stop
+		    krok 4  (Magazynier anuluje?) : END FLOW: wyjscie z petli -> (Zamowienie potwierdzone?) nie -> stop
+		    krok 5  (Nie wybrano dostawcy lub ilosc niepoprawna?) : GOTO 2: petla (Formularz do poprawy?)
+		    krok 5  (Ilosc mniejsza niz minimalna u dostawcy?) : GOTO 2: petla (Formularz do poprawy?)
+		    krok 7  (Magazynier potwierdza zamowienie?) : GOTO 2: petla (Formularz do poprawy?)
+		    krok 9  (Wyslanie nie powiodlo sie?) : GOTO 10: przejscie do (Oznacz brakujace czesci...)
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Zamów części u dostawcy</h5>
+			<p class="author">Kacper Bednarz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Zamow u dostawcy";
+				repeat
+				  :Wyswietl formularz z lista dostawcow oferujacych czesc;
+				  if (Brak dostawcy oferujacego czesc?) then (tak)
+				    :Wyswietl komunikat o braku dostawcy;
+				  else (nie)
+				    :Wybierz dostawce i podaj ilosc czesci;
+				    if (Magazynier anuluje?) then (tak)
+				    else (nie)
+				      :Wyslij formularz;
+				      :Zwaliduj formularz;
+				      if (Nie wybrano dostawcy lub ilosc niepoprawna?) then (tak)
+				        :Wyswietl komunikat o blednych danych;
+				      elseif (Ilosc mniejsza niz minimalna u dostawcy?) then (tak)
+				        :Wyswietl minimalna ilosc zamowienia;
+				      else (nie)
+				        :Wyswietl podsumowanie zamowienia;
+				        if (Magazynier potwierdza zamowienie?) then (tak)
+				        else (nie, "Popraw")
+				        endif
+				      endif
+				    endif
+				  endif
+				repeat while (Formularz do poprawy?) is (tak) not (nie)
+				if (Zamowienie potwierdzone?) then (tak)
+				  :Zapisz zamowienie u dostawcy ze statusem "wyslane";
+				  :Wyslij zamowienie do dostawcy;
+				  if (Wyslanie nie powiodlo sie?) then (tak)
+				    :Zapisz zamowienie do ponownej wysylki;
+				  else (nie)
+				  endif
+				  :Oznacz brakujace czesci jako zamowione u dostawcy;
+				  :Wyswietl potwierdzenie zlozenia zamowienia;
+				else (nie)
+				  :Nie tworz zamowienia;
+				endif
+				stop
+				@enduml
+			</p>
+		</section>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Przyjmij dostawę części" (scenariusze/scenariusze-magazynier.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 2  (Sa zamowienia ze statusem "wyslane"?) : END FLOW: galaz nie -> stop
+		    krok 5  (Czesci uszkodzone lub niezgodne z zamowieniem?) : GOTO 6: przejscie do zatwierdzenia
+		    krok 6  (Magazynier anuluje?) : END FLOW: wyjscie z petli -> (Dostawa zatwierdzona?) nie -> stop
+		    krok 7  (Ilosc ujemna lub wieksza niz zamowiona?) : GOTO 4: petla (Ilosci do poprawy?)
+		    krok 9  (Dostarczono mniej niz zamowiono?) : GOTO 10: przejscie do (Oznacz oczekujace zamowienia...)
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Przyjmij dostawę części</h5>
+			<p class="author">Kacper Bednarz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Przyjmij dostawe";
+				:Wyswietl liste zamowien u dostawcow ze statusem "wyslane";
+				if (Sa zamowienia ze statusem "wyslane"?) then (tak)
+				  :Wybierz zamowienie, ktorego dotyczy dostawa;
+				  repeat
+				    :Wyswietl liste zamowionych czesci i ilosci;
+				    :Wpisz ilosci faktycznie dostarczonych czesci;
+				    if (Czesci uszkodzone lub niezgodne z zamowieniem?) then (tak)
+				      :Oznacz czesci jako reklamowane (bez wliczania do stanu);
+				    else (nie)
+				    endif
+				    if (Magazynier anuluje?) then (tak)
+				    else (nie)
+				      :Zatwierdz przyjecie dostawy;
+				      :Zwaliduj wpisane ilosci;
+				      if (Ilosc ujemna lub wieksza niz zamowiona?) then (tak)
+				        :Wyswietl komunikat o blednych danych;
+				      else (nie)
+				      endif
+				    endif
+				  repeat while (Ilosci do poprawy?) is (tak) not (nie)
+				  if (Dostawa zatwierdzona?) then (tak)
+				    :Zwieksz stany magazynowe dostarczonych czesci;
+				    if (Dostarczono mniej niz zamowiono?) then (tak)
+				      :Zmien status zamowienia na "czesciowo zrealizowane";
+				    else (nie)
+				      :Zmien status zamowienia na "zrealizowane";
+				    endif
+				    :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
+				    :Wyswietl potwierdzenie przyjecia dostawy;
+				  else (nie, anulowano)
+				    :Nie rejestruj dostawy;
+				  endif
+				else (nie)
+				  :Wyswietl komunikat o braku oczekujacych zamowien;
+				endif
+				stop
+				@enduml
+			</p>
+		</section>
+
+	</article>
+
+</body></html>

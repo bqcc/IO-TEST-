@@ -18,3 +18,12 @@ Złączone: [scenariusze.html](https://bqcc.github.io/IO-TEST-/scenariusze/scena
 | Mechanik | Łukasz Bera | [scenariusze-mechanik.html](https://bqcc.github.io/IO-TEST-/scenariusze/scenariusze-mechanik.html) |
 | Magazynier | Kacper Bednarz | [scenariusze-magazynier.html](https://bqcc.github.io/IO-TEST-/scenariusze/scenariusze-magazynier.html) |
 | Manager warsztatu | Dawid Woźniak | [scenariusze-manager.html](https://bqcc.github.io/IO-TEST-/scenariusze/scenariusze-manager.html) |
+
+## Diagramy aktywności
+
+| Aktor | Autor | Diagramy |
+|---|---|---|
+| Klient | Jakub Banasiewicz | [diagramy-klient.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-klient.html) |
+| Mechanik | Łukasz Bera | [diagramy-mechanik.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-mechanik.html) |
+| Magazynier | Kacper Bednarz | [diagramy-magazynier.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-magazynier.html) |
+| Manager warsztatu | Dawid Woźniak | [diagramy-manager.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-manager.html) |

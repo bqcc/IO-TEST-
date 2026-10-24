@@ -1,0 +1,200 @@
+<html><head>
+	<meta charset="UTF-8">
+	<title>Diagramy aktywności – Klient</title>
+
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+	<script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix="">
+	<link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix="">
+</head>
+<body>
+
+	<article id="activity-diagrams">
+		<h4>Diagramy aktywności</h4>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Dodaj pojazd" (scenariusze/scenariusze-klient.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 6  (Klient anuluje?) : GOTO 2: petla (Powrot do listy pojazdow?)
+		    krok 7  (Nie wypelniono wymaganych pol?) : GOTO 4: petla (Formularz do poprawy?)
+		    krok 7  (Numer VIN niepoprawny?) : GOTO 4: petla (Formularz do poprawy?)
+		    krok 7  (Rok produkcji lub przebieg niepoprawny?) : GOTO 4: petla (Formularz do poprawy?)
+		    krok 8  (VIN juz przypisany do konta klienta?) : GOTO 2: petla (Powrot do listy pojazdow?)
+		    krok 8  (VIN przypisany do innego klienta?) : END FLOW: wyjscie z petli do stop
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Dodaj pojazd</h5>
+			<p class="author">Jakub Banasiewicz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Moje pojazdy";
+				repeat
+				  :Wyswietl liste pojazdow klienta;
+				  :Wybierz opcje "Dodaj pojazd";
+				  repeat
+				    :Wyswietl formularz danych pojazdu;
+				    :Wypelnij formularz;
+				    if (Klient anuluje?) then (tak)
+				      :Nie zapisuj pojazdu;
+				    else (nie)
+				      :Wyslij formularz;
+				      :Zwaliduj formularz;
+				      if (Nie wypelniono wymaganych pol?) then (tak)
+				        :Zaznacz brakujace pola;
+				      elseif (Numer VIN niepoprawny?) then (tak)
+				        :Wyswietl komunikat o blednym numerze VIN;
+				      elseif (Rok produkcji lub przebieg niepoprawny?) then (tak)
+				        :Wyswietl komunikat o blednych danych;
+				      else (nie)
+				      endif
+				    endif
+				  repeat while (Formularz do poprawy?) is (tak) not (nie)
+				  if (Formularz wyslany i poprawny?) then (tak)
+				    :Sprawdz numer VIN w systemie;
+				    if (VIN juz przypisany do konta klienta?) then (tak)
+				      :Poinformuj, ze pojazd zostal juz dodany;
+				    elseif (VIN przypisany do innego klienta?) then (tak)
+				      :Poinformuj o koniecznosci kontaktu z warsztatem;
+				    else (nie)
+				      :Zapisz pojazd i przypisz go do konta klienta;
+				      :Wyswietl zaktualizowana liste pojazdow;
+				    endif
+				  else (nie, anulowano)
+				  endif
+				repeat while (Powrot do listy pojazdow?) is (tak) not (nie)
+				stop
+				@enduml
+			</p>
+		</section>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Zarezerwuj wizytę" (scenariusze/scenariusze-klient.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 2  (Klient nie ma pojazdu?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
+		    krok 3  (Wybrano "Dodaj nowy pojazd"?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
+		    krok 3  (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
+		    krok 4  (Brak wolnych terminow w tygodniu?) : GOTO 4: petla z akcja powrotna
+		    krok 8  (Klient anuluje?) : END FLOW: (Klient anulowal?) -> tak -> stop
+		    krok 9  (Opis usterki pusty?) : GOTO 6: petla (Formularz do poprawy?)
+		    krok 10 (Termin zajety w miedzyczasie?) : GOTO 4: petla (Wybor terminu do powtorzenia?)
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Zarezerwuj wizytę</h5>
+			<p class="author">Jakub Banasiewicz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Zarezerwuj wizyte";
+				repeat
+				  :Wyswietl liste pojazdow klienta;
+				  if (Klient nie ma pojazdu?) then (tak)
+				    :Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
+				  elseif (Wybrano "Dodaj nowy pojazd"?) then (tak)
+				    :Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
+				  else (nie)
+				    :Wybierz pojazd z listy;
+				    if (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) then (tak)
+				      :Poinformuj o istniejacej rezerwacji lub zleceniu;
+				    else (nie)
+				    endif
+				  endif
+				repeat while (Pojazd do ponownego wyboru?) is (tak) not (nie)
+				repeat
+				  repeat
+				    :Wyswietl kalendarz z wolnymi terminami;
+				  backward:Przejdz do kolejnego tygodnia;
+				  repeat while (Brak wolnych terminow w tygodniu?) is (tak) not (nie)
+				  :Wybierz termin wizyty;
+				  repeat
+				    :Wyswietl formularz opisu usterki;
+				    :Wpisz opis usterki;
+				    if (Klient anuluje?) then (tak)
+				    else (nie)
+				      :Wyslij formularz;
+				      :Zwaliduj formularz;
+				      if (Opis usterki pusty?) then (tak)
+				        :Zaznacz brakujace pole;
+				      else (nie)
+				      endif
+				    endif
+				  repeat while (Formularz do poprawy?) is (tak) not (nie)
+				  if (Formularz wyslany i poprawny?) then (tak)
+				    :Sprawdz, czy termin jest nadal wolny;
+				    if (Termin zajety w miedzyczasie?) then (tak)
+				      :Poinformuj, ze termin jest niedostepny;
+				    else (nie)
+				    endif
+				  else (nie, anulowano)
+				  endif
+				repeat while (Wybor terminu do powtorzenia?) is (tak) not (nie)
+				if (Klient anulowal?) then (tak)
+				  :Nie tworz rezerwacji;
+				else (nie)
+				  :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
+				  :Przekaz rezerwacje managerowi do potwierdzenia;
+				  :Wyswietl potwierdzenie zlozenia rezerwacji;
+				endif
+				stop
+				@enduml
+			</p>
+		</section>
+
+		<!--
+		  Diagram odpowiada scenariuszowi "Zaakceptuj kosztorys dodatkowych prac" (scenariusze/scenariusze-klient.html).
+		  Mapowanie przeplywow alternatywnych:
+		    krok 3  case (Odrzuc) : END FLOW: galaz Odrzuc -> stop
+		    krok 3  case (Wroc) : END FLOW: galaz Wroc -> stop
+		    krok 5  (Klient potwierdza decyzje?) : GOTO 2: petla (Powrot do kosztorysu?)
+		    krok 6  (Kosztorys zmieniony przez mechanika?) : GOTO 2: petla (Powrot do kosztorysu?)
+		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
+		-->
+		<section>
+			<h5>Zaakceptuj kosztorys dodatkowych prac</h5>
+			<p class="author">Jakub Banasiewicz</p>
+			<p class="uml">
+				@startuml
+				start
+				:Wybierz opcje "Zobacz kosztorys";
+				repeat
+				  :Wyswietl kosztorys;
+				  if (Klient wybiera "Akceptuj"?) then (tak)
+				    :Popros o potwierdzenie decyzji;
+				    if (Klient potwierdza decyzje?) then (tak)
+				      :Sprawdz, czy kosztorys zostal zmieniony;
+				      if (Kosztorys zmieniony przez mechanika?) then (tak)
+				        :Wyswietl informacje o zmianie kosztorysu;
+				      else (nie)
+				      endif
+				    else (nie, rezygnuje)
+				    endif
+				  else (nie, "Odrzuc" lub "Wroc")
+				  endif
+				repeat while (Powrot do kosztorysu?) is (tak) not (nie)
+				switch (Decyzja klienta?)
+				case (Akceptuj)
+				  :Zapisz akceptacje kosztorysu;
+				  :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
+				  :Zmien status zlecenia na "w trakcie realizacji";
+				  :Poinformuj mechanika o akceptacji kosztorysu;
+				  :Wyswietl potwierdzenie akceptacji;
+				case (Odrzuc)
+				  :Zapisz odrzucenie kosztorysu;
+				  :Zmien status zlecenia na "w trakcie realizacji";
+				  :Poinformuj mechanika, ze dodatkowe prace nie zostana wykonane;
+				case (Wroc)
+				  :Pozostaw status zlecenia bez zmian;
+				endswitch
+				stop
+				@enduml
+			</p>
+		</section>
+
+	</article>
+
+</body></html>
