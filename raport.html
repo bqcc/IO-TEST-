@@ -3223,17 +3223,7 @@
 <article id="activity-diagrams">
   <h4>Diagramy aktywności</h4>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Dodaj pojazd" (scenariusze/scenariusze-klient.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 6  (Klient anuluje?) : END FLOW: wyjscie z petli -> (Pojazd juz dodany do konta klienta?) nie -> stop
-      krok 7  (Nie wypelniono wymaganych pol?) : GOTO 4: petla (Formularz do poprawy?)
-      krok 7  (Numer VIN niepoprawny?) : GOTO 4: petla (Formularz do poprawy?)
-      krok 7  (Rok produkcji lub przebieg niepoprawny?) : GOTO 4: petla (Formularz do poprawy?)
-      krok 8  (VIN juz przypisany do konta klienta?) : GOTO 2: petla (Pojazd juz dodany do konta klienta?)
-      krok 8  (VIN przypisany do innego klienta?) : END FLOW: wyjscie z petli -> stop
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Dodaj pojazd -->
   <section>
     <h5>Dodaj pojazd</h5>
     <p class="author">Jakub Banasiewicz</p>
@@ -3280,17 +3270,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Zarezerwuj wizytę" (scenariusze/scenariusze-klient.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 2  (Klient nie ma pojazdu?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
-      krok 3  (Wybrano "Dodaj nowy pojazd"?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
-      krok 3  (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) : GOTO 2: petla (Pojazd do ponownego wyboru?)
-      krok 8  (Klient anuluje?) : END FLOW: wyjscie z petli -> (Klient anulowal?) tak -> stop
-      krok 9  (Opis usterki pusty?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 10 (Termin zajety w miedzyczasie?) : GOTO 4: petla (Wybor terminu do powtorzenia?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Zarezerwuj wizytę -->
   <section>
     <h5>Zarezerwuj wizytę</h5>
     <p class="author">Jakub Banasiewicz</p>
@@ -3349,15 +3329,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Zaakceptuj kosztorys dodatkowych prac" (scenariusze/scenariusze-klient.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 3  case (Odrzuc) : END FLOW: galaz Odrzuc -> stop
-      krok 3  case (Wroc lub rezygnacja z potwierdzenia) : END FLOW: galaz Wroc -> stop
-      krok 5  else (nie, rezygnuje) : END FLOW: galaz rezygnacja z potwierdzenia -> stop
-      krok 6  (Kosztorys zmieniony przez mechanika?) : GOTO 2: petla (Kosztorys zmieniony przez mechanika?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Zaakceptuj kosztorys dodatkowych prac -->
   <section>
     <h5>Zaakceptuj kosztorys dodatkowych prac</h5>
     <p class="author">Jakub Banasiewicz</p>
@@ -3399,15 +3371,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Zamów części u magazyniera" (scenariusze/scenariusze-mechanik.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 7  (Brak czesci w katalogu?) : GOTO 6: petla (Zamowienie do poprawy?)
-      krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Zamowienie wyslane i poprawne?) nie -> stop
-      krok 9  (Nie wybrano czesci lub ilosc niepoprawna?) : GOTO 6: petla (Zamowienie do poprawy?)
-      krok 9  (Czesc juz zamowiona i niewydana?) : GOTO 6: petla (Zamowienie do poprawy?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Zamów części u magazyniera -->
   <section>
     <h5>Zamów części u magazyniera</h5>
     <p class="author">Łukasz Bera</p>
@@ -3451,16 +3415,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Wprowadź wykonaną naprawę" (scenariusze/scenariusze-mechanik.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 7  (Wykryto dodatkowa usterke?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 7  (Potrzebna czesc nie zostala wydana?) : GOTO 4: petla (Czesc do zamowienia u magazyniera?)
-      krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Formularz naprawy zapisany i poprawny?) nie -> stop
-      krok 9  (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 9  (Czas pracy niepoprawny?) : GOTO 6: petla (Formularz do poprawy?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Wprowadź wykonaną naprawę -->
   <section>
     <h5>Wprowadź wykonaną naprawę</h5>
     <p class="author">Łukasz Bera</p>
@@ -3507,15 +3462,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Zmień status zlecenia naprawy" (scenariusze/scenariusze-mechanik.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 5  (Zlecenie ma status "rozliczone"?) : GOTO 2: petla (Zlecenie ma status "rozliczone"?)
-      krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Zmiana statusu zatwierdzona i dozwolona?) nie -> stop
-      krok 9  ("zakonczone", ale brak zapisanej naprawy?) : GOTO 6: petla (Wybor statusu do poprawy?)
-      krok 9  ("zakonczone", ale kosztorys czeka na decyzje klienta?) : GOTO 6: petla (Wybor statusu do poprawy?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Zmień status zlecenia naprawy -->
   <section>
     <h5>Zmień status zlecenia naprawy</h5>
     <p class="author">Łukasz Bera</p>
@@ -3559,15 +3506,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Wydaj części mechanikowi" (scenariusze/scenariusze-magazynier.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 6  (Czesc niedostepna w magazynie?) : END FLOW: galaz tak -> stop
-      krok 6  (Dostepna ilosc mniejsza niz zamowiona?) : GOTO 7: przejscie do (Wyswietl podsumowanie wydania)
-      krok 8  (Magazynier anuluje?) : END FLOW: galaz tak -> stop
-      krok 9  (Zlecenie zakonczone lub rozliczone w miedzyczasie?) : END FLOW: galaz tak -> stop
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Wydaj części mechanikowi -->
   <section>
     <h5>Wydaj części mechanikowi</h5>
     <p class="author">Kacper Bednarz</p>
@@ -3610,16 +3549,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Zamów części u dostawcy" (scenariusze/scenariusze-magazynier.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 4  (Magazynier anuluje?) : END FLOW: wyjscie z petli -> (Zamowienie potwierdzone?) nie -> stop
-      krok 5  (Nie wybrano dostawcy lub ilosc niepoprawna?) : GOTO 2: petla (Formularz do poprawy?)
-      krok 5  (Ilosc mniejsza niz minimalna u dostawcy?) : GOTO 2: petla (Formularz do poprawy?)
-      krok 7  (Magazynier potwierdza zamowienie?) : GOTO 2: petla (Formularz do poprawy?)
-      krok 9  (Wyslanie nie powiodlo sie?) : GOTO 10: przejscie do (Oznacz brakujace czesci...)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Zamów części u dostawcy -->
   <section>
     <h5>Zamów części u dostawcy</h5>
     <p class="author">Kacper Bednarz</p>
@@ -3663,14 +3593,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Przyjmij dostawę części" (scenariusze/scenariusze-magazynier.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 6  (Magazynier anuluje?) : END FLOW: wyjscie z petli -> (Dostawa zatwierdzona?) nie -> stop
-      krok 7  (Ilosc ujemna lub wieksza niz zamowiona?) : GOTO 4: petla (Ilosci do poprawy?)
-      krok 9  (Dostarczono mniej niz zamowiono?) : GOTO 10: przejscie do (Oznacz oczekujace zamowienia...)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Przyjmij dostawę części -->
   <section>
     <h5>Przyjmij dostawę części</h5>
     <p class="author">Kacper Bednarz</p>
@@ -3710,16 +3633,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Utwórz zlecenie naprawy na podstawie rezerwacji" (scenariusze/scenariusze-manager.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 5  (Rezerwacja potwierdzona?) : GOTO 6: przejscie do formularza zlecenia
-      krok 9  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Zlecenie zapisane i poprawne?) nie -> stop
-      krok 10 (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 10 (Przebieg mniejszy niz ostatnio zapisany?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 10 (Nie przydzielono mechanika?) : GOTO 8: petla (Mechanik do przydzielenia?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Utwórz zlecenie naprawy na podstawie rezerwacji -->
   <section>
     <h5>Utwórz zlecenie naprawy na podstawie rezerwacji</h5>
     <p class="author">Dawid Woźniak</p>
@@ -3767,15 +3681,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Dodaj usługę do cennika" (scenariusze/scenariusze-manager.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 6  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Formularz zapisany i poprawny?) nie -> stop
-      krok 7  (Nie wypelniono wymaganych pol?) : GOTO 4: petla (Formularz do poprawy?)
-      krok 7  (Stawka zerowa lub ujemna?) : GOTO 4: petla (Formularz do poprawy?)
-      krok 7  (Usluga o tej nazwie juz istnieje?) : GOTO 4: petla (Formularz do poprawy?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Dodaj usługę do cennika -->
   <section>
     <h5>Dodaj usługę do cennika</h5>
     <p class="author">Dawid Woźniak</p>
@@ -3813,15 +3719,7 @@
     </p>
   </section>
 
-  <!--
-    Diagram odpowiada scenariuszowi "Wystaw fakturę" (scenariusze/scenariusze-manager.html).
-    Mapowanie przeplywow alternatywnych:
-      krok 5  (Pozycja zlecenia bez ceny?) : GOTO 2: petla (Pozycja zlecenia bez ceny?)
-      krok 8  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Faktura zatwierdzona i poprawna?) nie -> stop
-      krok 9  (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-      krok 9  (Numer NIP niepoprawny?) : GOTO 6: petla (Formularz do poprawy?)
-    Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-  -->
+  <!-- Scenariusz: Wystaw fakturę -->
   <section>
     <h5>Wystaw fakturę</h5>
     <p class="author">Dawid Woźniak</p>
