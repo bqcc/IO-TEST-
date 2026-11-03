@@ -132,20 +132,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
-							<span class="number">5</span>
-							<span class="condition">Zlecenie ma status „zakończone” lub „rozliczone”</span>
-							<span class="reaction-additional">System informuje, że do zlecenia nie można zamawiać części</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
-						</li>
-						<li>
 							<span class="number">7</span>
 							<span class="condition">Szukanej części nie ma w katalogu</span>
 							<span class="reaction-additional">System wyświetla komunikat o braku wyników</span>
@@ -156,8 +142,8 @@
 							<span class="number">8</span>
 							<span class="condition">Mechanik wybiera opcję Anuluj zamiast wysłania zamówienia</span>
 							<span class="reaction-additional">System nie tworzy zamówienia</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">9</span>
@@ -307,20 +293,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
-							<span class="number">5</span>
-							<span class="condition">Zlecenie ma status inny niż „w trakcie realizacji”</span>
-							<span class="reaction-additional">System informuje, że do zlecenia nie można dodać naprawy</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
-						</li>
-						<li>
 							<span class="number">7</span>
 							<span class="condition">Mechanik wykrył dodatkową usterkę</span>
 							<span class="reaction-additional">Mechanik zgłasza usterkę (przypadek użycia Zgłoś dodatkową usterkę)</span>
@@ -338,8 +310,8 @@
 							<span class="number">8</span>
 							<span class="condition">Mechanik wybiera opcję Anuluj zamiast zapisania formularza</span>
 							<span class="reaction-additional">System nie zapisuje naprawy</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">9</span>
@@ -644,13 +616,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
 							<span class="number">5</span>
 							<span class="condition">Zlecenie ma status „rozliczone”</span>
 							<span class="reaction-additional">System informuje, że zmiana statusu nie jest możliwa</span>
@@ -661,8 +626,8 @@
 							<span class="number">8</span>
 							<span class="condition">Mechanik wybiera opcję Anuluj</span>
 							<span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">9</span>

@@ -281,13 +281,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Brak niezrealizowanych zamówień części</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku zamówień</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
 							<span class="number">6</span>
 							<span class="condition">Zamówiona część jest niedostępna w magazynie</span>
 							<span class="reaction-additional">System oznacza zamówienie jako oczekujące i zmienia status zlecenia na „oczekuje na części”; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
@@ -305,8 +298,8 @@
 							<span class="number">8</span>
 							<span class="condition">Magazynier wybiera opcję Anuluj</span>
 							<span class="reaction-additional">System nie wydaje części</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">9</span>
@@ -370,7 +363,7 @@
 							Część musi być niedostępna lub jej ilość w magazynie musi być niewystarczająca (przypadek użycia Sprawdź dostępność części)
 						</li>
 						<li>
-							W systemie musi być zarejestrowany co najmniej jeden dostawca
+							Co najmniej jeden dostawca musi oferować brakującą część
 						</li>
 					</ul>
 				</td>
@@ -445,13 +438,6 @@
 				<th>Alternate flow:</th>
 				<td style="width: 15cm;">
 					<ul>
-						<li>
-							<span class="number">2</span>
-							<span class="condition">Żaden dostawca nie oferuje wybranej części</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku dostawcy</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
 						<li>
 							<span class="number">4</span>
 							<span class="condition">Magazynier wybiera opcję Anuluj zamiast wysłania formularza</span>
@@ -620,20 +606,6 @@
 				<th>Alternate flow:</th>
 				<td style="width: 15cm;">
 					<ul>
-						<li>
-							<span class="number">2</span>
-							<span class="condition">Brak zamówień u dostawców ze statusem „wysłane”</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku oczekujących zamówień</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
-							<span class="number">5</span>
-							<span class="condition">Część dostarczonych części jest uszkodzona lub niezgodna z zamówieniem</span>
-							<span class="reaction-additional">Magazynier oznacza je jako reklamowane i system nie wlicza ich do stanu magazynowego</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">6</span>
-						</li>
 						<li>
 							<span class="number">6</span>
 							<span class="condition">Magazynier wybiera opcję Anuluj</span>

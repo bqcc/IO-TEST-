@@ -141,13 +141,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">3</span>
-							<span class="condition">Na liście nie ma rezerwacji klienta, który dostarczył pojazd</span>
-							<span class="reaction-additional">System nie pozwala utworzyć zlecenia bez rezerwacji</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
 							<span class="number">5</span>
 							<span class="condition">Rezerwacja nie została jeszcze potwierdzona</span>
 							<span class="reaction-additional">Manager potwierdza rezerwację, a system zmienia jej status na „potwierdzona”</span>
@@ -237,7 +230,7 @@
 							Musi istnieć zlecenie naprawy, które nie zostało zakończone ani rozliczone
 						</li>
 						<li>
-							W warsztacie musi być zatrudniony co najmniej jeden mechanik
+							W dniu realizacji zlecenia musi być dostępny co najmniej jeden mechanik
 						</li>
 					</ul>
 				</td>
@@ -307,13 +300,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Żaden mechanik nie jest dostępny w dniu realizacji zlecenia</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku dostępnych mechaników</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
 							<span class="number">4</span>
 							<span class="condition">Manager wybiera opcję Anuluj</span>
 							<span class="reaction-additional">System nie zmienia przydziału</span>
@@ -376,7 +362,7 @@
 			<tr>
 				<th>Use Case:</th>
 				<td style="width: 15cm;">
-					Zarządzaj cennikiem usług
+					Dodaj usługę do cennika
 				</td>
 			</tr>
 			<tr>
@@ -457,25 +443,11 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">3</span>
-							<span class="condition">Manager wybiera opcję Edytuj przy istniejącej usłudze</span>
-							<span class="reaction-additional">System wyświetla formularz wypełniony aktualnymi danymi usługi</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">5</span>
-						</li>
-						<li>
-							<span class="number">3</span>
-							<span class="condition">Manager wybiera opcję Usuń przy istniejącej usłudze</span>
-							<span class="reaction-additional">System oznacza usługę jako nieaktywną, przez co nie jest ona dostępna w nowych naprawach i kosztorysach</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
-						</li>
-						<li>
 							<span class="number">6</span>
 							<span class="condition">Manager wybiera opcję Anuluj zamiast zapisania formularza</span>
-							<span class="reaction-additional">System nie zapisuje zmian</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
+							<span class="reaction-additional">System nie dodaje usługi</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">7</span>
@@ -497,13 +469,6 @@
 							<span class="reaction-additional">System wyświetla komunikat o istniejącej usłudze</span>
 							<span class="reaction-type">GOTO</span>
 							<span class="reaction-goto">4</span>
-						</li>
-						<li>
-							<span class="number">8</span>
-							<span class="condition">Edytowana usługa jest użyta w otwartych zleceniach lub kosztorysach</span>
-							<span class="reaction-additional">System stosuje nową stawkę tylko w nowych naprawach i kosztorysach</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">9</span>
 						</li>
 					</ul>
 				</td>
@@ -642,13 +607,6 @@
 				<td style="width: 15cm;">
 					<ul>
 						<li>
-							<span class="number">2</span>
-							<span class="condition">Brak zleceń o statusie „zakończone”</span>
-							<span class="reaction-additional">System wyświetla komunikat o braku zleceń do rozliczenia</span>
-							<span class="reaction-type">END FLOW</span>
-							<span class="reaction-goto"></span>
-						</li>
-						<li>
 							<span class="number">5</span>
 							<span class="condition">Pozycja zlecenia nie ma ceny (usługa bez stawki w cenniku lub część bez ceny)</span>
 							<span class="reaction-additional">System wskazuje pozycje bez ceny i nie pozwala wystawić faktury</span>
@@ -659,8 +617,8 @@
 							<span class="number">8</span>
 							<span class="condition">Manager wybiera opcję Anuluj zamiast zatwierdzenia faktury</span>
 							<span class="reaction-additional">System nie wystawia faktury</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">9</span>
