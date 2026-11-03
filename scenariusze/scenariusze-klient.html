@@ -123,8 +123,8 @@
 							<span class="number">6</span>
 							<span class="condition">Klient wybiera opcję Anuluj zamiast wysłania formularza</span>
 							<span class="reaction-additional">System nie zapisuje pojazdu</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">7</span>
@@ -314,13 +314,6 @@
 							<span class="reaction-additional">System informuje o istniejącej rezerwacji lub zleceniu</span>
 							<span class="reaction-type">GOTO</span>
 							<span class="reaction-goto">2</span>
-						</li>
-						<li>
-							<span class="number">4</span>
-							<span class="condition">Brak wolnych terminów w wyświetlanym tygodniu</span>
-							<span class="reaction-additional">Klient przechodzi do kolejnego tygodnia</span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">4</span>
 						</li>
 						<li>
 							<span class="number">8</span>
@@ -627,9 +620,9 @@
 						<li>
 							<span class="number">5</span>
 							<span class="condition">Klient rezygnuje z potwierdzenia decyzji</span>
-							<span class="reaction-additional"></span>
-							<span class="reaction-type">GOTO</span>
-							<span class="reaction-goto">2</span>
+							<span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
+							<span class="reaction-type">END FLOW</span>
+							<span class="reaction-goto"></span>
 						</li>
 						<li>
 							<span class="number">6</span>

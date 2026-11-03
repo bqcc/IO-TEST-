@@ -124,8 +124,8 @@
                         <span class="number">6</span>
                         <span class="condition">Klient wybiera opcję Anuluj zamiast wysłania formularza</span>
                         <span class="reaction-additional">System nie zapisuje pojazdu</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">7</span>
@@ -315,13 +315,6 @@
                         <span class="reaction-additional">System informuje o istniejącej rezerwacji lub zleceniu</span>
                         <span class="reaction-type">GOTO</span>
                         <span class="reaction-goto">2</span>
-                    </li>
-                    <li>
-                        <span class="number">4</span>
-                        <span class="condition">Brak wolnych terminów w wyświetlanym tygodniu</span>
-                        <span class="reaction-additional">Klient przechodzi do kolejnego tygodnia</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
                     </li>
                     <li>
                         <span class="number">8</span>
@@ -628,9 +621,9 @@
                     <li>
                         <span class="number">5</span>
                         <span class="condition">Klient rezygnuje z potwierdzenia decyzji</span>
-                        <span class="reaction-additional"></span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
+                        <span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">6</span>
@@ -773,20 +766,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
-                        <span class="number">5</span>
-                        <span class="condition">Zlecenie ma status „zakończone” lub „rozliczone”</span>
-                        <span class="reaction-additional">System informuje, że do zlecenia nie można zamawiać części</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
-                    </li>
-                    <li>
                         <span class="number">7</span>
                         <span class="condition">Szukanej części nie ma w katalogu</span>
                         <span class="reaction-additional">System wyświetla komunikat o braku wyników</span>
@@ -797,8 +776,8 @@
                         <span class="number">8</span>
                         <span class="condition">Mechanik wybiera opcję Anuluj zamiast wysłania zamówienia</span>
                         <span class="reaction-additional">System nie tworzy zamówienia</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">9</span>
@@ -948,20 +927,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
-                        <span class="number">5</span>
-                        <span class="condition">Zlecenie ma status inny niż „w trakcie realizacji”</span>
-                        <span class="reaction-additional">System informuje, że do zlecenia nie można dodać naprawy</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
-                    </li>
-                    <li>
                         <span class="number">7</span>
                         <span class="condition">Mechanik wykrył dodatkową usterkę</span>
                         <span class="reaction-additional">Mechanik zgłasza usterkę (przypadek użycia Zgłoś dodatkową usterkę)</span>
@@ -979,8 +944,8 @@
                         <span class="number">8</span>
                         <span class="condition">Mechanik wybiera opcję Anuluj zamiast zapisania formularza</span>
                         <span class="reaction-additional">System nie zapisuje naprawy</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">9</span>
@@ -1285,13 +1250,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Mechanik nie ma przydzielonych żadnych zleceń</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku zleceń</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
                         <span class="number">5</span>
                         <span class="condition">Zlecenie ma status „rozliczone”</span>
                         <span class="reaction-additional">System informuje, że zmiana statusu nie jest możliwa</span>
@@ -1302,8 +1260,8 @@
                         <span class="number">8</span>
                         <span class="condition">Mechanik wybiera opcję Anuluj</span>
                         <span class="reaction-additional">Status zlecenia nie ulega zmianie</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">9</span>
@@ -1602,13 +1560,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Brak niezrealizowanych zamówień części</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku zamówień</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
                         <span class="number">6</span>
                         <span class="condition">Zamówiona część jest niedostępna w magazynie</span>
                         <span class="reaction-additional">System oznacza zamówienie jako oczekujące i zmienia status zlecenia na „oczekuje na części”; magazynier może zamówić część (przypadek użycia Zamów części u dostawcy)</span>
@@ -1626,8 +1577,8 @@
                         <span class="number">8</span>
                         <span class="condition">Magazynier wybiera opcję Anuluj</span>
                         <span class="reaction-additional">System nie wydaje części</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">9</span>
@@ -1691,7 +1642,7 @@
                         Część musi być niedostępna lub jej ilość w magazynie musi być niewystarczająca (przypadek użycia Sprawdź dostępność części)
                     </li>
                     <li>
-                        W systemie musi być zarejestrowany co najmniej jeden dostawca
+                        Co najmniej jeden dostawca musi oferować brakującą część
                     </li>
                 </ul>
             </td>
@@ -1766,13 +1717,6 @@
             <th>Alternate flow:</th>
             <td style="width: 15cm;">
                 <ul>
-                    <li>
-                        <span class="number">2</span>
-                        <span class="condition">Żaden dostawca nie oferuje wybranej części</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku dostawcy</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
                     <li>
                         <span class="number">4</span>
                         <span class="condition">Magazynier wybiera opcję Anuluj zamiast wysłania formularza</span>
@@ -1942,20 +1886,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Brak zamówień u dostawców ze statusem „wysłane”</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku oczekujących zamówień</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
-                        <span class="number">5</span>
-                        <span class="condition">Część dostarczonych części jest uszkodzona lub niezgodna z zamówieniem</span>
-                        <span class="reaction-additional">Magazynier oznacza je jako reklamowane i system nie wlicza ich do stanu magazynowego</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">6</span>
-                    </li>
-                    <li>
                         <span class="number">6</span>
                         <span class="condition">Magazynier wybiera opcję Anuluj</span>
                         <span class="reaction-additional">System nie rejestruje dostawy</span>
@@ -2119,13 +2049,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">3</span>
-                        <span class="condition">Na liście nie ma rezerwacji klienta, który dostarczył pojazd</span>
-                        <span class="reaction-additional">System nie pozwala utworzyć zlecenia bez rezerwacji</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
                         <span class="number">5</span>
                         <span class="condition">Rezerwacja nie została jeszcze potwierdzona</span>
                         <span class="reaction-additional">Manager potwierdza rezerwację, a system zmienia jej status na „potwierdzona”</span>
@@ -2215,7 +2138,7 @@
                         Musi istnieć zlecenie naprawy, które nie zostało zakończone ani rozliczone
                     </li>
                     <li>
-                        W warsztacie musi być zatrudniony co najmniej jeden mechanik
+                        W dniu realizacji zlecenia musi być dostępny co najmniej jeden mechanik
                     </li>
                 </ul>
             </td>
@@ -2285,13 +2208,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Żaden mechanik nie jest dostępny w dniu realizacji zlecenia</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku dostępnych mechaników</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
                         <span class="number">4</span>
                         <span class="condition">Manager wybiera opcję Anuluj</span>
                         <span class="reaction-additional">System nie zmienia przydziału</span>
@@ -2354,7 +2270,7 @@
         <tr>
             <th>Use Case:</th>
             <td style="width: 15cm;">
-                Zarządzaj cennikiem usług
+                Dodaj usługę do cennika
             </td>
         </tr>
         <tr>
@@ -2435,25 +2351,11 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">3</span>
-                        <span class="condition">Manager wybiera opcję Edytuj przy istniejącej usłudze</span>
-                        <span class="reaction-additional">System wyświetla formularz wypełniony aktualnymi danymi usługi</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">5</span>
-                    </li>
-                    <li>
-                        <span class="number">3</span>
-                        <span class="condition">Manager wybiera opcję Usuń przy istniejącej usłudze</span>
-                        <span class="reaction-additional">System oznacza usługę jako nieaktywną, przez co nie jest ona dostępna w nowych naprawach i kosztorysach</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
-                    </li>
-                    <li>
                         <span class="number">6</span>
                         <span class="condition">Manager wybiera opcję Anuluj zamiast zapisania formularza</span>
-                        <span class="reaction-additional">System nie zapisuje zmian</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">2</span>
+                        <span class="reaction-additional">System nie dodaje usługi</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">7</span>
@@ -2475,13 +2377,6 @@
                         <span class="reaction-additional">System wyświetla komunikat o istniejącej usłudze</span>
                         <span class="reaction-type">GOTO</span>
                         <span class="reaction-goto">4</span>
-                    </li>
-                    <li>
-                        <span class="number">8</span>
-                        <span class="condition">Edytowana usługa jest użyta w otwartych zleceniach lub kosztorysach</span>
-                        <span class="reaction-additional">System stosuje nową stawkę tylko w nowych naprawach i kosztorysach</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">9</span>
                     </li>
                 </ul>
             </td>
@@ -2620,13 +2515,6 @@
             <td style="width: 15cm;">
                 <ul>
                     <li>
-                        <span class="number">2</span>
-                        <span class="condition">Brak zleceń o statusie „zakończone”</span>
-                        <span class="reaction-additional">System wyświetla komunikat o braku zleceń do rozliczenia</span>
-                        <span class="reaction-type">END FLOW</span>
-                        <span class="reaction-goto"></span>
-                    </li>
-                    <li>
                         <span class="number">5</span>
                         <span class="condition">Pozycja zlecenia nie ma ceny (usługa bez stawki w cenniku lub część bez ceny)</span>
                         <span class="reaction-additional">System wskazuje pozycje bez ceny i nie pozwala wystawić faktury</span>
@@ -2637,8 +2525,8 @@
                         <span class="number">8</span>
                         <span class="condition">Manager wybiera opcję Anuluj zamiast zatwierdzenia faktury</span>
                         <span class="reaction-additional">System nie wystawia faktury</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">9</span>
