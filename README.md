@@ -27,3 +27,7 @@ Złączone: [scenariusze.html](https://bqcc.github.io/IO-TEST-/scenariusze/scena
 | Mechanik | Łukasz Bera | [diagramy-mechanik.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-mechanik.html) |
 | Magazynier | Kacper Bednarz | [diagramy-magazynier.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-magazynier.html) |
 | Manager warsztatu | Dawid Woźniak | [diagramy-manager.html](https://bqcc.github.io/IO-TEST-/diagramy/diagramy-manager.html) |
+
+## Diagram klas
+
+- [diagram-klas.html](https://bqcc.github.io/IO-TEST-/diagram-klas/diagram-klas.html)
