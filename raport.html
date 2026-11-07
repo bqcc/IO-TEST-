@@ -193,6 +193,12 @@
   <h4>Słownik pojęć</h4>
   <ul>
     <li>
+      <strong>Użytkownik</strong>
+      Osoba posiadająca konto w systemie i logująca się do niego:
+      klient, mechanik, magazynier lub manager warsztatu. Zakres
+      dostępnych funkcji zależy od roli użytkownika.
+    </li>
+    <li>
       <strong>Klient</strong>
       Właściciel pojazdu korzystający z usług warsztatu. Posiada konto w
       systemie, rejestruje swoje samochody, umawia wizyty, śledzi status
@@ -243,6 +249,12 @@
       akceptację kosztorysu, zakończone, rozliczone).
     </li>
     <li>
+      <strong>Historia statusów</strong>
+      Lista kolejnych zmian statusu zlecenia naprawy wraz z datą zmiany
+      i komentarzem mechanika, dostępna dla klienta podczas śledzenia
+      statusu zlecenia.
+    </li>
+    <li>
       <strong>Naprawa</strong>
       Pojedyncza czynność serwisowa wykonana przez mechanika w ramach
       zlecenia naprawy, określająca rodzaj usługi, czas pracy oraz użyte
@@ -275,6 +287,24 @@
       przyjmowana na stan magazynu przez magazyniera.
     </li>
     <li>
+      <strong>Dostawca</strong>
+      Zewnętrzna firma oferująca części zamienne, u której magazynier
+      zamawia brakujące części. Dostawca może wymagać minimalnej ilości
+      zamówienia.
+    </li>
+    <li>
+      <strong>Zamówienie u dostawcy</strong>
+      Zamówienie brakującej części składane przez magazyniera u
+      dostawcy, określające ilość, cenę i przewidywany termin dostawy.
+      Ma status wysłane, częściowo zrealizowane lub zrealizowane.
+    </li>
+    <li>
+      <strong>Usługa serwisowa</strong>
+      Pozycja cennika usług opisana nazwą, opisem, stawką za
+      roboczogodzinę lub ceną stałą, szacowanym czasem wykonania oraz
+      datą obowiązywania stawki.
+    </li>
+    <li>
       <strong>Cennik usług</strong>
       Zbiór stawek za poszczególne usługi serwisowe i robociznę, zarządzany
       przez managera warsztatu i wykorzystywany do wyceny zleceń.
@@ -297,6 +327,12 @@
 <article id="dictionary-english">
   <h4>Dictionary</h4>
   <ul>
+    <li>
+      <strong>User</strong>
+      A person who has an account in the system and logs in to it: a
+      client, mechanic, storekeeper or workshop manager. The available
+      functions depend on the user's role.
+    </li>
     <li>
       <strong>Client</strong>
       The vehicle owner using the workshop's services. Has an account in the
@@ -348,6 +384,12 @@
       approval, completed, settled).
     </li>
     <li>
+      <strong>Status History</strong>
+      The list of successive status changes of a repair order with the
+      change date and the mechanic's comment, available to the client
+      when tracking the order status.
+    </li>
+    <li>
       <strong>Repair</strong>
       A single service activity performed by a mechanic within a repair
       order, specifying the service type, working time, and used spare
@@ -378,6 +420,24 @@
       <strong>Parts Delivery</strong>
       A batch of spare parts ordered from an external supplier and received
       into warehouse stock by the storekeeper.
+    </li>
+    <li>
+      <strong>Supplier</strong>
+      An external company offering spare parts, from which the
+      storekeeper orders missing parts. A supplier may require a minimum
+      order quantity.
+    </li>
+    <li>
+      <strong>Supplier Order</strong>
+      An order for a missing part placed by the storekeeper with a
+      supplier, specifying the quantity, price and expected delivery
+      date. Its status is sent, partially completed or completed.
+    </li>
+    <li>
+      <strong>Service Item</strong>
+      A price list entry described by name, description, hourly labor
+      rate or fixed price, estimated duration and the date from which
+      the rate applies.
     </li>
     <li>
       <strong>Service Price List</strong>
@@ -3764,6 +3824,370 @@
       @enduml
     </p>
   </section>
+</article>
+
+<article id="class-diagram">
+  <h4>Diagram klas</h4>
+  <p class="uml">
+    @startuml
+    skinparam classAttributeIconSize 0
+    title Car Service - diagram klas
+
+    interface AppointmentService {
+      +bookAppointment(client: Client, vehicle: Vehicle, dateTime: Date, faultDescription: String): Appointment
+      +confirmAppointment(id: int): void
+      +findAppointmentsForDay(date: Date): List&lt;Appointment&gt;
+    }
+
+    class AppointmentServiceImpl {
+      -appointments: List&lt;Appointment&gt;
+      +bookAppointment(client: Client, vehicle: Vehicle, dateTime: Date, faultDescription: String): Appointment
+      +confirmAppointment(id: int): void
+      +findAppointmentsForDay(date: Date): List&lt;Appointment&gt;
+    }
+
+    abstract class User {
+      -id: int
+      -login: String
+      -password: String
+      -firstName: String
+      -lastName: String
+      +logIn(login: String, password: String): boolean
+    }
+
+    class Client {
+      -vehicles: List&lt;Vehicle&gt;
+      -appointments: List&lt;Appointment&gt;
+      +addVehicle(vehicle: Vehicle): void
+      +getVehicles(): List&lt;Vehicle&gt;
+    }
+
+    class Vehicle {
+      -vin: String
+      -make: String
+      -model: String
+      -productionYear: int
+      -registrationNumber: String
+      -mileage: int
+      +Vehicle(vin: String, make: String, model: String, productionYear: int, registrationNumber: String, mileage: int)
+      +updateMileage(mileage: int): void
+    }
+
+    class Appointment {
+      -id: int
+      -dateTime: Date
+      -faultDescription: String
+      -status: AppointmentStatus
+      -vehicle: Vehicle
+      +Appointment(vehicle: Vehicle, dateTime: Date, faultDescription: String)
+      +confirm(): void
+      +markCompleted(): void
+    }
+
+    enum AppointmentStatus {
+      PENDING_CONFIRMATION
+      CONFIRMED
+      COMPLETED
+    }
+
+    class Mechanic {
+      +isAvailable(date: Date): boolean
+    }
+
+    class WorkshopManager {
+    }
+
+    class Storekeeper {
+    }
+
+    interface RepairOrderService {
+      +createOrder(appointment: Appointment, mileage: int, faultDescription: String, mechanic: Mechanic): RepairOrder
+      +assignMechanic(orderId: int, mechanic: Mechanic): void
+      +recordRepair(orderId: int, service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
+      +reportAdditionalFault(orderId: int, faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
+      +acceptEstimate(orderId: int): void
+      +rejectEstimate(orderId: int): void
+      +changeStatus(orderId: int, status: RepairOrderStatus, comment: String): void
+      +findOrdersByMechanic(mechanic: Mechanic): List&lt;RepairOrder&gt;
+      +findOrdersByClient(client: Client): List&lt;RepairOrder&gt;
+      +findServiceHistory(vehicle: Vehicle): List&lt;RepairOrder&gt;
+    }
+
+    class RepairOrderServiceImpl {
+      -orders: List&lt;RepairOrder&gt;
+      +createOrder(appointment: Appointment, mileage: int, faultDescription: String, mechanic: Mechanic): RepairOrder
+      +assignMechanic(orderId: int, mechanic: Mechanic): void
+      +recordRepair(orderId: int, service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
+      +reportAdditionalFault(orderId: int, faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
+      +acceptEstimate(orderId: int): void
+      +rejectEstimate(orderId: int): void
+      +changeStatus(orderId: int, status: RepairOrderStatus, comment: String): void
+      +findOrdersByMechanic(mechanic: Mechanic): List&lt;RepairOrder&gt;
+      +findOrdersByClient(client: Client): List&lt;RepairOrder&gt;
+      +findServiceHistory(vehicle: Vehicle): List&lt;RepairOrder&gt;
+    }
+
+    class RepairOrder {
+      -id: int
+      -acceptanceDate: Date
+      -mileage: int
+      -faultDescription: String
+      -status: RepairOrderStatus
+      -vehicle: Vehicle
+      -appointment: Appointment
+      -mechanic: Mechanic
+      -repairs: List&lt;Repair&gt;
+      -statusHistory: List&lt;StatusChange&gt;
+      -costEstimates: List&lt;CostEstimate&gt;
+      +RepairOrder(appointment: Appointment, mileage: int, faultDescription: String)
+      +assignMechanic(mechanic: Mechanic): void
+      +addRepair(service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
+      +addCostEstimate(faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
+      +changeStatus(status: RepairOrderStatus, comment: String): void
+      +calculateCost(): double
+    }
+
+    enum RepairOrderStatus {
+      ACCEPTED
+      IN_PROGRESS
+      WAITING_FOR_PARTS
+      WAITING_FOR_ESTIMATE_APPROVAL
+      COMPLETED
+      SETTLED
+    }
+
+    class StatusChange {
+      -status: RepairOrderStatus
+      -changeDate: Date
+      -comment: String
+      +StatusChange(status: RepairOrderStatus, comment: String)
+    }
+
+    class Repair {
+      -description: String
+      -workTime: double
+      -service: ServiceItem
+      -usedParts: List&lt;SparePart&gt;
+      +Repair(service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;)
+      +calculateCost(): double
+    }
+
+    class CostEstimate {
+      -faultDescription: String
+      -services: List&lt;ServiceItem&gt;
+      -parts: List&lt;SparePart&gt;
+      -laborCost: double
+      -partsCost: double
+      -status: EstimateStatus
+      +CostEstimate(faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;)
+      +calculateTotal(): double
+      +accept(): void
+      +reject(): void
+    }
+
+    enum EstimateStatus {
+      PENDING
+      ACCEPTED
+      REJECTED
+    }
+
+    class PriceList {
+      -services: List&lt;ServiceItem&gt;
+      +addService(service: ServiceItem): void
+      +findService(name: String): ServiceItem
+    }
+
+    class ServiceItem {
+      -name: String
+      -description: String
+      -rate: double
+      -fixedPrice: boolean
+      -estimatedTime: double
+      -validFrom: Date
+      +ServiceItem(name: String, description: String, rate: double, fixedPrice: boolean, estimatedTime: double)
+      +calculatePrice(workTime: double): double
+    }
+
+    interface BillingService {
+      +issueInvoice(order: RepairOrder, paymentMethod: String, taxId: String): Invoice
+      +generateReport(periodStart: Date, periodEnd: Date): Report
+    }
+
+    class BillingServiceImpl {
+      -invoices: List&lt;Invoice&gt;
+      +issueInvoice(order: RepairOrder, paymentMethod: String, taxId: String): Invoice
+      +generateReport(periodStart: Date, periodEnd: Date): Report
+    }
+
+    class Invoice {
+      -number: String
+      -repairOrder: RepairOrder
+      -laborCost: double
+      -partsCost: double
+      -paymentMethod: String
+      -taxId: String
+      +Invoice(number: String, repairOrder: RepairOrder, paymentMethod: String, taxId: String)
+      +calculateTotal(): double
+    }
+
+    class Report {
+      -periodStart: Date
+      -periodEnd: Date
+      -completedOrders: int
+      -usedParts: int
+      -revenue: double
+      +Report(periodStart: Date, periodEnd: Date)
+    }
+
+    interface WarehouseService {
+      +requestParts(order: RepairOrder, items: List&lt;PartRequestItem&gt;): PartRequest
+      +findPendingRequests(): List&lt;PartRequest&gt;
+      +checkAvailability(part: SparePart, quantity: int): boolean
+      +issueParts(requestId: int): void
+      +orderFromSupplier(supplier: Supplier, part: SparePart, quantity: int): SupplierOrder
+      +receiveDelivery(supplierOrderId: int, deliveredQuantity: int): Delivery
+    }
+
+    class WarehouseServiceImpl {
+      -parts: List&lt;SparePart&gt;
+      -partRequests: List&lt;PartRequest&gt;
+      -supplierOrders: List&lt;SupplierOrder&gt;
+      +requestParts(order: RepairOrder, items: List&lt;PartRequestItem&gt;): PartRequest
+      +findPendingRequests(): List&lt;PartRequest&gt;
+      +checkAvailability(part: SparePart, quantity: int): boolean
+      +issueParts(requestId: int): void
+      +orderFromSupplier(supplier: Supplier, part: SparePart, quantity: int): SupplierOrder
+      +receiveDelivery(supplierOrderId: int, deliveredQuantity: int): Delivery
+    }
+
+    class PartRequest {
+      -id: int
+      -repairOrder: RepairOrder
+      -items: List&lt;PartRequestItem&gt;
+      -status: PartRequestStatus
+      +PartRequest(repairOrder: RepairOrder)
+      +addItem(part: SparePart, quantity: int): void
+      +markFulfilled(): void
+      +cancel(): void
+    }
+
+    enum PartRequestStatus {
+      PENDING
+      WAITING
+      READY_FOR_ISSUE
+      FULFILLED
+      CANCELLED
+    }
+
+    class PartRequestItem {
+      -part: SparePart
+      -quantity: int
+      -issuedQuantity: int
+      +PartRequestItem(part: SparePart, quantity: int)
+    }
+
+    class SparePart {
+      -catalogNumber: String
+      -name: String
+      -manufacturer: String
+      -price: double
+      -stockQuantity: int
+      -reservedQuantity: int
+      +isAvailable(quantity: int): boolean
+      +decreaseStock(quantity: int): void
+      +increaseStock(quantity: int): void
+    }
+
+    class Supplier {
+      -name: String
+      -minimumOrderQuantity: int
+      -offeredParts: List&lt;SparePart&gt;
+      +offers(part: SparePart): boolean
+    }
+
+    class SupplierOrder {
+      -id: int
+      -supplier: Supplier
+      -part: SparePart
+      -quantity: int
+      -price: double
+      -expectedDeliveryDate: Date
+      -status: SupplierOrderStatus
+      +SupplierOrder(supplier: Supplier, part: SparePart, quantity: int)
+      +send(): boolean
+      +registerDelivery(delivery: Delivery): void
+    }
+
+    enum SupplierOrderStatus {
+      SENT
+      PARTIALLY_COMPLETED
+      COMPLETED
+    }
+
+    class Delivery {
+      -order: SupplierOrder
+      -deliveredQuantity: int
+      +Delivery(order: SupplierOrder, deliveredQuantity: int)
+      +isComplete(): boolean
+    }
+
+    ' --- generalizacja
+    User &lt;|-- Client : to
+    User &lt;|-- Mechanic : to
+    User &lt;|-- Storekeeper : to
+    Mechanic &lt;|-- WorkshopManager : to
+
+    ' --- implementacja
+    AppointmentService &lt;|.. AppointmentServiceImpl
+    RepairOrderService &lt;|.. RepairOrderServiceImpl
+    WarehouseService &lt;|.. WarehouseServiceImpl
+    BillingService &lt;|.. BillingServiceImpl
+
+    ' --- asocjacje
+    Client "1" --&gt; "0..*" Vehicle : ma
+    Client "1" --&gt; "0..*" Appointment : rezerwuje
+    Appointment "0..*" --&gt; "1" Vehicle : dotyczy
+    Appointment --&gt; "1" AppointmentStatus : ma
+    RepairOrder "0..1" --&gt; "1" Appointment : powstaje na podstawie
+    RepairOrder "0..*" --&gt; "1" Vehicle : dotyczy
+    RepairOrder "0..*" --&gt; "1" Mechanic : przydzielony
+    RepairOrder --&gt; "1" RepairOrderStatus : ma
+    StatusChange --&gt; "1" RepairOrderStatus : ma
+    Repair "0..*" --&gt; "1" ServiceItem : wedlug uslugi
+    Repair "0..*" --&gt; "0..*" SparePart : zuzywa
+    CostEstimate "0..*" --&gt; "1..*" ServiceItem : wycenia
+    CostEstimate "0..*" --&gt; "0..*" SparePart : wycenia
+    CostEstimate --&gt; "1" EstimateStatus : ma
+    PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
+    PartRequest --&gt; "1" PartRequestStatus : ma
+    PartRequestItem "0..*" --&gt; "1" SparePart : dotyczy
+    SupplierOrder "0..*" --&gt; "1" Supplier : skladane u
+    SupplierOrder "0..*" --&gt; "1" SparePart : dotyczy
+    SupplierOrder --&gt; "1" SupplierOrderStatus : ma
+    Delivery "0..*" --&gt; "1" SupplierOrder : realizuje
+    Invoice "0..1" --&gt; "1" RepairOrder : dotyczy
+    AppointmentServiceImpl "1" --&gt; "0..*" Appointment : przechowuje
+    RepairOrderServiceImpl "1" --&gt; "0..*" RepairOrder : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" SparePart : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" PartRequest : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" SupplierOrder : przechowuje
+    BillingServiceImpl "1" --&gt; "0..*" Invoice : przechowuje
+
+    ' --- agregacja
+    PriceList "1" o--&gt; "0..*" ServiceItem : sklada sie z
+    Supplier "0..*" o--&gt; "0..*" SparePart : oferuje
+
+    ' --- kompozycja
+    RepairOrder "1" *--&gt; "0..*" Repair : zawiera
+    RepairOrder "1" *--&gt; "1..*" StatusChange : zawiera
+    RepairOrder "1" *--&gt; "0..*" CostEstimate : zawiera
+    PartRequest "1" *--&gt; "1..*" PartRequestItem : zawiera
+
+    ' --- zaleznosc
+    SupplierOrder ..&gt; Delivery : uzywa
+    BillingServiceImpl ..&gt; Report : tworzy
+    @enduml
+  </p>
 </article>
 </body>
 </html>
