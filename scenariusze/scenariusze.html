@@ -111,7 +111,7 @@
                         System zapisuje pojazd i przypisuje go do konta klienta
                     </li>
                     <li>
-                        System wyświetla zaktualizowaną listę pojazdów klienta
+                        System wyświetla komunikat o dodaniu pojazdu oraz zaktualizowaną listę pojazdów klienta
                     </li>
                 </ol>
             </td>
@@ -937,8 +937,8 @@
                         <span class="number">7</span>
                         <span class="condition">Potrzebna część nie została jeszcze wydana do zlecenia</span>
                         <span class="reaction-additional">System wyświetla informację o konieczności zamówienia części u magazyniera</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">4</span>
+                        <span class="reaction-type">END FLOW</span>
+                        <span class="reaction-goto"></span>
                     </li>
                     <li>
                         <span class="number">8</span>
@@ -1569,7 +1569,7 @@
                     <li>
                         <span class="number">6</span>
                         <span class="condition">Dostępna ilość części jest mniejsza niż zamówiona</span>
-                        <span class="reaction-additional">System proponuje częściowe wydanie, a pozostała ilość zostaje w zamówieniu jako oczekująca</span>
+                        <span class="reaction-additional">System proponuje częściowe wydanie dostępnej ilości, a brakująca ilość zostaje usunięta z zamówienia; mechanik musi zamówić ją ponownie (przypadek użycia Zamów części u magazyniera)</span>
                         <span class="reaction-type">GOTO</span>
                         <span class="reaction-goto">7</span>
                     </li>
@@ -2075,13 +2075,6 @@
                         <span class="reaction-additional">System wyświetla komunikat o błędnym przebiegu</span>
                         <span class="reaction-type">GOTO</span>
                         <span class="reaction-goto">6</span>
-                    </li>
-                    <li>
-                        <span class="number">10</span>
-                        <span class="condition">Zlecenie nie zostało przydzielone żadnemu mechanikowi</span>
-                        <span class="reaction-additional">System wyświetla komunikat o konieczności przydzielenia mechanika</span>
-                        <span class="reaction-type">GOTO</span>
-                        <span class="reaction-goto">8</span>
                     </li>
                 </ul>
             </td>

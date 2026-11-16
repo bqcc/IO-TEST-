@@ -15,15 +15,7 @@
 	<article id="activity-diagrams">
 		<h4>Diagramy aktywności</h4>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Zamów części u magazyniera" (scenariusze/scenariusze-mechanik.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 7  (Brak czesci w katalogu?) : GOTO 6: petla (Zamowienie do poprawy?)
-		    krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Zamowienie wyslane i poprawne?) nie -> stop
-		    krok 9  (Nie wybrano czesci lub ilosc niepoprawna?) : GOTO 6: petla (Zamowienie do poprawy?)
-		    krok 9  (Czesc juz zamowiona i niewydana?) : GOTO 6: petla (Zamowienie do poprawy?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Zamów części u magazyniera -->
 		<section>
 			<h5>Zamów części u magazyniera</h5>
 			<p class="author">Łukasz Bera</p>
@@ -36,47 +28,33 @@
 				:Wyswietl szczegoly zlecenia;
 				:Wybierz opcje "Zamow czesci";
 				repeat
-				  :Wyswietl katalog czesci z wyszukiwarka;
-				  :Wyszukaj potrzebne czesci;
-				  if (Brak czesci w katalogu?) then (tak)
-				    :Wyswietl komunikat o braku wynikow;
-				  else (nie)
+				  repeat
+				    repeat
+				      :Wyswietl katalog czesci z wyszukiwarka;
+				      :Wyszukaj potrzebne czesci;
+				      backward:Wyswietl komunikat o braku wynikow;
+				    repeat while (Brak czesci w katalogu?) is (tak) not (nie)
 				    :Wybierz czesci i podaj ilosc;
 				    if (Mechanik anuluje?) then (tak)
+				      :Nie tworz zamowienia;
+				      end
 				    else (nie)
-				      :Wyslij zamowienie;
-				      :Zwaliduj zamowienie;
-				      if (Nie wybrano czesci lub ilosc niepoprawna?) then (tak)
-				        :Wyswietl komunikat o blednych danych;
-				      elseif (Czesc juz zamowiona i niewydana?) then (tak)
-				        :Wyswietl informacje o istniejacym zamowieniu;
-				      else (nie)
-				      endif
 				    endif
-				  endif
-				repeat while (Zamowienie do poprawy?) is (tak) not (nie)
-				if (Zamowienie wyslane i poprawne?) then (tak)
-				  :Utworz zamowienie czesci i przypisz je do zlecenia;
-				  :Przekaz zamowienie magazynierowi;
-				  :Wyswietl potwierdzenie zlozenia zamowienia;
-				else (nie, anulowano)
-				  :Nie tworz zamowienia;
-				endif
+				    :Wyslij zamowienie;
+				    :Zwaliduj zamowienie;
+				    backward:Wyswietl komunikat o blednych danych;
+				  repeat while (Nie wybrano czesci lub ilosc niepoprawna?) is (tak) not (nie)
+				  backward:Wyswietl informacje o istniejacym zamowieniu;
+				repeat while (Czesc juz zamowiona i niewydana?) is (tak) not (nie)
+				:Utworz zamowienie czesci i przypisz je do zlecenia;
+				:Przekaz zamowienie magazynierowi;
+				:Wyswietl potwierdzenie zlozenia zamowienia;
 				stop
 				@enduml
 			</p>
 		</section>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Wprowadź wykonaną naprawę" (scenariusze/scenariusze-mechanik.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 7  (Wykryto dodatkowa usterke?) : GOTO 6: petla (Formularz do poprawy?)
-		    krok 7  (Potrzebna czesc nie zostala wydana?) : GOTO 4: petla (Czesc do zamowienia u magazyniera?)
-		    krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Formularz naprawy zapisany i poprawny?) nie -> stop
-		    krok 9  (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-		    krok 9  (Czas pracy niepoprawny?) : GOTO 6: petla (Formularz do poprawy?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Wprowadź wykonaną naprawę -->
 		<section>
 			<h5>Wprowadź wykonaną naprawę</h5>
 			<p class="author">Łukasz Bera</p>
@@ -86,52 +64,40 @@
 				:Wybierz opcje "Moje zlecenia";
 				:Wyswietl liste przydzielonych zlecen;
 				:Wybierz zlecenie z listy;
+				:Wyswietl szczegoly zlecenia z historia serwisowa pojazdu;
+				:Wybierz opcje "Dodaj naprawe";
 				repeat
-				  :Wyswietl szczegoly zlecenia z historia serwisowa pojazdu;
-				  :Wybierz opcje "Dodaj naprawe";
 				  repeat
-				    :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
-				    if (Wykryto dodatkowa usterke?) then (tak)
-				      :Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
-				    elseif (Potrzebna czesc nie zostala wydana?) then (tak)
+				    repeat
+				      :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
+				      backward:Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
+				    repeat while (Wykryto dodatkowa usterke?) is (tak) not (nie)
+				    if (Potrzebna czesc nie zostala wydana?) then (tak)
 				      :Wyswietl informacje o koniecznosci zamowienia czesci u magazyniera;
+				      end
 				    else (nie)
-				      :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
-				      if (Mechanik anuluje?) then (tak)
-				      else (nie)
-				        :Zapisz formularz;
-				        :Zwaliduj formularz;
-				        if (Nie wypelniono wymaganych pol?) then (tak)
-				          :Zaznacz brakujace pola;
-				        elseif (Czas pracy niepoprawny?) then (tak)
-				          :Wyswietl komunikat o blednych danych;
-				        else (nie)
-				        endif
-				      endif
 				    endif
-				  repeat while (Formularz do poprawy?) is (tak) not (nie)
-				repeat while (Czesc do zamowienia u magazyniera?) is (tak) not (nie)
-				if (Formularz naprawy zapisany i poprawny?) then (tak)
-				  :Zapisz naprawe w zleceniu;
-				  :Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
-				  :Wyswietl zaktualizowane zlecenie z kosztem;
-				else (nie, anulowano)
-				  :Nie zapisuj naprawy;
-				endif
+				    :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
+				    if (Mechanik anuluje?) then (tak)
+				      :Nie zapisuj naprawy;
+				      end
+				    else (nie)
+				    endif
+				    :Zapisz formularz;
+				    :Zwaliduj formularz;
+				    backward:Zaznacz brakujace pola;
+				  repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+				  backward:Wyswietl komunikat o blednych danych;
+				repeat while (Czas pracy niepoprawny?) is (tak) not (nie)
+				:Zapisz naprawe w zleceniu;
+				:Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
+				:Wyswietl zaktualizowane zlecenie z kosztem;
 				stop
 				@enduml
 			</p>
 		</section>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Zmień status zlecenia naprawy" (scenariusze/scenariusze-mechanik.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 5  (Zlecenie ma status "rozliczone"?) : GOTO 2: petla (Zlecenie ma status "rozliczone"?)
-		    krok 8  (Mechanik anuluje?) : END FLOW: wyjscie z petli -> (Zmiana statusu zatwierdzona i dozwolona?) nie -> stop
-		    krok 9  ("zakonczone", ale brak zapisanej naprawy?) : GOTO 6: petla (Wybor statusu do poprawy?)
-		    krok 9  ("zakonczone", ale kosztorys czeka na decyzje klienta?) : GOTO 6: petla (Wybor statusu do poprawy?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Zmień status zlecenia naprawy -->
 		<section>
 			<h5>Zmień status zlecenia naprawy</h5>
 			<p class="author">Łukasz Bera</p>
@@ -143,33 +109,26 @@
 				  :Wyswietl liste przydzielonych zlecen;
 				  :Wybierz zlecenie z listy;
 				  :Wyswietl szczegoly zlecenia z aktualnym statusem;
-				  if (Zlecenie ma status "rozliczone"?) then (tak)
-				    :Poinformuj, ze zmiana statusu nie jest mozliwa;
-				  else (nie)
-				    :Wybierz opcje "Zmien status";
-				    repeat
-				      :Wyswietl liste statusow dozwolonych dla etapu zlecenia;
-				      :Wybierz nowy status i opcjonalnie dodaj komentarz;
-				      if (Mechanik anuluje?) then (tak)
-				      else (nie)
-				        :Zatwierdz zmiane statusu;
-				        :Sprawdz, czy zmiana statusu jest dozwolona;
-				        if ("zakonczone", ale brak zapisanej naprawy?) then (tak)
-				          :Wyswietl komunikat o braku wykonanych napraw;
-				        elseif ("zakonczone", ale kosztorys czeka na decyzje klienta?) then (tak)
-				          :Wyswietl komunikat o oczekujacym kosztorysie;
-				        else (nie)
-				        endif
-				      endif
-				    repeat while (Wybor statusu do poprawy?) is (tak) not (nie)
-				  endif
+				  backward:Poinformuj, ze zmiana statusu nie jest mozliwa;
 				repeat while (Zlecenie ma status "rozliczone"?) is (tak) not (nie)
-				if (Zmiana statusu zatwierdzona i dozwolona?) then (tak)
-				  :Zapisz nowy status z data zmiany;
-				  :Wyswietl potwierdzenie zmiany statusu;
-				else (nie, anulowano)
-				  :Pozostaw status bez zmian;
-				endif
+				:Wybierz opcje "Zmien status";
+				repeat
+				  repeat
+				    :Wyswietl liste statusow dozwolonych dla etapu zlecenia;
+				    :Wybierz nowy status i opcjonalnie dodaj komentarz;
+				    if (Mechanik anuluje?) then (tak)
+				      :Pozostaw status bez zmian;
+				      end
+				    else (nie)
+				    endif
+				    :Zatwierdz zmiane statusu;
+				    :Sprawdz, czy zmiana statusu jest dozwolona;
+				    backward:Wyswietl komunikat o braku wykonanych napraw;
+				  repeat while ("zakonczone", ale brak zapisanej naprawy?) is (tak) not (nie)
+				  backward:Wyswietl komunikat o oczekujacym kosztorysie;
+				repeat while ("zakonczone", ale kosztorys czeka na decyzje klienta?) is (tak) not (nie)
+				:Zapisz nowy status z data zmiany;
+				:Wyswietl potwierdzenie zmiany statusu;
 				stop
 				@enduml
 			</p>

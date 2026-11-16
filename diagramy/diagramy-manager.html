@@ -15,16 +15,7 @@
 	<article id="activity-diagrams">
 		<h4>Diagramy aktywności</h4>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Utwórz zlecenie naprawy na podstawie rezerwacji" (scenariusze/scenariusze-manager.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 5  (Rezerwacja potwierdzona?) : GOTO 6: przejscie do formularza zlecenia
-		    krok 9  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Zlecenie zapisane i poprawne?) nie -> stop
-		    krok 10 (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-		    krok 10 (Przebieg mniejszy niz ostatnio zapisany?) : GOTO 6: petla (Formularz do poprawy?)
-		    krok 10 (Nie przydzielono mechanika?) : GOTO 8: petla (Mechanik do przydzielenia?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Utwórz zlecenie naprawy na podstawie rezerwacji -->
 		<section>
 			<h5>Utwórz zlecenie naprawy na podstawie rezerwacji</h5>
 			<p class="author">Dawid Woźniak</p>
@@ -36,51 +27,35 @@
 				:Wybierz rezerwacje klienta;
 				:Wyswietl szczegoly rezerwacji;
 				:Wybierz opcje "Utworz zlecenie";
-				if (Rezerwacja potwierdzona?) then (nie)
+				if (Rezerwacja niepotwierdzona?) then (tak)
 				  :Potwierdz rezerwacje (status "potwierdzona");
-				else (tak)
+				else (nie)
 				endif
 				repeat
-				  :Wyswietl formularz zlecenia z danymi z rezerwacji;
-				  :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
 				  repeat
+				    :Wyswietl formularz zlecenia z danymi z rezerwacji;
+				    :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
 				    :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
 				    if (Manager anuluje?) then (tak)
+				      :Nie tworz zlecenia;
+				      end
 				    else (nie)
-				      :Zapisz zlecenie;
-				      :Zwaliduj formularz;
-				      if (Nie wypelniono wymaganych pol?) then (tak)
-				        :Zaznacz brakujace pola;
-				      elseif (Przebieg mniejszy niz ostatnio zapisany?) then (tak)
-				        :Wyswietl komunikat o blednym przebiegu;
-				      elseif (Nie przydzielono mechanika?) then (tak)
-				        :Wyswietl komunikat o koniecznosci przydzielenia mechanika;
-				      else (nie)
-				      endif
 				    endif
-				  repeat while (Mechanik do przydzielenia?) is (tak) not (nie)
-				repeat while (Formularz do poprawy?) is (tak) not (nie)
-				if (Zlecenie zapisane i poprawne?) then (tak)
-				  :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
-				  :Oznacz rezerwacje jako zrealizowana;
-				  :Wyswietl potwierdzenie utworzenia zlecenia;
-				else (nie, anulowano)
-				  :Nie tworz zlecenia;
-				endif
+				    :Zapisz zlecenie;
+				    :Zwaliduj formularz;
+				    backward:Zaznacz brakujace pola;
+				  repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+				  backward:Wyswietl komunikat o blednym przebiegu;
+				repeat while (Przebieg mniejszy niz ostatnio zapisany?) is (tak) not (nie)
+				:Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
+				:Oznacz rezerwacje jako zrealizowana;
+				:Wyswietl potwierdzenie utworzenia zlecenia;
 				stop
 				@enduml
 			</p>
 		</section>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Dodaj usługę do cennika" (scenariusze/scenariusze-manager.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 6  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Formularz zapisany i poprawny?) nie -> stop
-		    krok 7  (Nie wypelniono wymaganych pol?) : GOTO 4: petla (Formularz do poprawy?)
-		    krok 7  (Stawka zerowa lub ujemna?) : GOTO 4: petla (Formularz do poprawy?)
-		    krok 7  (Usluga o tej nazwie juz istnieje?) : GOTO 4: petla (Formularz do poprawy?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Dodaj usługę do cennika -->
 		<section>
 			<h5>Dodaj usługę do cennika</h5>
 			<p class="author">Dawid Woźniak</p>
@@ -91,42 +66,31 @@
 				:Wyswietl liste uslug ze stawkami;
 				:Wybierz opcje "Dodaj usluge";
 				repeat
-				  :Wyswietl formularz uslugi;
-				  :Wypelnij formularz uslugi;
-				  if (Manager anuluje?) then (tak)
-				  else (nie)
-				    :Zapisz formularz;
-				    :Zwaliduj formularz;
-				    if (Nie wypelniono wymaganych pol?) then (tak)
-				      :Zaznacz brakujace pola;
-				    elseif (Stawka zerowa lub ujemna?) then (tak)
-				      :Wyswietl komunikat o blednej stawce;
-				    elseif (Usluga o tej nazwie juz istnieje?) then (tak)
-				      :Wyswietl komunikat o istniejacej usludze;
-				    else (nie)
-				    endif
-				  endif
-				repeat while (Formularz do poprawy?) is (tak) not (nie)
-				if (Formularz zapisany i poprawny?) then (tak)
-				  :Zapisz usluge w cenniku z data obowiazywania stawki;
-				  :Wyswietl zaktualizowany cennik uslug;
-				else (nie, anulowano)
-				  :Nie dodawaj uslugi;
-				endif
+				  repeat
+				    repeat
+				      :Wyswietl formularz uslugi;
+				      :Wypelnij formularz uslugi;
+				      if (Manager anuluje?) then (tak)
+				        :Nie dodawaj uslugi;
+				        end
+				      else (nie)
+				      endif
+				      :Zapisz formularz;
+				      :Zwaliduj formularz;
+				      backward:Zaznacz brakujace pola;
+				    repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+				    backward:Wyswietl komunikat o blednej stawce;
+				  repeat while (Stawka zerowa lub ujemna?) is (tak) not (nie)
+				  backward:Wyswietl komunikat o istniejacej usludze;
+				repeat while (Usluga o tej nazwie juz istnieje?) is (tak) not (nie)
+				:Zapisz usluge w cenniku z data obowiazywania stawki;
+				:Wyswietl zaktualizowany cennik uslug;
 				stop
 				@enduml
 			</p>
 		</section>
 
-		<!--
-		  Diagram odpowiada scenariuszowi "Wystaw fakturę" (scenariusze/scenariusze-manager.html).
-		  Mapowanie przeplywow alternatywnych:
-		    krok 5  (Pozycja zlecenia bez ceny?) : GOTO 2: petla (Pozycja zlecenia bez ceny?)
-		    krok 8  (Manager anuluje?) : END FLOW: wyjscie z petli -> (Faktura zatwierdzona i poprawna?) nie -> stop
-		    krok 9  (Nie wypelniono wymaganych pol?) : GOTO 6: petla (Formularz do poprawy?)
-		    krok 9  (Numer NIP niepoprawny?) : GOTO 6: petla (Formularz do poprawy?)
-		  Wszystkie zakonczenia schodza sie w jednym punkcie koncowym (jedna aktywnosc koncowa).
-		-->
+		<!-- Scenariusz: Wystaw fakturę -->
 		<section>
 			<h5>Wystaw fakturę</h5>
 			<p class="author">Dawid Woźniak</p>
@@ -138,35 +102,28 @@
 				  :Wyswietl liste zlecen o statusie "zakonczone";
 				  :Wybierz zlecenie z listy;
 				  :Wyswietl podsumowanie kosztow zlecenia;
-				  if (Pozycja zlecenia bez ceny?) then (tak)
-				    :Wskaz pozycje bez ceny;
-				  else (nie)
-				    :Wybierz opcje "Wystaw fakture";
-				    repeat
-				      :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
-				      :Uzupelnij forme platnosci i opcjonalnie NIP;
-				      if (Manager anuluje?) then (tak)
-				      else (nie)
-				        :Zatwierdz fakture;
-				        :Zwaliduj dane faktury;
-				        if (Nie wypelniono wymaganych pol?) then (tak)
-				          :Zaznacz brakujace pola;
-				        elseif (Numer NIP niepoprawny?) then (tak)
-				          :Wyswietl komunikat o blednym numerze NIP;
-				        else (nie)
-				        endif
-				      endif
-				    repeat while (Formularz do poprawy?) is (tak) not (nie)
-				  endif
+				  backward:Wskaz pozycje bez ceny;
 				repeat while (Pozycja zlecenia bez ceny?) is (tak) not (nie)
-				if (Faktura zatwierdzona i poprawna?) then (tak)
-				  :Wygeneruj fakture z kolejnym numerem;
-				  :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
-				  :Udostepnij fakture klientowi;
-				  :Wyswietl fakture do wydruku;
-				else (nie, anulowano)
-				  :Nie wystawiaj faktury;
-				endif
+				:Wybierz opcje "Wystaw fakture";
+				repeat
+				  repeat
+				    :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
+				    :Uzupelnij forme platnosci i opcjonalnie NIP;
+				    if (Manager anuluje?) then (tak)
+				      :Nie wystawiaj faktury;
+				      end
+				    else (nie)
+				    endif
+				    :Zatwierdz fakture;
+				    :Zwaliduj dane faktury;
+				    backward:Zaznacz brakujace pola;
+				  repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+				  backward:Wyswietl komunikat o blednym numerze NIP;
+				repeat while (Numer NIP niepoprawny?) is (tak) not (nie)
+				:Wygeneruj fakture z kolejnym numerem;
+				:Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
+				:Udostepnij fakture klientowi;
+				:Wyswietl fakture do wydruku;
 				stop
 				@enduml
 			</p>
