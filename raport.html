@@ -82,7 +82,11 @@
     magazynowym. Mechanik zgłasza zapotrzebowanie na części przypisane do
     konkretnego zlecenia naprawy, natomiast magazynier weryfikuje ich
     dostępność, wydaje je mechanikowi, a w razie braków zamawia części u
-    dostawców i rejestruje przyjęcie dostaw do magazynu.
+    dostawców i rejestruje przyjęcie dostaw do magazynu. Zamówienie części
+    składa się z pozycji (część i ilość); te same pozycje opisują części
+    użyte w naprawie i wycenione w kosztorysie. Zamówienie u dostawcy
+    dotyczy jednej części i pamięta ilość już dostarczoną, dzięki czemu
+    dostawa może być częściowa.
   </p>
 
   <p>
@@ -157,7 +161,11 @@
     mechanic submits a part request linked to a specific repair order, while
     the storekeeper verifies availability, issues the parts to the mechanic,
     and in case of shortages, orders parts from suppliers and records
-    incoming deliveries into the warehouse.
+    incoming deliveries into the warehouse. A part request consists of
+    items (a part and a quantity); the same items describe the parts used
+    in a repair and priced in a cost estimate. A supplier order concerns a
+    single part and keeps track of the quantity already delivered, so a
+    delivery may be partial.
   </p>
 
   <p>
@@ -233,7 +241,8 @@
     <li>
       <strong>Rezerwacja wizyty</strong>
       Zgłoszenie chęci oddania pojazdu do warsztatu w wybranym terminie wraz
-      z wstępnym opisem usterki, składane przez klienta w systemie.
+      z wstępnym opisem usterki, składane przez klienta w systemie. Ma
+      status: oczekuje na potwierdzenie, potwierdzona lub zrealizowana.
     </li>
     <li>
       <strong>Zlecenie naprawy</strong>
@@ -258,7 +267,7 @@
       <strong>Naprawa</strong>
       Pojedyncza czynność serwisowa wykonana przez mechanika w ramach
       zlecenia naprawy, określająca rodzaj usługi, czas pracy oraz użyte
-      części zamienne.
+      części zamienne wraz z ich ilością.
     </li>
     <li>
       <strong>Dodatkowa usterka</strong>
@@ -269,6 +278,7 @@
       <strong>Kosztorys</strong>
       Wycena usunięcia dodatkowej usterki (obejmująca koszt robocizny i
       części), która wymaga akceptacji klienta przed przystąpieniem do prac.
+      Ma status: oczekujący, zaakceptowany lub odrzucony.
     </li>
     <li>
       <strong>Część zamienna</strong>
@@ -279,7 +289,14 @@
     <li>
       <strong>Zamówienie części</strong>
       Wewnętrzne zapotrzebowanie na części zamienne składane przez mechanika
-      u magazyniera w ramach realizowanego zlecenia naprawy.
+      u magazyniera w ramach realizowanego zlecenia naprawy. Składa się z
+      pozycji części i ma status: złożone, oczekujące, gotowe do wydania,
+      zrealizowane lub anulowane.
+    </li>
+    <li>
+      <strong>Pozycja części</strong>
+      Część zamienna wraz z ilością. Występuje w zamówieniu części, w
+      naprawie (części użyte) oraz w kosztorysie (części wyceniane).
     </li>
     <li>
       <strong>Dostawa części</strong>
@@ -296,7 +313,8 @@
       <strong>Zamówienie u dostawcy</strong>
       Zamówienie brakującej części składane przez magazyniera u
       dostawcy, określające ilość, cenę i przewidywany termin dostawy.
-      Ma status wysłane, częściowo zrealizowane lub zrealizowane.
+      Ma status wysłane, do ponownej wysyłki, częściowo zrealizowane lub
+      zrealizowane i pamięta ilość już dostarczoną.
     </li>
     <li>
       <strong>Usługa serwisowa</strong>
@@ -313,7 +331,8 @@
       <strong>Faktura</strong>
       Dokument rozliczeniowy generowany przez managera warsztatu po
       zakończeniu zlecenia naprawy, podsumowujący koszt robocizny oraz
-      zużytych części.
+      zużytych części. Zawiera numer, datę wystawienia, formę płatności
+      (gotówka, karta lub przelew) i opcjonalnie NIP klienta.
     </li>
     <li>
       <strong>Raport</strong>
@@ -368,7 +387,7 @@
       <strong>Appointment Booking</strong>
       A request to leave a vehicle at the workshop on a selected date along
       with an initial fault description, submitted by the client in the
-      system.
+      system. Its status is pending confirmation, confirmed or completed.
     </li>
     <li>
       <strong>Repair Order</strong>
@@ -393,7 +412,7 @@
       <strong>Repair</strong>
       A single service activity performed by a mechanic within a repair
       order, specifying the service type, working time, and used spare
-      parts.
+      parts with their quantities.
     </li>
     <li>
       <strong>Additional Fault</strong>
@@ -403,7 +422,8 @@
     <li>
       <strong>Cost Estimate</strong>
       A valuation for fixing an additional fault (including labor and parts
-      costs), which requires client approval before work begins.
+      costs), which requires client approval before work begins. Its
+      status is pending, accepted or rejected.
     </li>
     <li>
       <strong>Spare Part</strong>
@@ -414,7 +434,15 @@
     <li>
       <strong>Part Request</strong>
       An internal request for spare parts submitted by a mechanic to the
-      storekeeper within an active repair order.
+      storekeeper within an active repair order. It consists of part
+      items and its status is pending, waiting, ready for issue,
+      fulfilled or cancelled.
+    </li>
+    <li>
+      <strong>Part Item</strong>
+      A spare part together with a quantity. It appears in a part
+      request, in a repair (used parts) and in a cost estimate (priced
+      parts).
     </li>
     <li>
       <strong>Parts Delivery</strong>
@@ -431,7 +459,8 @@
       <strong>Supplier Order</strong>
       An order for a missing part placed by the storekeeper with a
       supplier, specifying the quantity, price and expected delivery
-      date. Its status is sent, partially completed or completed.
+      date. Its status is sent, to resend, partially completed or
+      completed, and it keeps track of the quantity already delivered.
     </li>
     <li>
       <strong>Service Item</strong>
@@ -447,7 +476,9 @@
     <li>
       <strong>Invoice</strong>
       A billing document generated by the workshop manager after completion
-      of a repair order, summarizing the cost of labor and used parts.
+      of a repair order, summarizing the cost of labor and used parts. It
+      contains a number, issue date, payment method (cash, card or
+      transfer) and optionally the client's tax ID.
     </li>
     <li>
       <strong>Report</strong>
@@ -3284,37 +3315,37 @@
       @startuml
       start
       :Wybierz opcje "Moje pojazdy";
+      :Wyswietl liste pojazdow klienta;
+      :Wybierz opcje "Dodaj pojazd";
       repeat
-        :Wyswietl liste pojazdow klienta;
-        :Wybierz opcje "Dodaj pojazd";
-        repeat
-          repeat
-            repeat
-              :Wyswietl formularz danych pojazdu;
-              :Wypelnij formularz;
-              if (Klient anuluje?) then (tak)
-                :Nie zapisuj pojazdu;
-                end
-              else (nie)
-              endif
-              :Wyslij formularz;
-              :Zwaliduj formularz;
-              backward:Zaznacz brakujace pola;
-            repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-            backward:Wyswietl komunikat o blednym numerze VIN;
-          repeat while (Numer VIN niepoprawny?) is (tak) not (nie)
-          backward:Wyswietl komunikat o blednych danych;
-        repeat while (Rok produkcji lub przebieg niepoprawny?) is (tak) not (nie)
-        :Sprawdz numer VIN w systemie;
-        if (VIN przypisany do innego klienta?) then (tak)
-          :Poinformuj o koniecznosci kontaktu z warsztatem;
-          end
+        :Wyswietl formularz danych pojazdu;
+        :Wypelnij formularz;
+        if (Klient anuluje?) then (tak)
+          :Nie zapisuj pojazdu;
+          break
         else (nie)
         endif
-        backward:Poinformuj, ze pojazd zostal juz dodany;
-      repeat while (VIN juz przypisany do konta klienta?) is (tak) not (nie)
-      :Zapisz pojazd i przypisz go do konta klienta;
-      :Wyswietl komunikat o dodaniu pojazdu i zaktualizowana liste pojazdow;
+        :Wyslij formularz;
+        :Zwaliduj formularz;
+        if (Nie wypelniono wymaganych pol?) then (tak)
+          :Zaznacz brakujace pola;
+        (nie) elseif (Numer VIN niepoprawny?) then (tak)
+          :Wyswietl komunikat o blednym numerze VIN;
+        (nie) elseif (Rok produkcji lub przebieg niepoprawny?) then (tak)
+          :Wyswietl komunikat o blednych danych;
+        else (nie)
+          :Sprawdz numer VIN w systemie;
+          if (VIN przypisany do innego klienta?) then (tak)
+            :Poinformuj o koniecznosci kontaktu z warsztatem;
+          (nie) elseif (VIN juz przypisany do konta klienta?) then (tak)
+            :Poinformuj, ze pojazd zostal juz dodany;
+          else (nie)
+            :Zapisz pojazd i przypisz go do konta klienta;
+            :Wyswietl komunikat o dodaniu pojazdu i zaktualizowana liste pojazdow;
+          endif
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3329,14 +3360,13 @@
       start
       :Wybierz opcje "Zarezerwuj wizyte";
       repeat
-        repeat
-          :Wyswietl liste pojazdow klienta;
-          backward:Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
-        repeat while (Klient nie ma pojazdu lub wybiera "Dodaj nowy pojazd"?) is (tak) not (nie)
-        :Wybierz pojazd z listy;
-        backward:Poinformuj o istniejacej rezerwacji lub zleceniu;
-      repeat while (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) is (tak) not (nie)
-      repeat
+        :Wyswietl liste pojazdow klienta;
+        backward:Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
+      repeat while (Klient nie ma pojazdu lub wybiera "Dodaj nowy pojazd"?) is (tak) not (nie)
+      :Wybierz pojazd z listy;
+      if (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) then (tak)
+        :Poinformuj o istniejacej rezerwacji lub zleceniu;
+      else (nie)
         :Wyswietl kalendarz z wolnymi terminami;
         :Wybierz termin wizyty;
         repeat
@@ -3344,19 +3374,28 @@
           :Wpisz opis usterki;
           if (Klient anuluje?) then (tak)
             :Nie tworz rezerwacji;
-            end
+            break
           else (nie)
           endif
           :Wyslij formularz;
           :Zwaliduj formularz;
-          backward:Zaznacz brakujace pole;
-        repeat while (Opis usterki pusty?) is (tak) not (nie)
-        :Sprawdz, czy termin jest nadal wolny;
-        backward:Poinformuj, ze termin jest niedostepny;
-      repeat while (Termin zajety w miedzyczasie?) is (tak) not (nie)
-      :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
-      :Przekaz rezerwacje managerowi do potwierdzenia;
-      :Wyswietl potwierdzenie zlozenia rezerwacji;
+          if (Opis usterki pusty?) then (tak)
+            :Zaznacz brakujace pole;
+          else (nie)
+            :Sprawdz, czy termin jest nadal wolny;
+            if (Termin zajety w miedzyczasie?) then (tak)
+              :Poinformuj, ze termin jest niedostepny;
+              :Wyswietl ponownie kalendarz z wolnymi terminami;
+              :Wybierz inny termin wizyty;
+            else (nie)
+              :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
+              :Przekaz rezerwacje managerowi do potwierdzenia;
+              :Wyswietl potwierdzenie zlozenia rezerwacji;
+              break
+            endif
+          endif
+        repeat while
+      endif
       stop
       @enduml
     </p>
@@ -3376,30 +3415,34 @@
           :Zapisz odrzucenie kosztorysu;
           :Zmien status zlecenia na "w trakcie realizacji";
           :Poinformuj mechanika, ze dodatkowe prace nie zostana wykonane;
-          end
+          break
         else (nie)
-          if (Klient wybiera "Wroc"?) then (tak)
-            :Pozostaw status zlecenia bez zmian;
-            end
-          else (nie)
-          endif
+        endif
+        if (Klient wybiera "Wroc"?) then (tak)
+          :Pozostaw status zlecenia bez zmian;
+          break
+        else (nie)
         endif
         :Wybierz opcje "Akceptuj";
         :Popros o potwierdzenie decyzji;
         if (Klient rezygnuje z potwierdzenia?) then (tak)
           :Pozostaw status zlecenia bez zmian;
-          end
+          break
         else (nie)
         endif
         :Potwierdz decyzje;
         :Sprawdz, czy kosztorys zostal zmieniony;
-        backward:Wyswietl informacje o zmianie kosztorysu;
-      repeat while (Kosztorys zmieniony przez mechanika?) is (tak) not (nie)
-      :Zapisz akceptacje kosztorysu;
-      :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
-      :Zmien status zlecenia na "w trakcie realizacji";
-      :Poinformuj mechanika o akceptacji kosztorysu;
-      :Wyswietl potwierdzenie akceptacji;
+        if (Kosztorys zmieniony przez mechanika?) then (tak)
+          :Wyswietl informacje o zmianie kosztorysu;
+        else (nie)
+          :Zapisz akceptacje kosztorysu;
+          :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
+          :Zmien status zlecenia na "w trakcie realizacji";
+          :Poinformuj mechanika o akceptacji kosztorysu;
+          :Wyswietl potwierdzenie akceptacji;
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3418,27 +3461,31 @@
       :Wyswietl szczegoly zlecenia;
       :Wybierz opcje "Zamow czesci";
       repeat
-        repeat
-          repeat
-            :Wyswietl katalog czesci z wyszukiwarka;
-            :Wyszukaj potrzebne czesci;
-            backward:Wyswietl komunikat o braku wynikow;
-          repeat while (Brak czesci w katalogu?) is (tak) not (nie)
+        :Wyswietl katalog czesci z wyszukiwarka;
+        :Wyszukaj potrzebne czesci;
+        if (Brak czesci w katalogu?) then (tak)
+          :Wyswietl komunikat o braku wynikow;
+        else (nie)
           :Wybierz czesci i podaj ilosc;
           if (Mechanik anuluje?) then (tak)
             :Nie tworz zamowienia;
-            end
+            break
           else (nie)
           endif
           :Wyslij zamowienie;
           :Zwaliduj zamowienie;
-          backward:Wyswietl komunikat o blednych danych;
-        repeat while (Nie wybrano czesci lub ilosc niepoprawna?) is (tak) not (nie)
-        backward:Wyswietl informacje o istniejacym zamowieniu;
-      repeat while (Czesc juz zamowiona i niewydana?) is (tak) not (nie)
-      :Utworz zamowienie czesci i przypisz je do zlecenia;
-      :Przekaz zamowienie magazynierowi;
-      :Wyswietl potwierdzenie zlozenia zamowienia;
+          if (Nie wybrano czesci lub ilosc niepoprawna?) then (tak)
+            :Wyswietl komunikat o blednych danych;
+          (nie) elseif (Czesc juz zamowiona i niewydana?) then (tak)
+            :Wyswietl informacje o istniejacym zamowieniu;
+          else (nie)
+            :Utworz zamowienie czesci i przypisz je do zlecenia;
+            :Przekaz zamowienie magazynierowi;
+            :Wyswietl potwierdzenie zlozenia zamowienia;
+            break
+          endif
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3457,31 +3504,37 @@
       :Wyswietl szczegoly zlecenia z historia serwisowa pojazdu;
       :Wybierz opcje "Dodaj naprawe";
       repeat
-        repeat
-          repeat
-            :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
-            backward:Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
-          repeat while (Wykryto dodatkowa usterke?) is (tak) not (nie)
-          if (Potrzebna czesc nie zostala wydana?) then (tak)
-            :Wyswietl informacje o koniecznosci zamowienia czesci u magazyniera;
-            end
-          else (nie)
-          endif
-          :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
-          if (Mechanik anuluje?) then (tak)
-            :Nie zapisuj naprawy;
-            end
-          else (nie)
-          endif
-          :Zapisz formularz;
-          :Zwaliduj formularz;
-          backward:Zaznacz brakujace pola;
-        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-        backward:Wyswietl komunikat o blednych danych;
-      repeat while (Czas pracy niepoprawny?) is (tak) not (nie)
-      :Zapisz naprawe w zleceniu;
-      :Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
-      :Wyswietl zaktualizowane zlecenie z kosztem;
+        :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
+        if (Wykryto dodatkowa usterke?) then (tak)
+          :Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
+          note right: Zlecenie czeka na akceptacje kosztorysu,\nwiec naprawa nie jest dalej wprowadzana
+          break
+        else (nie)
+        endif
+        if (Potrzebna czesc nie zostala wydana?) then (tak)
+          :Wyswietl informacje o koniecznosci zamowienia czesci u magazyniera;
+          break
+        else (nie)
+        endif
+        :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
+        if (Mechanik anuluje?) then (tak)
+          :Nie zapisuj naprawy;
+          break
+        else (nie)
+        endif
+        :Zapisz formularz;
+        :Zwaliduj formularz;
+        if (Nie wypelniono wymaganych pol?) then (tak)
+          :Zaznacz brakujace pola;
+        (nie) elseif (Czas pracy niepoprawny?) then (tak)
+          :Wyswietl komunikat o blednych danych;
+        else (nie)
+          :Zapisz naprawe w zleceniu;
+          :Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
+          :Wyswietl zaktualizowane zlecenie z kosztem;
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3495,30 +3548,34 @@
       @startuml
       start
       :Wybierz opcje "Moje zlecenia";
-      repeat
-        :Wyswietl liste przydzielonych zlecen;
-        :Wybierz zlecenie z listy;
-        :Wyswietl szczegoly zlecenia z aktualnym statusem;
-        backward:Poinformuj, ze zmiana statusu nie jest mozliwa;
-      repeat while (Zlecenie ma status "rozliczone"?) is (tak) not (nie)
-      :Wybierz opcje "Zmien status";
-      repeat
+      :Wyswietl liste przydzielonych zlecen;
+      :Wybierz zlecenie z listy;
+      :Wyswietl szczegoly zlecenia z aktualnym statusem;
+      if (Zlecenie ma status "rozliczone"?) then (tak)
+        :Poinformuj, ze zmiana statusu nie jest mozliwa;
+      else (nie)
+        :Wybierz opcje "Zmien status";
         repeat
           :Wyswietl liste statusow dozwolonych dla etapu zlecenia;
           :Wybierz nowy status i opcjonalnie dodaj komentarz;
           if (Mechanik anuluje?) then (tak)
             :Pozostaw status bez zmian;
-            end
+            break
           else (nie)
           endif
           :Zatwierdz zmiane statusu;
           :Sprawdz, czy zmiana statusu jest dozwolona;
-          backward:Wyswietl komunikat o braku wykonanych napraw;
-        repeat while ("zakonczone", ale brak zapisanej naprawy?) is (tak) not (nie)
-        backward:Wyswietl komunikat o oczekujacym kosztorysie;
-      repeat while ("zakonczone", ale kosztorys czeka na decyzje klienta?) is (tak) not (nie)
-      :Zapisz nowy status z data zmiany;
-      :Wyswietl potwierdzenie zmiany statusu;
+          if ("zakonczone", ale brak zapisanej naprawy?) then (tak)
+            :Wyswietl komunikat o braku wykonanych napraw;
+          (nie) elseif ("zakonczone", ale kosztorys czeka na decyzje klienta?) then (tak)
+            :Wyswietl komunikat o oczekujacym kosztorysie;
+          else (nie)
+            :Zapisz nowy status z data zmiany;
+            :Wyswietl potwierdzenie zmiany statusu;
+            break
+          endif
+        repeat while
+      endif
       stop
       @enduml
     </p>
@@ -3541,31 +3598,28 @@
         :Oznacz zamowienie jako oczekujace;
         :Zmien status zlecenia na "oczekuje na czesci";
         note right: Magazynier moze zamowic czesc\n(przypadek uzycia "Zamow czesci u dostawcy")
-        end
       else (nie)
         if (Dostepna ilosc mniejsza niz zamowiona?) then (tak)
           :Zaproponuj czesciowe wydanie i usuniecie brakujacej ilosci z zamowienia;
           note right: Mechanik musi ponownie zamowic brakujaca ilosc\n(przypadek uzycia "Zamow czesci u magazyniera")
         else (nie)
         endif
+        :Wyswietl podsumowanie wydania;
+        if (Magazynier anuluje?) then (tak)
+          :Nie wydawaj czesci;
+        else (nie)
+          :Potwierdz wydanie czesci;
+          if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
+            :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
+          else (nie)
+            :Przypisz wydane czesci do zlecenia naprawy;
+            :Pomniejsz stan magazynowy czesci;
+            :Oznacz zamowienie czesci jako zrealizowane;
+            :Poinformuj mechanika o wydaniu czesci;
+            :Wyswietl potwierdzenie wydania;
+          endif
+        endif
       endif
-      :Wyswietl podsumowanie wydania;
-      if (Magazynier anuluje?) then (tak)
-        :Nie wydawaj czesci;
-        end
-      else (nie)
-      endif
-      :Potwierdz wydanie czesci;
-      if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
-        :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
-        end
-      else (nie)
-      endif
-      :Przypisz wydane czesci do zlecenia naprawy;
-      :Pomniejsz stan magazynowy czesci;
-      :Oznacz zamowienie czesci jako zrealizowane;
-      :Poinformuj mechanika o wydaniu czesci;
-      :Wyswietl potwierdzenie wydania;
       stop
       @enduml
     </p>
@@ -3580,33 +3634,37 @@
       start
       :Wybierz opcje "Zamow u dostawcy";
       repeat
-        repeat
-          repeat
-            :Wyswietl formularz z lista dostawcow oferujacych czesc;
-            :Wybierz dostawce i podaj ilosc czesci;
-            if (Magazynier anuluje?) then (tak)
-              :Nie tworz zamowienia;
-              end
+        :Wyswietl formularz z lista dostawcow oferujacych czesc;
+        :Wybierz dostawce i podaj ilosc czesci;
+        if (Magazynier anuluje?) then (tak)
+          :Nie tworz zamowienia;
+          break
+        else (nie)
+        endif
+        :Wyslij formularz;
+        :Zwaliduj formularz;
+        if (Nie wybrano dostawcy lub ilosc niepoprawna?) then (tak)
+          :Wyswietl komunikat o blednych danych;
+        (nie) elseif (Ilosc mniejsza niz minimalna u dostawcy?) then (tak)
+          :Wyswietl minimalna ilosc zamowienia;
+        else (nie)
+          :Wyswietl podsumowanie zamowienia (cena, termin dostawy);
+          if (Magazynier chce poprawic zamowienie?) then (tak)
+            :Wybierz opcje "Popraw";
+          else (nie)
+            :Potwierdz zamowienie;
+            :Zapisz zamowienie u dostawcy ze statusem "wyslane";
+            :Wyslij zamowienie do dostawcy;
+            if (Wyslanie nie powiodlo sie?) then (tak)
+              :Zapisz zamowienie do ponownej wysylki;
             else (nie)
             endif
-            :Wyslij formularz;
-            :Zwaliduj formularz;
-            backward:Wyswietl komunikat o blednych danych;
-          repeat while (Nie wybrano dostawcy lub ilosc niepoprawna?) is (tak) not (nie)
-          backward:Wyswietl minimalna ilosc zamowienia;
-        repeat while (Ilosc mniejsza niz minimalna u dostawcy?) is (tak) not (nie)
-        :Wyswietl podsumowanie zamowienia (cena, termin dostawy);
-        backward:Wybierz opcje "Popraw";
-      repeat while (Magazynier chce poprawic zamowienie?) is (tak) not (nie)
-      :Potwierdz zamowienie;
-      :Zapisz zamowienie u dostawcy ze statusem "wyslane";
-      :Wyslij zamowienie do dostawcy;
-      if (Wyslanie nie powiodlo sie?) then (tak)
-        :Zapisz zamowienie do ponownej wysylki;
-      else (nie)
-      endif
-      :Oznacz brakujace czesci jako zamowione u dostawcy;
-      :Wyswietl potwierdzenie zlozenia zamowienia;
+            :Oznacz brakujace czesci jako zamowione u dostawcy;
+            :Wyswietl potwierdzenie zlozenia zamowienia;
+            break
+          endif
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3627,22 +3685,26 @@
         :Wpisz ilosci faktycznie dostarczonych czesci;
         if (Magazynier anuluje?) then (tak)
           :Nie rejestruj dostawy;
-          end
+          break
         else (nie)
         endif
         :Zatwierdz przyjecie dostawy;
         :Zwaliduj wpisane ilosci;
-        backward:Wyswietl komunikat o blednych danych;
-      repeat while (Ilosc ujemna lub wieksza niz zamowiona?) is (tak) not (nie)
-      :Zwieksz stany magazynowe dostarczonych czesci;
-      if (Dostarczono mniej niz zamowiono?) then (tak)
-        :Zmien status zamowienia na "czesciowo zrealizowane";
-        :Pozostaw brakujaca ilosc jako oczekujaca;
-      else (nie)
-        :Zmien status zamowienia na "zrealizowane";
-      endif
-      :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
-      :Wyswietl potwierdzenie przyjecia dostawy;
+        if (Ilosc ujemna lub wieksza niz zamowiona?) then (tak)
+          :Wyswietl komunikat o blednych danych;
+        else (nie)
+          :Zwieksz stany magazynowe dostarczonych czesci;
+          if (Dostarczono mniej niz zamowiono?) then (tak)
+            :Zmien status zamowienia na "czesciowo zrealizowane";
+            :Pozostaw brakujaca ilosc jako oczekujaca;
+          else (nie)
+            :Zmien status zamowienia na "zrealizowane";
+          endif
+          :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
+          :Wyswietl potwierdzenie przyjecia dostawy;
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3665,24 +3727,27 @@
       else (nie)
       endif
       repeat
-        repeat
-          :Wyswietl formularz zlecenia z danymi z rezerwacji;
-          :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
-          :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
-          if (Manager anuluje?) then (tak)
-            :Nie tworz zlecenia;
-            end
-          else (nie)
-          endif
-          :Zapisz zlecenie;
-          :Zwaliduj formularz;
-          backward:Zaznacz brakujace pola;
-        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-        backward:Wyswietl komunikat o blednym przebiegu;
-      repeat while (Przebieg mniejszy niz ostatnio zapisany?) is (tak) not (nie)
-      :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
-      :Oznacz rezerwacje jako zrealizowana;
-      :Wyswietl potwierdzenie utworzenia zlecenia;
+        :Wyswietl formularz zlecenia z danymi z rezerwacji;
+        :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
+        :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
+        if (Manager anuluje?) then (tak)
+          :Nie tworz zlecenia;
+          break
+        else (nie)
+        endif
+        :Zapisz zlecenie;
+        :Zwaliduj formularz;
+        if (Nie wypelniono wymaganych pol?) then (tak)
+          :Zaznacz brakujace pola;
+        (nie) elseif (Przebieg mniejszy niz ostatnio zapisany?) then (tak)
+          :Wyswietl komunikat o blednym przebiegu;
+        else (nie)
+          :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
+          :Oznacz rezerwacje jako zrealizowana;
+          :Wyswietl potwierdzenie utworzenia zlecenia;
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3699,25 +3764,27 @@
       :Wyswietl liste uslug ze stawkami;
       :Wybierz opcje "Dodaj usluge";
       repeat
-        repeat
-          repeat
-            :Wyswietl formularz uslugi;
-            :Wypelnij formularz uslugi;
-            if (Manager anuluje?) then (tak)
-              :Nie dodawaj uslugi;
-              end
-            else (nie)
-            endif
-            :Zapisz formularz;
-            :Zwaliduj formularz;
-            backward:Zaznacz brakujace pola;
-          repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-          backward:Wyswietl komunikat o blednej stawce;
-        repeat while (Stawka zerowa lub ujemna?) is (tak) not (nie)
-        backward:Wyswietl komunikat o istniejacej usludze;
-      repeat while (Usluga o tej nazwie juz istnieje?) is (tak) not (nie)
-      :Zapisz usluge w cenniku z data obowiazywania stawki;
-      :Wyswietl zaktualizowany cennik uslug;
+        :Wyswietl formularz uslugi;
+        :Wypelnij formularz uslugi;
+        if (Manager anuluje?) then (tak)
+          :Nie dodawaj uslugi;
+          break
+        else (nie)
+        endif
+        :Zapisz formularz;
+        :Zwaliduj formularz;
+        if (Nie wypelniono wymaganych pol?) then (tak)
+          :Zaznacz brakujace pola;
+        (nie) elseif (Stawka zerowa lub ujemna?) then (tak)
+          :Wyswietl komunikat o blednej stawce;
+        (nie) elseif (Usluga o tej nazwie juz istnieje?) then (tak)
+          :Wyswietl komunikat o istniejacej usludze;
+        else (nie)
+          :Zapisz usluge w cenniku z data obowiazywania stawki;
+          :Wyswietl zaktualizowany cennik uslug;
+          break
+        endif
+      repeat while
       stop
       @enduml
     </p>
@@ -3731,36 +3798,41 @@
       @startuml
       start
       :Wybierz opcje "Zlecenia do rozliczenia";
-      repeat
-        :Wyswietl liste zlecen o statusie "zakonczone";
-        :Wybierz zlecenie z listy;
-        :Wyswietl podsumowanie kosztow zlecenia;
-        backward:Wskaz pozycje bez ceny;
-      repeat while (Pozycja zlecenia bez ceny?) is (tak) not (nie)
-      :Wybierz opcje "Wystaw fakture";
-      repeat
+      :Wyswietl liste zlecen o statusie "zakonczone";
+      :Wybierz zlecenie z listy;
+      :Wyswietl podsumowanie kosztow zlecenia;
+      if (Pozycja zlecenia bez ceny?) then (tak)
+        :Wskaz pozycje bez ceny i nie pozwol wystawic faktury;
+      else (nie)
+        :Wybierz opcje "Wystaw fakture";
         repeat
           :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
           :Uzupelnij forme platnosci i opcjonalnie NIP;
           if (Manager anuluje?) then (tak)
             :Nie wystawiaj faktury;
-            end
+            break
           else (nie)
           endif
           :Zatwierdz fakture;
           :Zwaliduj dane faktury;
-          backward:Zaznacz brakujace pola;
-        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-        backward:Wyswietl komunikat o blednym numerze NIP;
-      repeat while (Numer NIP niepoprawny?) is (tak) not (nie)
-      :Wygeneruj fakture z kolejnym numerem;
-      :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
-      :Udostepnij fakture klientowi;
-      :Wyswietl fakture do wydruku;
+          if (Nie wypelniono wymaganych pol?) then (tak)
+            :Zaznacz brakujace pola;
+          (nie) elseif (Numer NIP niepoprawny?) then (tak)
+            :Wyswietl komunikat o blednym numerze NIP;
+          else (nie)
+            :Wygeneruj fakture z kolejnym numerem;
+            :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
+            :Udostepnij fakture klientowi;
+            :Wyswietl fakture do wydruku;
+            break
+          endif
+        repeat while
+      endif
       stop
       @enduml
     </p>
   </section>
+
 </article>
 
 <article id="class-diagram">
@@ -3768,18 +3840,26 @@
   <p class="uml">
     @startuml
     skinparam classAttributeIconSize 0
+    skinparam nodesep 25
+    skinparam ranksep 35
     title Car Service - diagram klas
 
-    interface AppointmentService {
-      +bookAppointment(client: Client, vehicle: Vehicle, dateTime: Date, faultDescription: String): Appointment
-      +confirmAppointment(id: int): void
+    ' ===== Klient: konta, pojazdy, rezerwacje =====
+    interface ClientService {
+      +addVehicle(client: Client, vehicle: Vehicle): boolean
+      +findVehicleByVin(vin: String): Vehicle
+      +findFreeSlots(date: Date): List&lt;Date&gt;
+      +addAppointment(appointment: Appointment): void
       +findAppointmentsForDay(date: Date): List&lt;Appointment&gt;
     }
 
-    class AppointmentServiceImpl {
+    class ClientServiceImpl {
+      -clients: List&lt;Client&gt;
       -appointments: List&lt;Appointment&gt;
-      +bookAppointment(client: Client, vehicle: Vehicle, dateTime: Date, faultDescription: String): Appointment
-      +confirmAppointment(id: int): void
+      +addVehicle(client: Client, vehicle: Vehicle): boolean
+      +findVehicleByVin(vin: String): Vehicle
+      +findFreeSlots(date: Date): List&lt;Date&gt;
+      +addAppointment(appointment: Appointment): void
       +findAppointmentsForDay(date: Date): List&lt;Appointment&gt;
     }
 
@@ -3787,12 +3867,15 @@
       -id: int
       -login: String
       -password: String
+      -firstName: String
+      -lastName: String
       +logIn(login: String, password: String): boolean
+      +getFullName(): String
     }
 
     class Client {
+      -phone: String
       -vehicles: List&lt;Vehicle&gt;
-      -appointments: List&lt;Appointment&gt;
       +addVehicle(vehicle: Vehicle): void
       +getVehicles(): List&lt;Vehicle&gt;
     }
@@ -3804,7 +3887,7 @@
       -productionYear: int
       -registrationNumber: String
       -mileage: int
-      +Vehicle(vin: String, make: String, model: String, productionYear: int, registrationNumber: String, mileage: int)
+      +Vehicle(vin: String, make: String, model: String)
       +updateMileage(mileage: int): void
     }
 
@@ -3813,8 +3896,9 @@
       -dateTime: Date
       -faultDescription: String
       -status: AppointmentStatus
+      -client: Client
       -vehicle: Vehicle
-      +Appointment(vehicle: Vehicle, dateTime: Date, faultDescription: String)
+      +Appointment(client: Client, vehicle: Vehicle, dateTime: Date)
       +confirm(): void
       +markCompleted(): void
     }
@@ -3825,7 +3909,9 @@
       COMPLETED
     }
 
+    ' ===== Mechanik: zlecenia, naprawy, kosztorysy =====
     class Mechanic {
+      -absences: List&lt;Date&gt;
       +isAvailable(date: Date): boolean
     }
 
@@ -3836,30 +3922,23 @@
     }
 
     interface RepairOrderService {
-      +createOrder(appointment: Appointment, mileage: int, faultDescription: String, mechanic: Mechanic): RepairOrder
-      +assignMechanic(orderId: int, mechanic: Mechanic): void
-      +recordRepair(orderId: int, service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
-      +reportAdditionalFault(orderId: int, faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
-      +acceptEstimate(orderId: int): void
-      +rejectEstimate(orderId: int): void
-      +changeStatus(orderId: int, status: RepairOrderStatus, comment: String): void
+      +addOrder(order: RepairOrder): void
+      +findOrder(id: int): RepairOrder
       +findOrdersByMechanic(mechanic: Mechanic): List&lt;RepairOrder&gt;
       +findOrdersByClient(client: Client): List&lt;RepairOrder&gt;
       +findServiceHistory(vehicle: Vehicle): List&lt;RepairOrder&gt;
+      +findAvailableMechanics(date: Date): List&lt;Mechanic&gt;
     }
 
     class RepairOrderServiceImpl {
       -orders: List&lt;RepairOrder&gt;
-      +createOrder(appointment: Appointment, mileage: int, faultDescription: String, mechanic: Mechanic): RepairOrder
-      +assignMechanic(orderId: int, mechanic: Mechanic): void
-      +recordRepair(orderId: int, service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
-      +reportAdditionalFault(orderId: int, faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
-      +acceptEstimate(orderId: int): void
-      +rejectEstimate(orderId: int): void
-      +changeStatus(orderId: int, status: RepairOrderStatus, comment: String): void
+      -mechanics: List&lt;Mechanic&gt;
+      +addOrder(order: RepairOrder): void
+      +findOrder(id: int): RepairOrder
       +findOrdersByMechanic(mechanic: Mechanic): List&lt;RepairOrder&gt;
       +findOrdersByClient(client: Client): List&lt;RepairOrder&gt;
       +findServiceHistory(vehicle: Vehicle): List&lt;RepairOrder&gt;
+      +findAvailableMechanics(date: Date): List&lt;Mechanic&gt;
     }
 
     class RepairOrder {
@@ -3868,16 +3947,16 @@
       -mileage: int
       -faultDescription: String
       -status: RepairOrderStatus
-      -vehicle: Vehicle
       -appointment: Appointment
       -mechanic: Mechanic
       -repairs: List&lt;Repair&gt;
       -statusHistory: List&lt;StatusChange&gt;
       -costEstimates: List&lt;CostEstimate&gt;
-      +RepairOrder(appointment: Appointment, mileage: int, faultDescription: String)
+      +RepairOrder(appointment: Appointment, mileage: int, mechanic: Mechanic)
       +assignMechanic(mechanic: Mechanic): void
-      +addRepair(service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;): void
-      +addCostEstimate(faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;): CostEstimate
+      +addRepair(repair: Repair): void
+      +addCostEstimate(estimate: CostEstimate): void
+      +decideOnEstimate(estimateId: int, accepted: boolean): void
       +changeStatus(status: RepairOrderStatus, comment: String): void
       +calculateCost(): double
     }
@@ -3902,19 +3981,23 @@
       -description: String
       -workTime: double
       -service: ServiceItem
-      -usedParts: List&lt;SparePart&gt;
-      +Repair(service: ServiceItem, description: String, workTime: double, usedParts: List&lt;SparePart&gt;)
+      -usedParts: List&lt;PartItem&gt;
+      +Repair(service: ServiceItem, description: String, workTime: double)
+      +addUsedPart(part: SparePart, quantity: int): void
       +calculateCost(): double
     }
 
     class CostEstimate {
+      -id: int
       -faultDescription: String
       -services: List&lt;ServiceItem&gt;
-      -parts: List&lt;SparePart&gt;
-      -laborCost: double
-      -partsCost: double
+      -parts: List&lt;PartItem&gt;
       -status: EstimateStatus
-      +CostEstimate(faultDescription: String, services: List&lt;ServiceItem&gt;, parts: List&lt;SparePart&gt;)
+      +CostEstimate(faultDescription: String)
+      +addService(service: ServiceItem): void
+      +addPart(part: SparePart, quantity: int): void
+      +calculateLaborCost(): double
+      +calculatePartsCost(): double
       +calculateTotal(): double
       +accept(): void
       +reject(): void
@@ -3926,79 +4009,58 @@
       REJECTED
     }
 
-    class PriceList {
-      -services: List&lt;ServiceItem&gt;
-      +addService(service: ServiceItem): void
-      +findService(name: String): ServiceItem
-    }
-
-    class ServiceItem {
-      -name: String
-      -description: String
-      -rate: double
-      -fixedPrice: boolean
-      -estimatedTime: double
-      -validFrom: Date
-      +ServiceItem(name: String, description: String, rate: double, fixedPrice: boolean, estimatedTime: double)
-      +calculatePrice(workTime: double): double
-    }
-
-    interface BillingService {
-      +issueInvoice(order: RepairOrder, paymentMethod: String, taxId: String): Invoice
-      +generateReport(periodStart: Date, periodEnd: Date): Report
-    }
-
-    class BillingServiceImpl {
-      -invoices: List&lt;Invoice&gt;
-      +issueInvoice(order: RepairOrder, paymentMethod: String, taxId: String): Invoice
-      +generateReport(periodStart: Date, periodEnd: Date): Report
-    }
-
-    class Invoice {
-      -number: String
-      -repairOrder: RepairOrder
-      -laborCost: double
-      -partsCost: double
-      -paymentMethod: String
-      -taxId: String
-      +Invoice(number: String, repairOrder: RepairOrder, paymentMethod: String, taxId: String)
-      +calculateTotal(): double
-    }
-
-    class Report {
-      -periodStart: Date
-      -periodEnd: Date
-      -completedOrders: int
-      -usedParts: int
-      -revenue: double
-      +Report(periodStart: Date, periodEnd: Date)
-    }
-
+    ' ===== Magazynier: czesci, zamowienia, dostawcy =====
     interface WarehouseService {
-      +requestParts(order: RepairOrder, items: List&lt;PartRequestItem&gt;): PartRequest
+      +findParts(query: String): List&lt;SparePart&gt;
+      +addPartRequest(request: PartRequest): void
       +findPendingRequests(): List&lt;PartRequest&gt;
-      +checkAvailability(part: SparePart, quantity: int): boolean
       +issueParts(requestId: int): void
-      +orderFromSupplier(supplier: Supplier, part: SparePart, quantity: int): SupplierOrder
-      +receiveDelivery(supplierOrderId: int, deliveredQuantity: int): Delivery
+      +findIssuedParts(order: RepairOrder): List&lt;PartItem&gt;
+      +findSuppliers(part: SparePart): List&lt;Supplier&gt;
+      +addSupplierOrder(order: SupplierOrder): void
+      +receiveDelivery(supplierOrderId: int, quantity: int): void
     }
 
     class WarehouseServiceImpl {
       -parts: List&lt;SparePart&gt;
       -partRequests: List&lt;PartRequest&gt;
+      -suppliers: List&lt;Supplier&gt;
       -supplierOrders: List&lt;SupplierOrder&gt;
-      +requestParts(order: RepairOrder, items: List&lt;PartRequestItem&gt;): PartRequest
+      +findParts(query: String): List&lt;SparePart&gt;
+      +addPartRequest(request: PartRequest): void
       +findPendingRequests(): List&lt;PartRequest&gt;
-      +checkAvailability(part: SparePart, quantity: int): boolean
       +issueParts(requestId: int): void
-      +orderFromSupplier(supplier: Supplier, part: SparePart, quantity: int): SupplierOrder
-      +receiveDelivery(supplierOrderId: int, deliveredQuantity: int): Delivery
+      +findIssuedParts(order: RepairOrder): List&lt;PartItem&gt;
+      +findSuppliers(part: SparePart): List&lt;Supplier&gt;
+      +addSupplierOrder(order: SupplierOrder): void
+      +receiveDelivery(supplierOrderId: int, quantity: int): void
+    }
+
+    class SparePart {
+      -catalogNumber: String
+      -name: String
+      -manufacturer: String
+      -price: double
+      -stockQuantity: int
+      -reservedQuantity: int
+      +isAvailable(quantity: int): boolean
+      +reserve(quantity: int): void
+      +decreaseStock(quantity: int): void
+      +increaseStock(quantity: int): void
+    }
+
+    class PartItem {
+      -part: SparePart
+      -quantity: int
+      +PartItem(part: SparePart, quantity: int)
+      +reduceQuantity(quantity: int): void
+      +calculateCost(): double
     }
 
     class PartRequest {
       -id: int
       -repairOrder: RepairOrder
-      -items: List&lt;PartRequestItem&gt;
+      -items: List&lt;PartItem&gt;
       -status: PartRequestStatus
       +PartRequest(repairOrder: RepairOrder)
       +addItem(part: SparePart, quantity: int): void
@@ -4016,25 +4078,6 @@
       CANCELLED
     }
 
-    class PartRequestItem {
-      -part: SparePart
-      -quantity: int
-      +PartRequestItem(part: SparePart, quantity: int)
-      +reduceQuantity(quantity: int): void
-    }
-
-    class SparePart {
-      -catalogNumber: String
-      -name: String
-      -manufacturer: String
-      -price: double
-      -stockQuantity: int
-      -reservedQuantity: int
-      +isAvailable(quantity: int): boolean
-      +decreaseStock(quantity: int): void
-      +increaseStock(quantity: int): void
-    }
-
     class Supplier {
       -name: String
       -minimumOrderQuantity: int
@@ -4047,25 +4090,82 @@
       -supplier: Supplier
       -part: SparePart
       -quantity: int
+      -deliveredQuantity: int
       -price: double
       -expectedDeliveryDate: Date
       -status: SupplierOrderStatus
       +SupplierOrder(supplier: Supplier, part: SparePart, quantity: int)
       +send(): boolean
-      +registerDelivery(delivery: Delivery): void
+      +registerDelivery(quantity: int): void
+      +getMissingQuantity(): int
     }
 
     enum SupplierOrderStatus {
       SENT
+      TO_RESEND
       PARTIALLY_COMPLETED
       COMPLETED
     }
 
-    class Delivery {
-      -order: SupplierOrder
-      -deliveredQuantity: int
-      +Delivery(order: SupplierOrder, deliveredQuantity: int)
-      +isComplete(): boolean
+    ' ===== Manager: cennik, faktury, raporty =====
+    interface BillingService {
+      +getPriceList(): PriceList
+      +issueInvoice(order: RepairOrder, method: PaymentMethod, taxId: String): Invoice
+      +generateReport(periodStart: Date, periodEnd: Date): Report
+    }
+
+    class BillingServiceImpl {
+      -priceList: PriceList
+      -invoices: List&lt;Invoice&gt;
+      -orderService: RepairOrderService
+      +getPriceList(): PriceList
+      +issueInvoice(order: RepairOrder, method: PaymentMethod, taxId: String): Invoice
+      +generateReport(periodStart: Date, periodEnd: Date): Report
+    }
+
+    class PriceList {
+      -services: List&lt;ServiceItem&gt;
+      +addService(service: ServiceItem): boolean
+      +findService(name: String): ServiceItem
+      +getServices(): List&lt;ServiceItem&gt;
+    }
+
+    class ServiceItem {
+      -name: String
+      -description: String
+      -rate: double
+      -fixedPrice: boolean
+      -estimatedTime: double
+      -validFrom: Date
+      +ServiceItem(name: String, rate: double, fixedPrice: boolean)
+      +calculatePrice(workTime: double): double
+    }
+
+    class Invoice {
+      -number: String
+      -issueDate: Date
+      -repairOrder: RepairOrder
+      -paymentMethod: PaymentMethod
+      -taxId: String
+      +Invoice(number: String, repairOrder: RepairOrder)
+      +calculateLaborCost(): double
+      +calculatePartsCost(): double
+      +calculateTotal(): double
+    }
+
+    enum PaymentMethod {
+      CASH
+      CARD
+      TRANSFER
+    }
+
+    class Report {
+      -periodStart: Date
+      -periodEnd: Date
+      -completedOrders: int
+      -usedParts: int
+      -revenue: double
+      +Report(periodStart: Date, periodEnd: Date)
     }
 
     ' --- generalizacja
@@ -4075,53 +4175,56 @@
     Mechanic &lt;|-- WorkshopManager : to
 
     ' --- implementacja
-    AppointmentService &lt;|.. AppointmentServiceImpl
+    ClientService &lt;|.. ClientServiceImpl
     RepairOrderService &lt;|.. RepairOrderServiceImpl
     WarehouseService &lt;|.. WarehouseServiceImpl
     BillingService &lt;|.. BillingServiceImpl
 
     ' --- asocjacje
+    ClientServiceImpl "1" --&gt; "0..*" Client : przechowuje
+    ClientServiceImpl "1" --&gt; "0..*" Appointment : przechowuje
     Client "1" --&gt; "0..*" Vehicle : ma
-    Client "1" --&gt; "0..*" Appointment : rezerwuje
+    Appointment "0..*" --&gt; "1" Client : zlozona przez
     Appointment "0..*" --&gt; "1" Vehicle : dotyczy
     Appointment --&gt; "1" AppointmentStatus : ma
-    RepairOrder "0..1" --&gt; "1" Appointment : powstaje na podstawie
-    RepairOrder "0..*" --&gt; "1" Vehicle : dotyczy
-    RepairOrder "0..*" --&gt; "1" Mechanic : przydzielony
+    RepairOrderServiceImpl "1" --&gt; "0..*" RepairOrder : przechowuje
+    RepairOrderServiceImpl "1" --&gt; "0..*" Mechanic : przechowuje
+    RepairOrder "0..1" --&gt; "1" Appointment : powstaje z
+    RepairOrder "0..*" --&gt; "1" Mechanic : przydzielone
     RepairOrder --&gt; "1" RepairOrderStatus : ma
     StatusChange --&gt; "1" RepairOrderStatus : ma
     Repair "0..*" --&gt; "1" ServiceItem : wedlug uslugi
-    Repair "0..*" --&gt; "0..*" SparePart : zuzywa
     CostEstimate "0..*" --&gt; "1..*" ServiceItem : wycenia
-    CostEstimate "0..*" --&gt; "0..*" SparePart : wycenia
     CostEstimate --&gt; "1" EstimateStatus : ma
+    WarehouseServiceImpl "1" --&gt; "0..*" SparePart : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" PartRequest : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" Supplier : przechowuje
+    WarehouseServiceImpl "1" --&gt; "0..*" SupplierOrder : przechowuje
+    PartItem "0..*" --&gt; "1" SparePart : dotyczy
     PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
     PartRequest --&gt; "1" PartRequestStatus : ma
-    PartRequestItem "0..*" --&gt; "1" SparePart : dotyczy
+    Supplier "0..*" --&gt; "0..*" SparePart : oferuje
     SupplierOrder "0..*" --&gt; "1" Supplier : skladane u
     SupplierOrder "0..*" --&gt; "1" SparePart : dotyczy
     SupplierOrder --&gt; "1" SupplierOrderStatus : ma
-    Delivery "0..*" --&gt; "1" SupplierOrder : realizuje
-    Invoice "0..1" --&gt; "1" RepairOrder : dotyczy
-    AppointmentServiceImpl "1" --&gt; "0..*" Appointment : przechowuje
-    RepairOrderServiceImpl "1" --&gt; "0..*" RepairOrder : przechowuje
-    WarehouseServiceImpl "1" --&gt; "0..*" SparePart : przechowuje
-    WarehouseServiceImpl "1" --&gt; "0..*" PartRequest : przechowuje
-    WarehouseServiceImpl "1" --&gt; "0..*" SupplierOrder : przechowuje
+    BillingServiceImpl "1" --&gt; "1" PriceList : zarzadza
     BillingServiceImpl "1" --&gt; "0..*" Invoice : przechowuje
+    BillingServiceImpl "1" -[norank]-&gt; "1" RepairOrderService : korzysta z
+    Invoice "0..1" --&gt; "1" RepairOrder : dotyczy
+    Invoice --&gt; "1" PaymentMethod : ma
 
     ' --- agregacja
     PriceList "1" o--&gt; "0..*" ServiceItem : sklada sie z
-    Supplier "0..*" o--&gt; "0..*" SparePart : oferuje
 
     ' --- kompozycja
     RepairOrder "1" *--&gt; "0..*" Repair : zawiera
     RepairOrder "1" *--&gt; "1..*" StatusChange : zawiera
     RepairOrder "1" *--&gt; "0..*" CostEstimate : zawiera
-    PartRequest "1" *--&gt; "1..*" PartRequestItem : zawiera
+    Repair "1" *--&gt; "0..*" PartItem : zuzywa
+    CostEstimate "1" *--&gt; "0..*" PartItem : wycenia
+    PartRequest "1" *--&gt; "1..*" PartItem : zawiera
 
     ' --- zaleznosc
-    SupplierOrder ..&gt; Delivery : uzywa
     BillingServiceImpl ..&gt; Report : tworzy
     @enduml
   </p>

@@ -32,31 +32,28 @@
 				  :Oznacz zamowienie jako oczekujace;
 				  :Zmien status zlecenia na "oczekuje na czesci";
 				  note right: Magazynier moze zamowic czesc\n(przypadek uzycia "Zamow czesci u dostawcy")
-				  end
 				else (nie)
 				  if (Dostepna ilosc mniejsza niz zamowiona?) then (tak)
 				    :Zaproponuj czesciowe wydanie i usuniecie brakujacej ilosci z zamowienia;
 				    note right: Mechanik musi ponownie zamowic brakujaca ilosc\n(przypadek uzycia "Zamow czesci u magazyniera")
 				  else (nie)
 				  endif
+				  :Wyswietl podsumowanie wydania;
+				  if (Magazynier anuluje?) then (tak)
+				    :Nie wydawaj czesci;
+				  else (nie)
+				    :Potwierdz wydanie czesci;
+				    if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
+				      :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
+				    else (nie)
+				      :Przypisz wydane czesci do zlecenia naprawy;
+				      :Pomniejsz stan magazynowy czesci;
+				      :Oznacz zamowienie czesci jako zrealizowane;
+				      :Poinformuj mechanika o wydaniu czesci;
+				      :Wyswietl potwierdzenie wydania;
+				    endif
+				  endif
 				endif
-				:Wyswietl podsumowanie wydania;
-				if (Magazynier anuluje?) then (tak)
-				  :Nie wydawaj czesci;
-				  end
-				else (nie)
-				endif
-				:Potwierdz wydanie czesci;
-				if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
-				  :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
-				  end
-				else (nie)
-				endif
-				:Przypisz wydane czesci do zlecenia naprawy;
-				:Pomniejsz stan magazynowy czesci;
-				:Oznacz zamowienie czesci jako zrealizowane;
-				:Poinformuj mechanika o wydaniu czesci;
-				:Wyswietl potwierdzenie wydania;
 				stop
 				@enduml
 			</p>
@@ -71,33 +68,37 @@
 				start
 				:Wybierz opcje "Zamow u dostawcy";
 				repeat
-				  repeat
-				    repeat
-				      :Wyswietl formularz z lista dostawcow oferujacych czesc;
-				      :Wybierz dostawce i podaj ilosc czesci;
-				      if (Magazynier anuluje?) then (tak)
-				        :Nie tworz zamowienia;
-				        end
+				  :Wyswietl formularz z lista dostawcow oferujacych czesc;
+				  :Wybierz dostawce i podaj ilosc czesci;
+				  if (Magazynier anuluje?) then (tak)
+				    :Nie tworz zamowienia;
+				    break
+				  else (nie)
+				  endif
+				  :Wyslij formularz;
+				  :Zwaliduj formularz;
+				  if (Nie wybrano dostawcy lub ilosc niepoprawna?) then (tak)
+				    :Wyswietl komunikat o blednych danych;
+				  (nie) elseif (Ilosc mniejsza niz minimalna u dostawcy?) then (tak)
+				    :Wyswietl minimalna ilosc zamowienia;
+				  else (nie)
+				    :Wyswietl podsumowanie zamowienia (cena, termin dostawy);
+				    if (Magazynier chce poprawic zamowienie?) then (tak)
+				      :Wybierz opcje "Popraw";
+				    else (nie)
+				      :Potwierdz zamowienie;
+				      :Zapisz zamowienie u dostawcy ze statusem "wyslane";
+				      :Wyslij zamowienie do dostawcy;
+				      if (Wyslanie nie powiodlo sie?) then (tak)
+				        :Zapisz zamowienie do ponownej wysylki;
 				      else (nie)
 				      endif
-				      :Wyslij formularz;
-				      :Zwaliduj formularz;
-				      backward:Wyswietl komunikat o blednych danych;
-				    repeat while (Nie wybrano dostawcy lub ilosc niepoprawna?) is (tak) not (nie)
-				    backward:Wyswietl minimalna ilosc zamowienia;
-				  repeat while (Ilosc mniejsza niz minimalna u dostawcy?) is (tak) not (nie)
-				  :Wyswietl podsumowanie zamowienia (cena, termin dostawy);
-				  backward:Wybierz opcje "Popraw";
-				repeat while (Magazynier chce poprawic zamowienie?) is (tak) not (nie)
-				:Potwierdz zamowienie;
-				:Zapisz zamowienie u dostawcy ze statusem "wyslane";
-				:Wyslij zamowienie do dostawcy;
-				if (Wyslanie nie powiodlo sie?) then (tak)
-				  :Zapisz zamowienie do ponownej wysylki;
-				else (nie)
-				endif
-				:Oznacz brakujace czesci jako zamowione u dostawcy;
-				:Wyswietl potwierdzenie zlozenia zamowienia;
+				      :Oznacz brakujace czesci jako zamowione u dostawcy;
+				      :Wyswietl potwierdzenie zlozenia zamowienia;
+				      break
+				    endif
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>
@@ -118,22 +119,26 @@
 				  :Wpisz ilosci faktycznie dostarczonych czesci;
 				  if (Magazynier anuluje?) then (tak)
 				    :Nie rejestruj dostawy;
-				    end
+				    break
 				  else (nie)
 				  endif
 				  :Zatwierdz przyjecie dostawy;
 				  :Zwaliduj wpisane ilosci;
-				  backward:Wyswietl komunikat o blednych danych;
-				repeat while (Ilosc ujemna lub wieksza niz zamowiona?) is (tak) not (nie)
-				:Zwieksz stany magazynowe dostarczonych czesci;
-				if (Dostarczono mniej niz zamowiono?) then (tak)
-				  :Zmien status zamowienia na "czesciowo zrealizowane";
-				  :Pozostaw brakujaca ilosc jako oczekujaca;
-				else (nie)
-				  :Zmien status zamowienia na "zrealizowane";
-				endif
-				:Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
-				:Wyswietl potwierdzenie przyjecia dostawy;
+				  if (Ilosc ujemna lub wieksza niz zamowiona?) then (tak)
+				    :Wyswietl komunikat o blednych danych;
+				  else (nie)
+				    :Zwieksz stany magazynowe dostarczonych czesci;
+				    if (Dostarczono mniej niz zamowiono?) then (tak)
+				      :Zmien status zamowienia na "czesciowo zrealizowane";
+				      :Pozostaw brakujaca ilosc jako oczekujaca;
+				    else (nie)
+				      :Zmien status zamowienia na "zrealizowane";
+				    endif
+				    :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
+				    :Wyswietl potwierdzenie przyjecia dostawy;
+				    break
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>

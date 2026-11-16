@@ -32,24 +32,27 @@
 				else (nie)
 				endif
 				repeat
-				  repeat
-				    :Wyswietl formularz zlecenia z danymi z rezerwacji;
-				    :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
-				    :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
-				    if (Manager anuluje?) then (tak)
-				      :Nie tworz zlecenia;
-				      end
-				    else (nie)
-				    endif
-				    :Zapisz zlecenie;
-				    :Zwaliduj formularz;
-				    backward:Zaznacz brakujace pola;
-				  repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-				  backward:Wyswietl komunikat o blednym przebiegu;
-				repeat while (Przebieg mniejszy niz ostatnio zapisany?) is (tak) not (nie)
-				:Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
-				:Oznacz rezerwacje jako zrealizowana;
-				:Wyswietl potwierdzenie utworzenia zlecenia;
+				  :Wyswietl formularz zlecenia z danymi z rezerwacji;
+				  :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
+				  :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
+				  if (Manager anuluje?) then (tak)
+				    :Nie tworz zlecenia;
+				    break
+				  else (nie)
+				  endif
+				  :Zapisz zlecenie;
+				  :Zwaliduj formularz;
+				  if (Nie wypelniono wymaganych pol?) then (tak)
+				    :Zaznacz brakujace pola;
+				  (nie) elseif (Przebieg mniejszy niz ostatnio zapisany?) then (tak)
+				    :Wyswietl komunikat o blednym przebiegu;
+				  else (nie)
+				    :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
+				    :Oznacz rezerwacje jako zrealizowana;
+				    :Wyswietl potwierdzenie utworzenia zlecenia;
+				    break
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>
@@ -66,25 +69,27 @@
 				:Wyswietl liste uslug ze stawkami;
 				:Wybierz opcje "Dodaj usluge";
 				repeat
-				  repeat
-				    repeat
-				      :Wyswietl formularz uslugi;
-				      :Wypelnij formularz uslugi;
-				      if (Manager anuluje?) then (tak)
-				        :Nie dodawaj uslugi;
-				        end
-				      else (nie)
-				      endif
-				      :Zapisz formularz;
-				      :Zwaliduj formularz;
-				      backward:Zaznacz brakujace pola;
-				    repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-				    backward:Wyswietl komunikat o blednej stawce;
-				  repeat while (Stawka zerowa lub ujemna?) is (tak) not (nie)
-				  backward:Wyswietl komunikat o istniejacej usludze;
-				repeat while (Usluga o tej nazwie juz istnieje?) is (tak) not (nie)
-				:Zapisz usluge w cenniku z data obowiazywania stawki;
-				:Wyswietl zaktualizowany cennik uslug;
+				  :Wyswietl formularz uslugi;
+				  :Wypelnij formularz uslugi;
+				  if (Manager anuluje?) then (tak)
+				    :Nie dodawaj uslugi;
+				    break
+				  else (nie)
+				  endif
+				  :Zapisz formularz;
+				  :Zwaliduj formularz;
+				  if (Nie wypelniono wymaganych pol?) then (tak)
+				    :Zaznacz brakujace pola;
+				  (nie) elseif (Stawka zerowa lub ujemna?) then (tak)
+				    :Wyswietl komunikat o blednej stawce;
+				  (nie) elseif (Usluga o tej nazwie juz istnieje?) then (tak)
+				    :Wyswietl komunikat o istniejacej usludze;
+				  else (nie)
+				    :Zapisz usluge w cenniku z data obowiazywania stawki;
+				    :Wyswietl zaktualizowany cennik uslug;
+				    break
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>
@@ -98,32 +103,36 @@
 				@startuml
 				start
 				:Wybierz opcje "Zlecenia do rozliczenia";
-				repeat
-				  :Wyswietl liste zlecen o statusie "zakonczone";
-				  :Wybierz zlecenie z listy;
-				  :Wyswietl podsumowanie kosztow zlecenia;
-				  backward:Wskaz pozycje bez ceny;
-				repeat while (Pozycja zlecenia bez ceny?) is (tak) not (nie)
-				:Wybierz opcje "Wystaw fakture";
-				repeat
+				:Wyswietl liste zlecen o statusie "zakonczone";
+				:Wybierz zlecenie z listy;
+				:Wyswietl podsumowanie kosztow zlecenia;
+				if (Pozycja zlecenia bez ceny?) then (tak)
+				  :Wskaz pozycje bez ceny i nie pozwol wystawic faktury;
+				else (nie)
+				  :Wybierz opcje "Wystaw fakture";
 				  repeat
 				    :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
 				    :Uzupelnij forme platnosci i opcjonalnie NIP;
 				    if (Manager anuluje?) then (tak)
 				      :Nie wystawiaj faktury;
-				      end
+				      break
 				    else (nie)
 				    endif
 				    :Zatwierdz fakture;
 				    :Zwaliduj dane faktury;
-				    backward:Zaznacz brakujace pola;
-				  repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-				  backward:Wyswietl komunikat o blednym numerze NIP;
-				repeat while (Numer NIP niepoprawny?) is (tak) not (nie)
-				:Wygeneruj fakture z kolejnym numerem;
-				:Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
-				:Udostepnij fakture klientowi;
-				:Wyswietl fakture do wydruku;
+				    if (Nie wypelniono wymaganych pol?) then (tak)
+				      :Zaznacz brakujace pola;
+				    (nie) elseif (Numer NIP niepoprawny?) then (tak)
+				      :Wyswietl komunikat o blednym numerze NIP;
+				    else (nie)
+				      :Wygeneruj fakture z kolejnym numerem;
+				      :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
+				      :Udostepnij fakture klientowi;
+				      :Wyswietl fakture do wydruku;
+				      break
+				    endif
+				  repeat while
+				endif
 				stop
 				@enduml
 			</p>

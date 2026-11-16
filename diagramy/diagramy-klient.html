@@ -23,37 +23,37 @@
 				@startuml
 				start
 				:Wybierz opcje "Moje pojazdy";
+				:Wyswietl liste pojazdow klienta;
+				:Wybierz opcje "Dodaj pojazd";
 				repeat
-				  :Wyswietl liste pojazdow klienta;
-				  :Wybierz opcje "Dodaj pojazd";
-				  repeat
-				    repeat
-				      repeat
-				        :Wyswietl formularz danych pojazdu;
-				        :Wypelnij formularz;
-				        if (Klient anuluje?) then (tak)
-				          :Nie zapisuj pojazdu;
-				          end
-				        else (nie)
-				        endif
-				        :Wyslij formularz;
-				        :Zwaliduj formularz;
-				        backward:Zaznacz brakujace pola;
-				      repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
-				      backward:Wyswietl komunikat o blednym numerze VIN;
-				    repeat while (Numer VIN niepoprawny?) is (tak) not (nie)
-				    backward:Wyswietl komunikat o blednych danych;
-				  repeat while (Rok produkcji lub przebieg niepoprawny?) is (tak) not (nie)
-				  :Sprawdz numer VIN w systemie;
-				  if (VIN przypisany do innego klienta?) then (tak)
-				    :Poinformuj o koniecznosci kontaktu z warsztatem;
-				    end
+				  :Wyswietl formularz danych pojazdu;
+				  :Wypelnij formularz;
+				  if (Klient anuluje?) then (tak)
+				    :Nie zapisuj pojazdu;
+				    break
 				  else (nie)
 				  endif
-				  backward:Poinformuj, ze pojazd zostal juz dodany;
-				repeat while (VIN juz przypisany do konta klienta?) is (tak) not (nie)
-				:Zapisz pojazd i przypisz go do konta klienta;
-				:Wyswietl komunikat o dodaniu pojazdu i zaktualizowana liste pojazdow;
+				  :Wyslij formularz;
+				  :Zwaliduj formularz;
+				  if (Nie wypelniono wymaganych pol?) then (tak)
+				    :Zaznacz brakujace pola;
+				  (nie) elseif (Numer VIN niepoprawny?) then (tak)
+				    :Wyswietl komunikat o blednym numerze VIN;
+				  (nie) elseif (Rok produkcji lub przebieg niepoprawny?) then (tak)
+				    :Wyswietl komunikat o blednych danych;
+				  else (nie)
+				    :Sprawdz numer VIN w systemie;
+				    if (VIN przypisany do innego klienta?) then (tak)
+				      :Poinformuj o koniecznosci kontaktu z warsztatem;
+				    (nie) elseif (VIN juz przypisany do konta klienta?) then (tak)
+				      :Poinformuj, ze pojazd zostal juz dodany;
+				    else (nie)
+				      :Zapisz pojazd i przypisz go do konta klienta;
+				      :Wyswietl komunikat o dodaniu pojazdu i zaktualizowana liste pojazdow;
+				    endif
+				    break
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>
@@ -68,14 +68,13 @@
 				start
 				:Wybierz opcje "Zarezerwuj wizyte";
 				repeat
-				  repeat
-				    :Wyswietl liste pojazdow klienta;
-				    backward:Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
-				  repeat while (Klient nie ma pojazdu lub wybiera "Dodaj nowy pojazd"?) is (tak) not (nie)
-				  :Wybierz pojazd z listy;
-				  backward:Poinformuj o istniejacej rezerwacji lub zleceniu;
-				repeat while (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) is (tak) not (nie)
-				repeat
+				  :Wyswietl liste pojazdow klienta;
+				  backward:Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
+				repeat while (Klient nie ma pojazdu lub wybiera "Dodaj nowy pojazd"?) is (tak) not (nie)
+				:Wybierz pojazd z listy;
+				if (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) then (tak)
+				  :Poinformuj o istniejacej rezerwacji lub zleceniu;
+				else (nie)
 				  :Wyswietl kalendarz z wolnymi terminami;
 				  :Wybierz termin wizyty;
 				  repeat
@@ -83,19 +82,28 @@
 				    :Wpisz opis usterki;
 				    if (Klient anuluje?) then (tak)
 				      :Nie tworz rezerwacji;
-				      end
+				      break
 				    else (nie)
 				    endif
 				    :Wyslij formularz;
 				    :Zwaliduj formularz;
-				    backward:Zaznacz brakujace pole;
-				  repeat while (Opis usterki pusty?) is (tak) not (nie)
-				  :Sprawdz, czy termin jest nadal wolny;
-				  backward:Poinformuj, ze termin jest niedostepny;
-				repeat while (Termin zajety w miedzyczasie?) is (tak) not (nie)
-				:Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
-				:Przekaz rezerwacje managerowi do potwierdzenia;
-				:Wyswietl potwierdzenie zlozenia rezerwacji;
+				    if (Opis usterki pusty?) then (tak)
+				      :Zaznacz brakujace pole;
+				    else (nie)
+				      :Sprawdz, czy termin jest nadal wolny;
+				      if (Termin zajety w miedzyczasie?) then (tak)
+				        :Poinformuj, ze termin jest niedostepny;
+				        :Wyswietl ponownie kalendarz z wolnymi terminami;
+				        :Wybierz inny termin wizyty;
+				      else (nie)
+				        :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
+				        :Przekaz rezerwacje managerowi do potwierdzenia;
+				        :Wyswietl potwierdzenie zlozenia rezerwacji;
+				        break
+				      endif
+				    endif
+				  repeat while
+				endif
 				stop
 				@enduml
 			</p>
@@ -115,30 +123,34 @@
 				    :Zapisz odrzucenie kosztorysu;
 				    :Zmien status zlecenia na "w trakcie realizacji";
 				    :Poinformuj mechanika, ze dodatkowe prace nie zostana wykonane;
-				    end
+				    break
 				  else (nie)
-				    if (Klient wybiera "Wroc"?) then (tak)
-				      :Pozostaw status zlecenia bez zmian;
-				      end
-				    else (nie)
-				    endif
+				  endif
+				  if (Klient wybiera "Wroc"?) then (tak)
+				    :Pozostaw status zlecenia bez zmian;
+				    break
+				  else (nie)
 				  endif
 				  :Wybierz opcje "Akceptuj";
 				  :Popros o potwierdzenie decyzji;
 				  if (Klient rezygnuje z potwierdzenia?) then (tak)
 				    :Pozostaw status zlecenia bez zmian;
-				    end
+				    break
 				  else (nie)
 				  endif
 				  :Potwierdz decyzje;
 				  :Sprawdz, czy kosztorys zostal zmieniony;
-				  backward:Wyswietl informacje o zmianie kosztorysu;
-				repeat while (Kosztorys zmieniony przez mechanika?) is (tak) not (nie)
-				:Zapisz akceptacje kosztorysu;
-				:Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
-				:Zmien status zlecenia na "w trakcie realizacji";
-				:Poinformuj mechanika o akceptacji kosztorysu;
-				:Wyswietl potwierdzenie akceptacji;
+				  if (Kosztorys zmieniony przez mechanika?) then (tak)
+				    :Wyswietl informacje o zmianie kosztorysu;
+				  else (nie)
+				    :Zapisz akceptacje kosztorysu;
+				    :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
+				    :Zmien status zlecenia na "w trakcie realizacji";
+				    :Poinformuj mechanika o akceptacji kosztorysu;
+				    :Wyswietl potwierdzenie akceptacji;
+				    break
+				  endif
+				repeat while
 				stop
 				@enduml
 			</p>

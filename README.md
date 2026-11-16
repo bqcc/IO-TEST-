@@ -31,3 +31,12 @@ Złączone: [scenariusze.html](https://bqcc.github.io/IO-TEST-/scenariusze/scena
 ## Diagram klas
 
 - [diagram-klas.html](https://bqcc.github.io/IO-TEST-/diagram-klas/diagram-klas.html)
+
+Odpowiedzialność za klasy:
+
+| Obszar | Autor | Klasy | Opis klas |
+|---|---|---|---|
+| Klient | Jakub Banasiewicz | `ClientService`, `ClientServiceImpl`, `User`, `Client`, `Vehicle`, `Appointment`, `AppointmentStatus` | [klasy-banasiewicz.md](diagram-klas/klasy-banasiewicz.md) |
+| Mechanik | Łukasz Bera | `RepairOrderService`, `RepairOrderServiceImpl`, `Mechanic`, `RepairOrder`, `RepairOrderStatus`, `StatusChange`, `Repair`, `CostEstimate`, `EstimateStatus` | [klasy-bera.md](diagram-klas/klasy-bera.md) |
+| Magazynier | Kacper Bednarz | `WarehouseService`, `WarehouseServiceImpl`, `Storekeeper`, `SparePart`, `PartItem`, `PartRequest`, `PartRequestStatus`, `Supplier`, `SupplierOrder`, `SupplierOrderStatus` | [klasy-bednarz.md](diagram-klas/klasy-bednarz.md) |
+| Manager warsztatu | Dawid Woźniak | `BillingService`, `BillingServiceImpl`, `WorkshopManager`, `PriceList`, `ServiceItem`, `Invoice`, `PaymentMethod`, `Report` | [klasy-wozniak.md](diagram-klas/klasy-wozniak.md) |
