@@ -842,7 +842,7 @@
             System zapisuje pojazd i przypisuje go do konta klienta
           </li>
           <li>
-            System wyświetla zaktualizowaną listę pojazdów klienta
+            System wyświetla komunikat o dodaniu pojazdu oraz zaktualizowaną listę pojazdów klienta
           </li>
         </ol>
       </td>
@@ -1668,8 +1668,8 @@
             <span class="number">7</span>
             <span class="condition">Potrzebna część nie została jeszcze wydana do zlecenia</span>
             <span class="reaction-additional">System wyświetla informację o konieczności zamówienia części u magazyniera</span>
-            <span class="reaction-type">GOTO</span>
-            <span class="reaction-goto">4</span>
+            <span class="reaction-type">END FLOW</span>
+            <span class="reaction-goto"></span>
           </li>
           <li>
             <span class="number">8</span>
@@ -2300,7 +2300,7 @@
           <li>
             <span class="number">6</span>
             <span class="condition">Dostępna ilość części jest mniejsza niż zamówiona</span>
-            <span class="reaction-additional">System proponuje częściowe wydanie, a pozostała ilość zostaje w zamówieniu jako oczekująca</span>
+            <span class="reaction-additional">System proponuje częściowe wydanie dostępnej ilości, a brakująca ilość zostaje usunięta z zamówienia; mechanik musi zamówić ją ponownie (przypadek użycia Zamów części u magazyniera)</span>
             <span class="reaction-type">GOTO</span>
             <span class="reaction-goto">7</span>
           </li>
@@ -2807,13 +2807,6 @@
             <span class="reaction-type">GOTO</span>
             <span class="reaction-goto">6</span>
           </li>
-          <li>
-            <span class="number">10</span>
-            <span class="condition">Zlecenie nie zostało przydzielone żadnemu mechanikowi</span>
-            <span class="reaction-additional">System wyświetla komunikat o konieczności przydzielenia mechanika</span>
-            <span class="reaction-type">GOTO</span>
-            <span class="reaction-goto">8</span>
-          </li>
         </ul>
       </td>
     </tr>
@@ -3295,36 +3288,33 @@
         :Wyswietl liste pojazdow klienta;
         :Wybierz opcje "Dodaj pojazd";
         repeat
-          :Wyswietl formularz danych pojazdu;
-          :Wypelnij formularz;
-          if (Klient anuluje?) then (tak)
-          else (nie)
-            :Wyslij formularz;
-            :Zwaliduj formularz;
-            if (Nie wypelniono wymaganych pol?) then (tak)
-              :Zaznacz brakujace pola;
-            elseif (Numer VIN niepoprawny?) then (tak)
-              :Wyswietl komunikat o blednym numerze VIN;
-            elseif (Rok produkcji lub przebieg niepoprawny?) then (tak)
-              :Wyswietl komunikat o blednych danych;
-            else (nie)
-            endif
-          endif
-        repeat while (Formularz do poprawy?) is (tak) not (nie)
-        if (Formularz wyslany i poprawny?) then (tak)
-          :Sprawdz numer VIN w systemie;
-          if (VIN juz przypisany do konta klienta?) then (tak)
-            :Poinformuj, ze pojazd zostal juz dodany;
-          elseif (VIN przypisany do innego klienta?) then (tak)
-            :Poinformuj o koniecznosci kontaktu z warsztatem;
-          else (nie)
-            :Zapisz pojazd i przypisz go do konta klienta;
-            :Wyswietl zaktualizowana liste pojazdow;
-          endif
-        else (nie, anulowano)
-          :Nie zapisuj pojazdu;
+          repeat
+            repeat
+              :Wyswietl formularz danych pojazdu;
+              :Wypelnij formularz;
+              if (Klient anuluje?) then (tak)
+                :Nie zapisuj pojazdu;
+                end
+              else (nie)
+              endif
+              :Wyslij formularz;
+              :Zwaliduj formularz;
+              backward:Zaznacz brakujace pola;
+            repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+            backward:Wyswietl komunikat o blednym numerze VIN;
+          repeat while (Numer VIN niepoprawny?) is (tak) not (nie)
+          backward:Wyswietl komunikat o blednych danych;
+        repeat while (Rok produkcji lub przebieg niepoprawny?) is (tak) not (nie)
+        :Sprawdz numer VIN w systemie;
+        if (VIN przypisany do innego klienta?) then (tak)
+          :Poinformuj o koniecznosci kontaktu z warsztatem;
+          end
+        else (nie)
         endif
-      repeat while (Pojazd juz dodany do konta klienta?) is (tak) not (nie)
+        backward:Poinformuj, ze pojazd zostal juz dodany;
+      repeat while (VIN juz przypisany do konta klienta?) is (tak) not (nie)
+      :Zapisz pojazd i przypisz go do konta klienta;
+      :Wyswietl komunikat o dodaniu pojazdu i zaktualizowana liste pojazdow;
       stop
       @enduml
     </p>
@@ -3339,19 +3329,13 @@
       start
       :Wybierz opcje "Zarezerwuj wizyte";
       repeat
-        :Wyswietl liste pojazdow klienta;
-        if (Klient nie ma pojazdu?) then (tak)
-          :Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
-        elseif (Wybrano "Dodaj nowy pojazd"?) then (tak)
-          :Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
-        else (nie)
-          :Wybierz pojazd z listy;
-          if (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) then (tak)
-            :Poinformuj o istniejacej rezerwacji lub zleceniu;
-          else (nie)
-          endif
-        endif
-      repeat while (Pojazd do ponownego wyboru?) is (tak) not (nie)
+        repeat
+          :Wyswietl liste pojazdow klienta;
+          backward:Dodaj pojazd (przypadek uzycia "Dodaj pojazd");
+        repeat while (Klient nie ma pojazdu lub wybiera "Dodaj nowy pojazd"?) is (tak) not (nie)
+        :Wybierz pojazd z listy;
+        backward:Poinformuj o istniejacej rezerwacji lub zleceniu;
+      repeat while (Pojazd ma aktywna rezerwacje lub otwarte zlecenie?) is (tak) not (nie)
       repeat
         :Wyswietl kalendarz z wolnymi terminami;
         :Wybierz termin wizyty;
@@ -3359,31 +3343,20 @@
           :Wyswietl formularz opisu usterki;
           :Wpisz opis usterki;
           if (Klient anuluje?) then (tak)
-          else (nie)
-            :Wyslij formularz;
-            :Zwaliduj formularz;
-            if (Opis usterki pusty?) then (tak)
-              :Zaznacz brakujace pole;
-            else (nie)
-            endif
-          endif
-        repeat while (Formularz do poprawy?) is (tak) not (nie)
-        if (Formularz wyslany i poprawny?) then (tak)
-          :Sprawdz, czy termin jest nadal wolny;
-          if (Termin zajety w miedzyczasie?) then (tak)
-            :Poinformuj, ze termin jest niedostepny;
+            :Nie tworz rezerwacji;
+            end
           else (nie)
           endif
-        else (nie, anulowano)
-        endif
-      repeat while (Wybor terminu do powtorzenia?) is (tak) not (nie)
-      if (Klient anulowal?) then (tak)
-        :Nie tworz rezerwacji;
-      else (nie)
-        :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
-        :Przekaz rezerwacje managerowi do potwierdzenia;
-        :Wyswietl potwierdzenie zlozenia rezerwacji;
-      endif
+          :Wyslij formularz;
+          :Zwaliduj formularz;
+          backward:Zaznacz brakujace pole;
+        repeat while (Opis usterki pusty?) is (tak) not (nie)
+        :Sprawdz, czy termin jest nadal wolny;
+        backward:Poinformuj, ze termin jest niedostepny;
+      repeat while (Termin zajety w miedzyczasie?) is (tak) not (nie)
+      :Zapisz rezerwacje "oczekuje na potwierdzenie" i zablokuj termin;
+      :Przekaz rezerwacje managerowi do potwierdzenia;
+      :Wyswietl potwierdzenie zlozenia rezerwacji;
       stop
       @enduml
     </p>
@@ -3399,33 +3372,34 @@
       :Wybierz opcje "Zobacz kosztorys";
       repeat
         :Wyswietl kosztorys;
-        if (Klient wybiera "Akceptuj"?) then (tak)
-          :Popros o potwierdzenie decyzji;
-          if (Klient potwierdza decyzje?) then (tak)
-            :Sprawdz, czy kosztorys zostal zmieniony;
-            if (Kosztorys zmieniony przez mechanika?) then (tak)
-              :Wyswietl informacje o zmianie kosztorysu;
-            else (nie)
-            endif
-          else (nie, rezygnuje)
+        if (Klient wybiera "Odrzuc"?) then (tak)
+          :Zapisz odrzucenie kosztorysu;
+          :Zmien status zlecenia na "w trakcie realizacji";
+          :Poinformuj mechanika, ze dodatkowe prace nie zostana wykonane;
+          end
+        else (nie)
+          if (Klient wybiera "Wroc"?) then (tak)
+            :Pozostaw status zlecenia bez zmian;
+            end
+          else (nie)
           endif
-        else (nie, "Odrzuc" lub "Wroc")
         endif
+        :Wybierz opcje "Akceptuj";
+        :Popros o potwierdzenie decyzji;
+        if (Klient rezygnuje z potwierdzenia?) then (tak)
+          :Pozostaw status zlecenia bez zmian;
+          end
+        else (nie)
+        endif
+        :Potwierdz decyzje;
+        :Sprawdz, czy kosztorys zostal zmieniony;
+        backward:Wyswietl informacje o zmianie kosztorysu;
       repeat while (Kosztorys zmieniony przez mechanika?) is (tak) not (nie)
-      switch (Decyzja klienta?)
-      case (Akceptuj i potwierdz)
-        :Zapisz akceptacje kosztorysu;
-        :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
-        :Zmien status zlecenia na "w trakcie realizacji";
-        :Poinformuj mechanika o akceptacji kosztorysu;
-        :Wyswietl potwierdzenie akceptacji;
-      case (Odrzuc)
-        :Zapisz odrzucenie kosztorysu;
-        :Zmien status zlecenia na "w trakcie realizacji";
-        :Poinformuj mechanika, ze dodatkowe prace nie zostana wykonane;
-      case (Wroc lub rezygnacja z potwierdzenia)
-        :Pozostaw status zlecenia bez zmian;
-      endswitch
+      :Zapisz akceptacje kosztorysu;
+      :Dodaj prace z kosztorysu do zlecenia i przelicz koszt;
+      :Zmien status zlecenia na "w trakcie realizacji";
+      :Poinformuj mechanika o akceptacji kosztorysu;
+      :Wyswietl potwierdzenie akceptacji;
       stop
       @enduml
     </p>
@@ -3444,32 +3418,27 @@
       :Wyswietl szczegoly zlecenia;
       :Wybierz opcje "Zamow czesci";
       repeat
-        :Wyswietl katalog czesci z wyszukiwarka;
-        :Wyszukaj potrzebne czesci;
-        if (Brak czesci w katalogu?) then (tak)
-          :Wyswietl komunikat o braku wynikow;
-        else (nie)
+        repeat
+          repeat
+            :Wyswietl katalog czesci z wyszukiwarka;
+            :Wyszukaj potrzebne czesci;
+            backward:Wyswietl komunikat o braku wynikow;
+          repeat while (Brak czesci w katalogu?) is (tak) not (nie)
           :Wybierz czesci i podaj ilosc;
           if (Mechanik anuluje?) then (tak)
+            :Nie tworz zamowienia;
+            end
           else (nie)
-            :Wyslij zamowienie;
-            :Zwaliduj zamowienie;
-            if (Nie wybrano czesci lub ilosc niepoprawna?) then (tak)
-              :Wyswietl komunikat o blednych danych;
-            elseif (Czesc juz zamowiona i niewydana?) then (tak)
-              :Wyswietl informacje o istniejacym zamowieniu;
-            else (nie)
-            endif
           endif
-        endif
-      repeat while (Zamowienie do poprawy?) is (tak) not (nie)
-      if (Zamowienie wyslane i poprawne?) then (tak)
-        :Utworz zamowienie czesci i przypisz je do zlecenia;
-        :Przekaz zamowienie magazynierowi;
-        :Wyswietl potwierdzenie zlozenia zamowienia;
-      else (nie, anulowano)
-        :Nie tworz zamowienia;
-      endif
+          :Wyslij zamowienie;
+          :Zwaliduj zamowienie;
+          backward:Wyswietl komunikat o blednych danych;
+        repeat while (Nie wybrano czesci lub ilosc niepoprawna?) is (tak) not (nie)
+        backward:Wyswietl informacje o istniejacym zamowieniu;
+      repeat while (Czesc juz zamowiona i niewydana?) is (tak) not (nie)
+      :Utworz zamowienie czesci i przypisz je do zlecenia;
+      :Przekaz zamowienie magazynierowi;
+      :Wyswietl potwierdzenie zlozenia zamowienia;
       stop
       @enduml
     </p>
@@ -3485,38 +3454,34 @@
       :Wybierz opcje "Moje zlecenia";
       :Wyswietl liste przydzielonych zlecen;
       :Wybierz zlecenie z listy;
+      :Wyswietl szczegoly zlecenia z historia serwisowa pojazdu;
+      :Wybierz opcje "Dodaj naprawe";
       repeat
-        :Wyswietl szczegoly zlecenia z historia serwisowa pojazdu;
-        :Wybierz opcje "Dodaj naprawe";
         repeat
-          :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
-          if (Wykryto dodatkowa usterke?) then (tak)
-            :Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
-          elseif (Potrzebna czesc nie zostala wydana?) then (tak)
+          repeat
+            :Wyswietl formularz naprawy z uslugami z cennika i wydanymi czesciami;
+            backward:Zglos usterke (przypadek uzycia "Zglos dodatkowa usterke");
+          repeat while (Wykryto dodatkowa usterke?) is (tak) not (nie)
+          if (Potrzebna czesc nie zostala wydana?) then (tak)
             :Wyswietl informacje o koniecznosci zamowienia czesci u magazyniera;
+            end
           else (nie)
-            :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
-            if (Mechanik anuluje?) then (tak)
-            else (nie)
-              :Zapisz formularz;
-              :Zwaliduj formularz;
-              if (Nie wypelniono wymaganych pol?) then (tak)
-                :Zaznacz brakujace pola;
-              elseif (Czas pracy niepoprawny?) then (tak)
-                :Wyswietl komunikat o blednych danych;
-              else (nie)
-              endif
-            endif
           endif
-        repeat while (Formularz do poprawy?) is (tak) not (nie)
-      repeat while (Czesc do zamowienia u magazyniera?) is (tak) not (nie)
-      if (Formularz naprawy zapisany i poprawny?) then (tak)
-        :Zapisz naprawe w zleceniu;
-        :Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
-        :Wyswietl zaktualizowane zlecenie z kosztem;
-      else (nie, anulowano)
-        :Nie zapisuj naprawy;
-      endif
+          :Wybierz usluge, wpisz opis i czas pracy, zaznacz uzyte czesci;
+          if (Mechanik anuluje?) then (tak)
+            :Nie zapisuj naprawy;
+            end
+          else (nie)
+          endif
+          :Zapisz formularz;
+          :Zwaliduj formularz;
+          backward:Zaznacz brakujace pola;
+        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+        backward:Wyswietl komunikat o blednych danych;
+      repeat while (Czas pracy niepoprawny?) is (tak) not (nie)
+      :Zapisz naprawe w zleceniu;
+      :Przelicz koszt zlecenia wedlug cennika i uzytych czesci;
+      :Wyswietl zaktualizowane zlecenie z kosztem;
       stop
       @enduml
     </p>
@@ -3534,33 +3499,26 @@
         :Wyswietl liste przydzielonych zlecen;
         :Wybierz zlecenie z listy;
         :Wyswietl szczegoly zlecenia z aktualnym statusem;
-        if (Zlecenie ma status "rozliczone"?) then (tak)
-          :Poinformuj, ze zmiana statusu nie jest mozliwa;
-        else (nie)
-          :Wybierz opcje "Zmien status";
-          repeat
-            :Wyswietl liste statusow dozwolonych dla etapu zlecenia;
-            :Wybierz nowy status i opcjonalnie dodaj komentarz;
-            if (Mechanik anuluje?) then (tak)
-            else (nie)
-              :Zatwierdz zmiane statusu;
-              :Sprawdz, czy zmiana statusu jest dozwolona;
-              if ("zakonczone", ale brak zapisanej naprawy?) then (tak)
-                :Wyswietl komunikat o braku wykonanych napraw;
-              elseif ("zakonczone", ale kosztorys czeka na decyzje klienta?) then (tak)
-                :Wyswietl komunikat o oczekujacym kosztorysie;
-              else (nie)
-              endif
-            endif
-          repeat while (Wybor statusu do poprawy?) is (tak) not (nie)
-        endif
+        backward:Poinformuj, ze zmiana statusu nie jest mozliwa;
       repeat while (Zlecenie ma status "rozliczone"?) is (tak) not (nie)
-      if (Zmiana statusu zatwierdzona i dozwolona?) then (tak)
-        :Zapisz nowy status z data zmiany;
-        :Wyswietl potwierdzenie zmiany statusu;
-      else (nie, anulowano)
-        :Pozostaw status bez zmian;
-      endif
+      :Wybierz opcje "Zmien status";
+      repeat
+        repeat
+          :Wyswietl liste statusow dozwolonych dla etapu zlecenia;
+          :Wybierz nowy status i opcjonalnie dodaj komentarz;
+          if (Mechanik anuluje?) then (tak)
+            :Pozostaw status bez zmian;
+            end
+          else (nie)
+          endif
+          :Zatwierdz zmiane statusu;
+          :Sprawdz, czy zmiana statusu jest dozwolona;
+          backward:Wyswietl komunikat o braku wykonanych napraw;
+        repeat while ("zakonczone", ale brak zapisanej naprawy?) is (tak) not (nie)
+        backward:Wyswietl komunikat o oczekujacym kosztorysie;
+      repeat while ("zakonczone", ale kosztorys czeka na decyzje klienta?) is (tak) not (nie)
+      :Zapisz nowy status z data zmiany;
+      :Wyswietl potwierdzenie zmiany statusu;
       stop
       @enduml
     </p>
@@ -3583,27 +3541,31 @@
         :Oznacz zamowienie jako oczekujace;
         :Zmien status zlecenia na "oczekuje na czesci";
         note right: Magazynier moze zamowic czesc\n(przypadek uzycia "Zamow czesci u dostawcy")
+        end
       else (nie)
         if (Dostepna ilosc mniejsza niz zamowiona?) then (tak)
-          :Zaproponuj czesciowe wydanie;
+          :Zaproponuj czesciowe wydanie i usuniecie brakujacej ilosci z zamowienia;
+          note right: Mechanik musi ponownie zamowic brakujaca ilosc\n(przypadek uzycia "Zamow czesci u magazyniera")
         else (nie)
-        endif
-        :Wyswietl podsumowanie wydania;
-        if (Magazynier anuluje?) then (tak)
-          :Nie wydawaj czesci;
-        else (nie)
-          :Potwierdz wydanie czesci;
-          if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
-            :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
-          else (nie)
-            :Przypisz wydane czesci do zlecenia naprawy;
-            :Pomniejsz stan magazynowy czesci;
-            :Oznacz zamowienie czesci jako zrealizowane;
-            :Poinformuj mechanika o wydaniu czesci;
-            :Wyswietl potwierdzenie wydania;
-          endif
         endif
       endif
+      :Wyswietl podsumowanie wydania;
+      if (Magazynier anuluje?) then (tak)
+        :Nie wydawaj czesci;
+        end
+      else (nie)
+      endif
+      :Potwierdz wydanie czesci;
+      if (Zlecenie zakonczone lub rozliczone w miedzyczasie?) then (tak)
+        :Anuluj zamowienie czesci bez zmiany stanu magazynowego;
+        end
+      else (nie)
+      endif
+      :Przypisz wydane czesci do zlecenia naprawy;
+      :Pomniejsz stan magazynowy czesci;
+      :Oznacz zamowienie czesci jako zrealizowane;
+      :Poinformuj mechanika o wydaniu czesci;
+      :Wyswietl potwierdzenie wydania;
       stop
       @enduml
     </p>
@@ -3618,36 +3580,33 @@
       start
       :Wybierz opcje "Zamow u dostawcy";
       repeat
-        :Wyswietl formularz z lista dostawcow oferujacych czesc;
-        :Wybierz dostawce i podaj ilosc czesci;
-        if (Magazynier anuluje?) then (tak)
-        else (nie)
-          :Wyslij formularz;
-          :Zwaliduj formularz;
-          if (Nie wybrano dostawcy lub ilosc niepoprawna?) then (tak)
-            :Wyswietl komunikat o blednych danych;
-          elseif (Ilosc mniejsza niz minimalna u dostawcy?) then (tak)
-            :Wyswietl minimalna ilosc zamowienia;
-          else (nie)
-            :Wyswietl podsumowanie zamowienia;
-            if (Magazynier potwierdza zamowienie?) then (tak)
-            else (nie, "Popraw")
+        repeat
+          repeat
+            :Wyswietl formularz z lista dostawcow oferujacych czesc;
+            :Wybierz dostawce i podaj ilosc czesci;
+            if (Magazynier anuluje?) then (tak)
+              :Nie tworz zamowienia;
+              end
+            else (nie)
             endif
-          endif
-        endif
-      repeat while (Formularz do poprawy?) is (tak) not (nie)
-      if (Zamowienie potwierdzone?) then (tak)
-        :Zapisz zamowienie u dostawcy ze statusem "wyslane";
-        :Wyslij zamowienie do dostawcy;
-        if (Wyslanie nie powiodlo sie?) then (tak)
-          :Zapisz zamowienie do ponownej wysylki;
-        else (nie)
-        endif
-        :Oznacz brakujace czesci jako zamowione u dostawcy;
-        :Wyswietl potwierdzenie zlozenia zamowienia;
-      else (nie, anulowano)
-        :Nie tworz zamowienia;
+            :Wyslij formularz;
+            :Zwaliduj formularz;
+            backward:Wyswietl komunikat o blednych danych;
+          repeat while (Nie wybrano dostawcy lub ilosc niepoprawna?) is (tak) not (nie)
+          backward:Wyswietl minimalna ilosc zamowienia;
+        repeat while (Ilosc mniejsza niz minimalna u dostawcy?) is (tak) not (nie)
+        :Wyswietl podsumowanie zamowienia (cena, termin dostawy);
+        backward:Wybierz opcje "Popraw";
+      repeat while (Magazynier chce poprawic zamowienie?) is (tak) not (nie)
+      :Potwierdz zamowienie;
+      :Zapisz zamowienie u dostawcy ze statusem "wyslane";
+      :Wyslij zamowienie do dostawcy;
+      if (Wyslanie nie powiodlo sie?) then (tak)
+        :Zapisz zamowienie do ponownej wysylki;
+      else (nie)
       endif
+      :Oznacz brakujace czesci jako zamowione u dostawcy;
+      :Wyswietl potwierdzenie zlozenia zamowienia;
       stop
       @enduml
     </p>
@@ -3667,27 +3626,23 @@
         :Wyswietl liste zamowionych czesci i ilosci;
         :Wpisz ilosci faktycznie dostarczonych czesci;
         if (Magazynier anuluje?) then (tak)
+          :Nie rejestruj dostawy;
+          end
         else (nie)
-          :Zatwierdz przyjecie dostawy;
-          :Zwaliduj wpisane ilosci;
-          if (Ilosc ujemna lub wieksza niz zamowiona?) then (tak)
-            :Wyswietl komunikat o blednych danych;
-          else (nie)
-          endif
         endif
-      repeat while (Ilosci do poprawy?) is (tak) not (nie)
-      if (Dostawa zatwierdzona?) then (tak)
-        :Zwieksz stany magazynowe dostarczonych czesci;
-        if (Dostarczono mniej niz zamowiono?) then (tak)
-          :Zmien status zamowienia na "czesciowo zrealizowane";
-        else (nie)
-          :Zmien status zamowienia na "zrealizowane";
-        endif
-        :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
-        :Wyswietl potwierdzenie przyjecia dostawy;
-      else (nie, anulowano)
-        :Nie rejestruj dostawy;
+        :Zatwierdz przyjecie dostawy;
+        :Zwaliduj wpisane ilosci;
+        backward:Wyswietl komunikat o blednych danych;
+      repeat while (Ilosc ujemna lub wieksza niz zamowiona?) is (tak) not (nie)
+      :Zwieksz stany magazynowe dostarczonych czesci;
+      if (Dostarczono mniej niz zamowiono?) then (tak)
+        :Zmien status zamowienia na "czesciowo zrealizowane";
+        :Pozostaw brakujaca ilosc jako oczekujaca;
+      else (nie)
+        :Zmien status zamowienia na "zrealizowane";
       endif
+      :Oznacz oczekujace zamowienia mechanikow jako gotowe do wydania;
+      :Wyswietl potwierdzenie przyjecia dostawy;
       stop
       @enduml
     </p>
@@ -3705,37 +3660,29 @@
       :Wybierz rezerwacje klienta;
       :Wyswietl szczegoly rezerwacji;
       :Wybierz opcje "Utworz zlecenie";
-      if (Rezerwacja potwierdzona?) then (nie)
+      if (Rezerwacja niepotwierdzona?) then (tak)
         :Potwierdz rezerwacje (status "potwierdzona");
-      else (tak)
+      else (nie)
       endif
       repeat
-        :Wyswietl formularz zlecenia z danymi z rezerwacji;
-        :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
         repeat
+          :Wyswietl formularz zlecenia z danymi z rezerwacji;
+          :Uzupelnij aktualny przebieg i opis usterki po ogledzinach;
           :Przydziel zlecenie mechanikowi (przypadek uzycia "Przydziel zlecenie mechanikowi");
           if (Manager anuluje?) then (tak)
+            :Nie tworz zlecenia;
+            end
           else (nie)
-            :Zapisz zlecenie;
-            :Zwaliduj formularz;
-            if (Nie wypelniono wymaganych pol?) then (tak)
-              :Zaznacz brakujace pola;
-            elseif (Przebieg mniejszy niz ostatnio zapisany?) then (tak)
-              :Wyswietl komunikat o blednym przebiegu;
-            elseif (Nie przydzielono mechanika?) then (tak)
-              :Wyswietl komunikat o koniecznosci przydzielenia mechanika;
-            else (nie)
-            endif
           endif
-        repeat while (Mechanik do przydzielenia?) is (tak) not (nie)
-      repeat while (Formularz do poprawy?) is (tak) not (nie)
-      if (Zlecenie zapisane i poprawne?) then (tak)
-        :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
-        :Oznacz rezerwacje jako zrealizowana;
-        :Wyswietl potwierdzenie utworzenia zlecenia;
-      else (nie, anulowano)
-        :Nie tworz zlecenia;
-      endif
+          :Zapisz zlecenie;
+          :Zwaliduj formularz;
+          backward:Zaznacz brakujace pola;
+        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+        backward:Wyswietl komunikat o blednym przebiegu;
+      repeat while (Przebieg mniejszy niz ostatnio zapisany?) is (tak) not (nie)
+      :Utworz zlecenie naprawy ze statusem "przyjete" i data przyjecia;
+      :Oznacz rezerwacje jako zrealizowana;
+      :Wyswietl potwierdzenie utworzenia zlecenia;
       stop
       @enduml
     </p>
@@ -3752,28 +3699,25 @@
       :Wyswietl liste uslug ze stawkami;
       :Wybierz opcje "Dodaj usluge";
       repeat
-        :Wyswietl formularz uslugi;
-        :Wypelnij formularz uslugi;
-        if (Manager anuluje?) then (tak)
-        else (nie)
-          :Zapisz formularz;
-          :Zwaliduj formularz;
-          if (Nie wypelniono wymaganych pol?) then (tak)
-            :Zaznacz brakujace pola;
-          elseif (Stawka zerowa lub ujemna?) then (tak)
-            :Wyswietl komunikat o blednej stawce;
-          elseif (Usluga o tej nazwie juz istnieje?) then (tak)
-            :Wyswietl komunikat o istniejacej usludze;
-          else (nie)
-          endif
-        endif
-      repeat while (Formularz do poprawy?) is (tak) not (nie)
-      if (Formularz zapisany i poprawny?) then (tak)
-        :Zapisz usluge w cenniku z data obowiazywania stawki;
-        :Wyswietl zaktualizowany cennik uslug;
-      else (nie, anulowano)
-        :Nie dodawaj uslugi;
-      endif
+        repeat
+          repeat
+            :Wyswietl formularz uslugi;
+            :Wypelnij formularz uslugi;
+            if (Manager anuluje?) then (tak)
+              :Nie dodawaj uslugi;
+              end
+            else (nie)
+            endif
+            :Zapisz formularz;
+            :Zwaliduj formularz;
+            backward:Zaznacz brakujace pola;
+          repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+          backward:Wyswietl komunikat o blednej stawce;
+        repeat while (Stawka zerowa lub ujemna?) is (tak) not (nie)
+        backward:Wyswietl komunikat o istniejacej usludze;
+      repeat while (Usluga o tej nazwie juz istnieje?) is (tak) not (nie)
+      :Zapisz usluge w cenniku z data obowiazywania stawki;
+      :Wyswietl zaktualizowany cennik uslug;
       stop
       @enduml
     </p>
@@ -3791,35 +3735,28 @@
         :Wyswietl liste zlecen o statusie "zakonczone";
         :Wybierz zlecenie z listy;
         :Wyswietl podsumowanie kosztow zlecenia;
-        if (Pozycja zlecenia bez ceny?) then (tak)
-          :Wskaz pozycje bez ceny;
-        else (nie)
-          :Wybierz opcje "Wystaw fakture";
-          repeat
-            :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
-            :Uzupelnij forme platnosci i opcjonalnie NIP;
-            if (Manager anuluje?) then (tak)
-            else (nie)
-              :Zatwierdz fakture;
-              :Zwaliduj dane faktury;
-              if (Nie wypelniono wymaganych pol?) then (tak)
-                :Zaznacz brakujace pola;
-              elseif (Numer NIP niepoprawny?) then (tak)
-                :Wyswietl komunikat o blednym numerze NIP;
-              else (nie)
-              endif
-            endif
-          repeat while (Formularz do poprawy?) is (tak) not (nie)
-        endif
+        backward:Wskaz pozycje bez ceny;
       repeat while (Pozycja zlecenia bez ceny?) is (tak) not (nie)
-      if (Faktura zatwierdzona i poprawna?) then (tak)
-        :Wygeneruj fakture z kolejnym numerem;
-        :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
-        :Udostepnij fakture klientowi;
-        :Wyswietl fakture do wydruku;
-      else (nie, anulowano)
-        :Nie wystawiaj faktury;
-      endif
+      :Wybierz opcje "Wystaw fakture";
+      repeat
+        repeat
+          :Wyswietl formularz faktury z danymi klienta i pozycjami zlecenia;
+          :Uzupelnij forme platnosci i opcjonalnie NIP;
+          if (Manager anuluje?) then (tak)
+            :Nie wystawiaj faktury;
+            end
+          else (nie)
+          endif
+          :Zatwierdz fakture;
+          :Zwaliduj dane faktury;
+          backward:Zaznacz brakujace pola;
+        repeat while (Nie wypelniono wymaganych pol?) is (tak) not (nie)
+        backward:Wyswietl komunikat o blednym numerze NIP;
+      repeat while (Numer NIP niepoprawny?) is (tak) not (nie)
+      :Wygeneruj fakture z kolejnym numerem;
+      :Zmien status zlecenia na "rozliczone" (przypadek uzycia "Zmien status zlecenia naprawy");
+      :Udostepnij fakture klientowi;
+      :Wyswietl fakture do wydruku;
       stop
       @enduml
     </p>
@@ -3850,8 +3787,6 @@
       -id: int
       -login: String
       -password: String
-      -firstName: String
-      -lastName: String
       +logIn(login: String, password: String): boolean
     }
 
@@ -4067,6 +4002,8 @@
       -status: PartRequestStatus
       +PartRequest(repairOrder: RepairOrder)
       +addItem(part: SparePart, quantity: int): void
+      +markWaiting(): void
+      +markReadyForIssue(): void
       +markFulfilled(): void
       +cancel(): void
     }
@@ -4082,8 +4019,8 @@
     class PartRequestItem {
       -part: SparePart
       -quantity: int
-      -issuedQuantity: int
       +PartRequestItem(part: SparePart, quantity: int)
+      +reduceQuantity(quantity: int): void
     }
 
     class SparePart {

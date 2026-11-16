@@ -36,8 +36,6 @@
               -id: int
               -login: String
               -password: String
-              -firstName: String
-              -lastName: String
               +logIn(login: String, password: String): boolean
             }
 
@@ -253,6 +251,8 @@
               -status: PartRequestStatus
               +PartRequest(repairOrder: RepairOrder)
               +addItem(part: SparePart, quantity: int): void
+              +markWaiting(): void
+              +markReadyForIssue(): void
               +markFulfilled(): void
               +cancel(): void
             }
@@ -268,8 +268,8 @@
             class PartRequestItem {
               -part: SparePart
               -quantity: int
-              -issuedQuantity: int
               +PartRequestItem(part: SparePart, quantity: int)
+              +reduceQuantity(quantity: int): void
             }
 
             class SparePart {
