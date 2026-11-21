@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wzorce projektowe – Manager warsztatu</title>
+
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix />
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix />
+</head>
+<body>
+
+<article>
+  <h4>Wzorce projektowe</h4>
+
+  <section class="pattern">
+    <h5>Singleton</h5>
+    <p class="author">Dawid Woźniak</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        Z cennika usług korzysta wiele przypadków użycia. Manager dodaje do niego usługi
+        („Dodaj usługę do cennika”), mechanik wybiera z niego usługi w formularzu naprawy
+        („Wprowadź wykonaną naprawę”) i w zgłoszeniu dodatkowej usterki, na podstawie stawek z
+        cennika wyliczane są kosztorysy („Zgłoś dodatkową usterkę”) i faktury („Wystaw
+        fakturę”). Warunek końcowy przypadku użycia „Dodaj usługę do cennika” mówi, że nowa
+        stawka jest stosowana przy wyliczaniu kosztorysów i faktur.
+      </p>
+      <p>
+        W warsztacie obowiązuje jeden cennik. Gdyby każdy serwis tworzył własny obiekt
+        <code>PriceList</code>, usługa dodana przez managera nie byłaby widoczna w formularzu
+        mechanika, a kosztorys i faktura za te same prace mogłyby zostać policzone według
+        różnych stawek. Z cennika korzysta jednocześnie wielu użytkowników, więc jego
+        utworzenie i zmiany muszą być bezpieczne przy pracy wielu wątków. Wzorzec nie dotyczy
+        tu sposobu przechowywania danych, tylko reguły biznesowej: w całym systemie obowiązuje
+        jeden cennik z jednolitymi stawkami.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Singleton zapewnia, że klasa ma tylko jedną instancję, i daje pojedynczy punkt dostępu
+        do niej.
+      </p>
+      <ul>
+        <li>
+          <code>PriceList</code> ma prywatny konstruktor i statyczne pole
+          <code>instance</code>. Jedyną instancję zwraca statyczna metoda
+          <code>getInstance()</code>. Synchronizacja z podwójnym sprawdzeniem i słowo
+          <code>volatile</code> zapewniają jedną instancję także przy wielu wątkach.
+        </li>
+        <li>
+          W odróżnieniu od przykładu z materiałów cennik się zmienia, bo manager dodaje usługi.
+          Dlatego metody <code>addService()</code>, <code>findService()</code> i
+          <code>getServices()</code> są synchronizowane, a <code>getServices()</code> zwraca
+          niemodyfikowalną kopię listy.
+        </li>
+        <li>
+          <code>addService()</code> realizuje krok 8: zapisuje usługę z datą obowiązywania
+          stawki albo zwraca <code>false</code>, gdy usługa o tej nazwie już istnieje (przepływ
+          alternatywny 7). Pozostałe błędy z kroku 7, czyli brak nazwy i stawkę zerową lub
+          ujemną, odrzuca konstruktor <code>ServiceItem</code>.
+        </li>
+        <li>
+          <code>BillingServiceImpl</code> – klient Singletona. Jego pole <code>priceList</code>
+          (asocjacja „zarządza” z diagramu klas) wskazuje jedyną instancję cennika, więc każdy
+          obiekt serwisu korzysta z tego samego cennika. Dlatego na diagramie wzorca liczność
+          po stronie serwisu wynosi 0..*: wiele obiektów serwisu wskazuje jeden cennik.
+        </li>
+      </ul>
+      <p>
+        Wzorzec pasuje do problemu, bo cennik musi istnieć w systemie dokładnie raz, a dostęp
+        do niego jest potrzebny w wielu miejscach.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Singleton - cennik uslug
+
+      class PriceList {
+        -{static} instance: PriceList
+        -services: List&lt;ServiceItem&gt;
+        -PriceList()
+        +{static} getInstance(): PriceList
+        +addService(service: ServiceItem): boolean
+        +findService(name: String): ServiceItem
+        +getServices(): List&lt;ServiceItem&gt;
+      }
+      class ServiceItem {
+        -name: String
+        -description: String
+        -rate: double
+        -fixedPrice: boolean
+        -estimatedTime: double
+        -validFrom: LocalDate
+        +ServiceItem(name: String, rate: double, fixedPrice: boolean)
+        +calculatePrice(workTime: double): double
+        ~setValidFrom(validFrom: LocalDate): void
+        +setDescription(description: String): void
+        +setEstimatedTime(estimatedTime: double): void
+      }
+      class BillingServiceImpl {
+        -priceList: PriceList
+        +getPriceList(): PriceList
+      }
+      PriceList ..&gt; PriceList : &lt;&lt; create &gt;&gt;
+      PriceList "1" o--&gt; "0..*" ServiceItem : sklada sie z
+      BillingServiceImpl "0..*" --&gt; "1" PriceList : zarzadza
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+// Cennik usług warsztatu - Singleton
+public final class PriceList {
+    private static volatile PriceList instance;
+
+    private final List&lt;ServiceItem&gt; services = new ArrayList&lt;&gt;();
+
+    // Prywatny konstruktor - cennika nie można utworzyć spoza klasy
+    private PriceList() {
+    }
+
+    public static PriceList getInstance() {
+        if (instance == null) {
+            synchronized (PriceList.class) {
+                if (instance == null) {
+                    instance = new PriceList();
+                }
+            }
+        }
+        return instance;
+    }
+
+    // Krok 8 przypadku użycia "Dodaj usługę do cennika".
+    // Zwraca false, gdy usługa o tej nazwie już istnieje (przepływ alternatywny 7).
+    public synchronized boolean addService(ServiceItem service) {
+        if (findService(service.getName()) != null) {
+            return false;
+        }
+        service.setValidFrom(LocalDate.now());
+        services.add(service);
+        return true;
+    }
+
+    // Zwraca usługę o podanej nazwie albo null, gdy takiej usługi nie ma w cenniku
+    public synchronized ServiceItem findService(String name) {
+        for (ServiceItem service : services) {
+            if (service.getName().equalsIgnoreCase(name.trim())) {
+                return service;
+            }
+        }
+        return null;
+    }
+
+    // Lista usług do formularza naprawy, kosztorysu i faktury (tylko do odczytu)
+    public synchronized List&lt;ServiceItem&gt; getServices() {
+        return List.copyOf(services);
+    }
+}
+
+import java.time.LocalDate;
+
+// Usługa serwisowa - pozycja cennika
+public class ServiceItem {
+    private final String name;
+    private String description;
+    private final double rate;           // stawka za roboczogodzinę albo cena stała
+    private final boolean fixedPrice;
+    private double estimatedTime;
+    private LocalDate validFrom;
+
+    public ServiceItem(String name, double rate, boolean fixedPrice) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Nazwa usługi jest wymagana");
+        }
+        if (rate &lt;= 0) {
+            throw new IllegalArgumentException("Stawka musi być dodatnia (podano: " + rate + ")");
+        }
+        this.name = name.trim();
+        this.rate = rate;
+        this.fixedPrice = fixedPrice;
+    }
+
+    public double calculatePrice(double workTime) {
+        return fixedPrice ? rate : rate * workTime;
+    }
+
+    // Datę obowiązywania stawki ustawia cennik w chwili dodania usługi
+    void setValidFrom(LocalDate validFrom) { this.validFrom = validFrom; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public void setEstimatedTime(double estimatedTime) { this.estimatedTime = estimatedTime; }
+
+    public String getName() { return name; }
+
+    public String getDescription() { return description; }
+
+    public double getEstimatedTime() { return estimatedTime; }
+
+    public LocalDate getValidFrom() { return validFrom; }
+}
+
+// Klient Singletona - serwis managera korzysta z jedynego cennika warsztatu
+public class BillingServiceImpl {
+    private final PriceList priceList = PriceList.getInstance();
+
+    public PriceList getPriceList() {
+        return priceList;
+    }
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.junit.jupiter.api.Test;
+
+// Cennik jest wspólny dla wszystkich testów, dlatego każdy test używa innych nazw usług
+public class PriceListTest {
+
+    @Test
+    public void testSingletonInstance() {
+        PriceList instance1 = PriceList.getInstance();
+        PriceList instance2 = PriceList.getInstance();
+
+        assertSame(instance1, instance2, "Obie referencje powinny wskazywać na ten sam cennik");
+        assertSame(instance1, new BillingServiceImpl().getPriceList());
+    }
+
+    @Test
+    public void testServiceAddedByManagerIsVisibleEverywhere() {
+        ServiceItem oilChange = new ServiceItem("Wymiana oleju", 120.0, true);
+
+        // Manager dodaje usługę przez swój serwis
+        assertTrue(new BillingServiceImpl().getPriceList().addService(oilChange));
+
+        // Formularz naprawy mechanika korzysta z tego samego cennika
+        assertSame(oilChange, PriceList.getInstance().findService("Wymiana oleju"));
+        assertEquals(LocalDate.now(), oilChange.getValidFrom());
+    }
+
+    @Test
+    public void testServiceWithExistingNameIsRejected() {
+        PriceList priceList = PriceList.getInstance();
+        assertTrue(priceList.addService(new ServiceItem("Geometria kół", 200.0, true)));
+        int count = priceList.getServices().size();
+
+        assertFalse(priceList.addService(new ServiceItem("geometria KÓŁ", 250.0, true)));
+        assertEquals(count, priceList.getServices().size());
+        assertEquals(200.0, priceList.findService("Geometria kół").calculatePrice(1.0), 0.001);
+    }
+
+    @Test
+    public void testServiceWithInvalidDataIsRejected() {
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem("Diagnostyka komputerowa", 0.0, false));
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem("Diagnostyka komputerowa", -50.0, false));
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem(" ", 100.0, false));
+        assertNull(PriceList.getInstance().findService("Diagnostyka komputerowa"));
+    }
+
+    @Test
+    public void testPriceDependsOnRateType() {
+        ServiceItem brakeRepair = new ServiceItem("Naprawa układu hamulcowego", 150.0, false);
+        ServiceItem tyreChange = new ServiceItem("Wymiana opon", 100.0, true);
+        PriceList.getInstance().addService(brakeRepair);
+        PriceList.getInstance().addService(tyreChange);
+
+        assertEquals(300.0, PriceList.getInstance().findService("Naprawa układu hamulcowego").calculatePrice(2.0), 0.001);
+        assertEquals(100.0, PriceList.getInstance().findService("Wymiana opon").calculatePrice(2.0), 0.001);
+    }
+
+    @Test
+    public void testServicesListIsReadOnly() {
+        List&lt;ServiceItem&gt; services = PriceList.getInstance().getServices();
+
+        assertThrows(UnsupportedOperationException.class,
+                () -&gt; services.add(new ServiceItem("Wymiana akumulatora", 80.0, true)));
+    }
+
+    @Test
+    public void testOneInstanceForManyThreads() throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        List&lt;Callable&lt;PriceList&gt;&gt; tasks = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; 50; i++) {
+            tasks.add(PriceList::getInstance);
+        }
+
+        Set&lt;PriceList&gt; instances = new HashSet&lt;&gt;();
+        for (Future&lt;PriceList&gt; result : executor.invokeAll(tasks)) {
+            instances.add(result.get());
+        }
+        executor.shutdown();
+
+        assertEquals(1, instances.size(), "Wszystkie wątki powinny dostać ten sam cennik");
+    }
+}</code></pre>
+  </section>
+</article>
+
+</body>
+</html>

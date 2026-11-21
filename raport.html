@@ -4239,5 +4239,1720 @@
     @enduml
   </p>
 </article>
+
+<article>
+  <h4>Wzorce projektowe</h4>
+
+  <section class="pattern">
+    <h5>Prototyp</h5>
+    <p class="author">Jakub Banasiewicz</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        W przypadku użycia „Zaakceptuj kosztorys dodatkowych prac” klient ogląda kosztorys
+        (krok 2), wybiera opcję Akceptuj i potwierdza decyzję (kroki 3–5). W tym czasie
+        mechanik może zmienić kosztorys, np. dodać usługę albo zmienić ilość części. Dlatego
+        w kroku 6 system sprawdza, czy kosztorys nie został w międzyczasie zmieniony, a jeśli
+        tak, wyświetla go ponownie (przepływ alternatywny 6, GOTO 2). Klient może zaakceptować
+        tylko taki kosztorys, jaki faktycznie widział.
+      </p>
+      <p>
+        Żeby to sprawdzić, system musi zapamiętać kosztorys dokładnie w tej postaci, w jakiej
+        został pokazany klientowi. Zapamiętanie samej referencji nic nie daje, bo wskazuje ten
+        sam obiekt, który zmienia mechanik. Przepisywanie pól poza klasą
+        <code>CostEstimate</code> jest podatne na błędy: kosztorys zawiera listę usług i listę
+        pozycji części (<code>PartItem</code>). Kopia płytka dzieliłaby z oryginałem te same
+        pozycje części, więc zmiana ilości przez mechanika zmieniłaby też zapamiętaną kopię i
+        zmiana nie zostałaby wykryta.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Prototyp pozwala tworzyć nowe obiekty przez klonowanie istniejącego obiektu, zamiast
+        budować je od zera. Obiekt sam wie, jak utworzyć swoją kopię, więc kod, który z niej
+        korzysta, nie musi znać jego budowy.
+      </p>
+      <ul>
+        <li>
+          <code>Prototype</code> – klasa abstrakcyjna z metodą <code>clone()</code>.
+        </li>
+        <li>
+          <code>CostEstimate</code> i <code>PartItem</code> – prototypy konkretne (klasy z
+          diagramu klas). Kopię tworzą prywatne konstruktory kopiujące wywoływane w
+          <code>clone()</code>.
+        </li>
+        <li>
+          <code>EstimateReview</code> – klient prototypu. Przy wyświetleniu kosztorysu
+          (<code>display()</code>) zapamiętuje jego klon, a przy potwierdzeniu
+          (<code>confirmAcceptance()</code>) porównuje klon z aktualnym kosztorysem metodą
+          <code>hasSameContentAs()</code>. Jeśli treść się różni, akceptacja nie jest
+          zapisywana i kosztorys trzeba wyświetlić ponownie.
+        </li>
+      </ul>
+      <p>
+        Kopia jest głęboka tam, gdzie wymaga tego diagram klas. Pozycje części należą do
+        kosztorysu (kompozycja <code>CostEstimate</code>–<code>PartItem</code>), więc każda
+        jest klonowana. Usługi pochodzą z cennika (asocjacja), dlatego kopia dostaje nową
+        listę z tymi samymi obiektami <code>ServiceItem</code>. Kopia zachowuje identyfikator,
+        bo jest obrazem tego samego kosztorysu, a nie nowym kosztorysem. Tak jak w materiałach,
+        <code>clone()</code> nie korzysta z mechanizmu <code>Cloneable</code>, tylko jawnie
+        wywołuje konstruktor kopiujący.
+      </p>
+      <p>
+        Wzorzec pasuje do problemu, bo w chwili wyświetlenia potrzebna jest wierna i niezależna
+        kopia obiektu o złożonej strukturze. Klasy <code>ServiceItem</code> i
+        <code>SparePart</code> są w kodzie uproszczone do pól potrzebnych w kosztorysie.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Prototyp - kosztorys dodatkowych prac
+
+      abstract class Prototype {
+        +{abstract} clone(): Prototype
+      }
+      class CostEstimate {
+        -{static} nextId: int
+        -id: int
+        -faultDescription: String
+        -services: List&lt;ServiceItem&gt;
+        -parts: List&lt;PartItem&gt;
+        -status: EstimateStatus
+        +CostEstimate(faultDescription: String)
+        -CostEstimate(other: CostEstimate)
+        +clone(): CostEstimate
+        +addService(service: ServiceItem): void
+        +addPart(part: SparePart, quantity: int): void
+        +calculateLaborCost(): double
+        +calculatePartsCost(): double
+        +calculateTotal(): double
+        +accept(): void
+        +reject(): void
+        +hasSameContentAs(other: CostEstimate): boolean
+      }
+      class PartItem {
+        -part: SparePart
+        -quantity: int
+        +PartItem(part: SparePart, quantity: int)
+        -PartItem(other: PartItem)
+        +clone(): PartItem
+        +reduceQuantity(quantity: int): void
+        +calculateCost(): double
+        +hasSameContentAs(other: PartItem): boolean
+      }
+      class EstimateReview {
+        -estimate: CostEstimate
+        -displayedCopy: CostEstimate
+        +EstimateReview(estimate: CostEstimate)
+        +display(): CostEstimate
+        +confirmAcceptance(): boolean
+      }
+      class ServiceItem {
+        -name: String
+        -rate: double
+        -fixedPrice: boolean
+        -estimatedTime: double
+        +ServiceItem(name: String, rate: double, fixedPrice: boolean)
+        +calculatePrice(workTime: double): double
+      }
+      class SparePart {
+        -catalogNumber: String
+        -name: String
+        -price: double
+        +SparePart(catalogNumber: String, name: String, price: double)
+      }
+      enum EstimateStatus {
+        PENDING
+        ACCEPTED
+        REJECTED
+      }
+      Prototype &lt;|-- CostEstimate : to
+      Prototype &lt;|-- PartItem : to
+      CostEstimate ..&gt; CostEstimate : &lt;&lt; create &gt;&gt;
+      PartItem ..&gt; PartItem : &lt;&lt; create &gt;&gt;
+      CostEstimate "1" *--&gt; "0..*" PartItem : wycenia
+      CostEstimate "0..*" --&gt; "1..*" ServiceItem : wycenia
+      CostEstimate --&gt; "1" EstimateStatus : ma
+      PartItem "0..*" --&gt; "1" SparePart : dotyczy
+      EstimateReview "0..*" --&gt; "1" CostEstimate : sprawdza
+      EstimateReview "1" --&gt; "0..1" CostEstimate : kopia pokazana klientowi
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">// Prototyp abstrakcyjny - obiekt, który potrafi utworzyć swoją kopię
+public abstract class Prototype {
+
+    public abstract Prototype clone();
+}
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Kosztorys dodatkowych prac - prototyp konkretny
+public class CostEstimate extends Prototype {
+    private static int nextId = 1;
+
+    private final int id;
+    private final String faultDescription;
+    private final List&lt;ServiceItem&gt; services;
+    private final List&lt;PartItem&gt; parts;
+    private EstimateStatus status;
+
+    public CostEstimate(String faultDescription) {
+        this.id = nextId++;
+        this.faultDescription = faultDescription;
+        this.services = new ArrayList&lt;&gt;();
+        this.parts = new ArrayList&lt;&gt;();
+        this.status = EstimateStatus.PENDING;
+    }
+
+    // Konstruktor kopiujący - używa go metoda clone()
+    private CostEstimate(CostEstimate other) {
+        this.id = other.id;
+        this.faultDescription = other.faultDescription;
+        // Nowa lista, ale te same usługi - usługi należą do cennika, a nie do kosztorysu
+        this.services = new ArrayList&lt;&gt;(other.services);
+        // KOPIA GŁĘBOKA: pozycje części należą do kosztorysu (kompozycja), więc każda jest klonowana
+        this.parts = new ArrayList&lt;&gt;();
+        for (PartItem item : other.parts) {
+            this.parts.add(item.clone());
+        }
+        this.status = other.status;
+    }
+
+    @Override
+    public CostEstimate clone() {
+        return new CostEstimate(this);
+    }
+
+    public void addService(ServiceItem service) {
+        services.add(service);
+    }
+
+    public void addPart(SparePart part, int quantity) {
+        parts.add(new PartItem(part, quantity));
+    }
+
+    // Koszt robocizny liczony według cennika dla szacowanego czasu wykonania usług
+    public double calculateLaborCost() {
+        double cost = 0;
+        for (ServiceItem service : services) {
+            cost += service.calculatePrice(service.getEstimatedTime());
+        }
+        return cost;
+    }
+
+    public double calculatePartsCost() {
+        double cost = 0;
+        for (PartItem item : parts) {
+            cost += item.calculateCost();
+        }
+        return cost;
+    }
+
+    public double calculateTotal() {
+        return calculateLaborCost() + calculatePartsCost();
+    }
+
+    public void accept() {
+        checkPending();
+        status = EstimateStatus.ACCEPTED;
+    }
+
+    public void reject() {
+        checkPending();
+        status = EstimateStatus.REJECTED;
+    }
+
+    private void checkPending() {
+        if (status != EstimateStatus.PENDING) {
+            throw new IllegalStateException("Decyzja o kosztorysie została już zapisana");
+        }
+    }
+
+    // Porównanie treści dwóch kosztorysów (opis usterki, usługi, części i ich ilości)
+    public boolean hasSameContentAs(CostEstimate other) {
+        if (id != other.id
+                || !faultDescription.equals(other.faultDescription)
+                || !services.equals(other.services)
+                || parts.size() != other.parts.size()) {
+            return false;
+        }
+        for (int i = 0; i &lt; parts.size(); i++) {
+            if (!parts.get(i).hasSameContentAs(other.parts.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public List&lt;ServiceItem&gt; getServices() { return Collections.unmodifiableList(services); }
+
+    public List&lt;PartItem&gt; getParts() { return Collections.unmodifiableList(parts); }
+
+    public EstimateStatus getStatus() { return status; }
+}
+
+// Pozycja "część + ilość" - prototyp konkretny
+public class PartItem extends Prototype {
+    private final SparePart part;
+    private int quantity;
+
+    public PartItem(SparePart part, int quantity) {
+        this.part = part;
+        this.quantity = quantity;
+    }
+
+    // Konstruktor kopiujący - używa go metoda clone()
+    private PartItem(PartItem other) {
+        this.part = other.part;          // ta sama część z katalogu
+        this.quantity = other.quantity;
+    }
+
+    @Override
+    public PartItem clone() {
+        return new PartItem(this);
+    }
+
+    // Mechanik zmniejsza ilość części w kosztorysie
+    public void reduceQuantity(int quantity) {
+        if (quantity &lt;= 0 || quantity &gt;= this.quantity) {
+            throw new IllegalArgumentException("Niepoprawna ilość do usunięcia: " + quantity);
+        }
+        this.quantity -= quantity;
+    }
+
+    public double calculateCost() {
+        return part.getPrice() * quantity;
+    }
+
+    public boolean hasSameContentAs(PartItem other) {
+        return part == other.part &amp;&amp; quantity == other.quantity;
+    }
+
+    public SparePart getPart() { return part; }
+
+    public int getQuantity() { return quantity; }
+}
+
+// Przegląd kosztorysu przez klienta (przypadek użycia "Zaakceptuj kosztorys dodatkowych prac")
+public class EstimateReview {
+    private final CostEstimate estimate;   // kosztorys zapisany w zleceniu - mechanik może go zmienić
+    private CostEstimate displayedCopy;    // kopia kosztorysu w postaci pokazanej klientowi
+
+    public EstimateReview(CostEstimate estimate) {
+        this.estimate = estimate;
+    }
+
+    // Krok 2: system wyświetla kosztorys i zapamiętuje jego kopię
+    public CostEstimate display() {
+        displayedCopy = estimate.clone();
+        return displayedCopy;
+    }
+
+    // Kroki 5-7: klient potwierdza akceptację, system sprawdza, czy kosztorys się nie zmienił
+    public boolean confirmAcceptance() {
+        if (displayedCopy == null) {
+            throw new IllegalStateException("Kosztorys nie został wyświetlony klientowi");
+        }
+        if (!estimate.hasSameContentAs(displayedCopy)) {
+            // Przepływ alternatywny 6: kosztorys zmieniony przez mechanika - trzeba go wyświetlić ponownie (GOTO 2)
+            return false;
+        }
+        estimate.accept();
+        return true;
+    }
+}
+
+// Usługa z cennika (uproszczona - tylko pola potrzebne w kosztorysie)
+public class ServiceItem {
+    private final String name;
+    private final double rate;
+    private final boolean fixedPrice;
+    private double estimatedTime;
+
+    public ServiceItem(String name, double rate, boolean fixedPrice) {
+        this.name = name;
+        this.rate = rate;
+        this.fixedPrice = fixedPrice;
+    }
+
+    public void setEstimatedTime(double estimatedTime) { this.estimatedTime = estimatedTime; }
+
+    public double getEstimatedTime() { return estimatedTime; }
+
+    // Cena stała albo stawka za roboczogodzinę razy czas pracy
+    public double calculatePrice(double workTime) {
+        return fixedPrice ? rate : rate * workTime;
+    }
+}
+
+// Część zamienna z katalogu magazynu (uproszczona - tylko pola potrzebne w kosztorysie)
+public class SparePart {
+    private final String catalogNumber;
+    private final String name;
+    private final double price;
+
+    public SparePart(String catalogNumber, String name, double price) {
+        this.catalogNumber = catalogNumber;
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() { return name; }
+
+    public double getPrice() { return price; }
+}
+
+public enum EstimateStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class CostEstimatePrototypeTest {
+    private ServiceItem brakeDiscReplacement;
+    private SparePart brakeDisc;
+    private CostEstimate estimate;
+
+    @BeforeEach
+    public void setUp() {
+        brakeDiscReplacement = new ServiceItem("Wymiana tarcz hamulcowych", 150.0, false);
+        brakeDiscReplacement.setEstimatedTime(2.0);
+        brakeDisc = new SparePart("TH-200", "Tarcza hamulcowa", 180.0);
+
+        estimate = new CostEstimate("Zużyte tarcze hamulcowe");
+        estimate.addService(brakeDiscReplacement);
+        estimate.addPart(brakeDisc, 2);
+    }
+
+    @Test
+    public void testCloneCreatesSeparateObjectWithSameContent() {
+        CostEstimate copy = estimate.clone();
+
+        assertNotSame(estimate, copy, "Kopia powinna być nowym obiektem");
+        assertTrue(copy.hasSameContentAs(estimate), "Kopia powinna mieć tę samą treść");
+        // 150 zł/h * 2 h + 2 * 180 zł = 660 zł
+        assertEquals(660.0, copy.calculateTotal(), 0.001);
+    }
+
+    @Test
+    public void testCloneCopiesPartItemsDeeply() {
+        CostEstimate copy = estimate.clone();
+
+        assertNotSame(estimate.getParts().get(0), copy.getParts().get(0), "Pozycje części powinny być sklonowane");
+
+        // Mechanik zmienia oryginał: zmniejsza ilość tarcz i dodaje nową część
+        estimate.getParts().get(0).reduceQuantity(1);
+        estimate.addPart(new SparePart("KL-10", "Klocki hamulcowe", 120.0), 1);
+
+        assertEquals(2, copy.getParts().get(0).getQuantity(), "Zmiana oryginału nie może zmienić kopii");
+        assertEquals(1, copy.getParts().size());
+    }
+
+    @Test
+    public void testCloneSharesServicesFromPriceList() {
+        CostEstimate copy = estimate.clone();
+
+        assertSame(brakeDiscReplacement, copy.getServices().get(0), "Usługa z cennika nie jest kopiowana");
+    }
+
+    @Test
+    public void testAcceptWhenEstimateNotChanged() {
+        EstimateReview review = new EstimateReview(estimate);
+        review.display();
+
+        assertTrue(review.confirmAcceptance());
+        assertEquals(EstimateStatus.ACCEPTED, estimate.getStatus());
+    }
+
+    @Test
+    public void testChangeByMechanicIsDetected() {
+        EstimateReview review = new EstimateReview(estimate);
+        review.display();
+
+        // Mechanik zmienia kosztorys, zanim klient potwierdzi decyzję
+        estimate.addService(new ServiceItem("Odpowietrzenie układu hamulcowego", 80.0, true));
+
+        assertFalse(review.confirmAcceptance(), "Zmiana kosztorysu powinna zostać wykryta");
+        assertEquals(EstimateStatus.PENDING, estimate.getStatus());
+
+        // GOTO 2: kosztorys wyświetlony ponownie, teraz akceptacja się udaje
+        review.display();
+        assertTrue(review.confirmAcceptance());
+        assertEquals(EstimateStatus.ACCEPTED, estimate.getStatus());
+    }
+
+    @Test
+    public void testConfirmWithoutDisplayIsNotAllowed() {
+        EstimateReview review = new EstimateReview(estimate);
+
+        assertThrows(IllegalStateException.class, review::confirmAcceptance);
+    }
+}</code></pre>
+  </section>
+
+  <section class="pattern">
+    <h5>Budowniczy</h5>
+    <p class="author">Łukasz Bera</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        W przypadku użycia „Zamów części u magazyniera” mechanik składa zamówienie stopniowo:
+        przegląda katalog, wybiera kolejne części i podaje ich ilości (krok 7), a dopiero potem
+        wysyła zamówienie (krok 8). System waliduje je w kroku 9 i odrzuca, gdy nie wybrano
+        żadnej części, ilość jest niepoprawna albo ta sama część została już zamówiona do tego
+        zlecenia i nie została jeszcze wydana (przepływy alternatywne 9, GOTO 6). Dopiero
+        poprawne zamówienie jest tworzone, przypisywane do zlecenia i przekazywane
+        magazynierowi (kroki 10–11).
+      </p>
+      <p>
+        Gdyby obiekt <code>PartRequest</code> tworzyć od razu i dopisywać do niego pozycje w
+        trakcie wybierania części, w systemie istniałyby zamówienia niepełne lub błędne, np.
+        bez żadnej pozycji, choć diagram klas wymaga co najmniej jednej (kompozycja
+        <code>PartRequest</code>–<code>PartItem</code>, 1..*). Walidacja byłaby rozproszona po
+        kodzie, a magazynier mógłby zobaczyć zamówienie, którego mechanik jeszcze nie wysłał.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Budowniczy oddziela proces tworzenia złożonego obiektu z części od jego reprezentacji.
+        Obiekt jest składany krok po kroku, a powstaje dopiero w metodzie <code>build()</code>,
+        po sprawdzeniu, że wszystkie jego części są poprawne.
+      </p>
+      <ul>
+        <li>
+          <code>PartRequestBuilder</code> – budowniczy. <code>selectPart()</code> odpowiada
+          wyborowi części z katalogu i podaniu ilości (ponowny wybór tej samej części zmienia
+          ilość), <code>removePart()</code> – rezygnacji z części przy poprawianiu zamówienia.
+          <code>build()</code> wykonuje walidację z kroku 9 i tworzy zamówienie.
+        </li>
+        <li>
+          <code>PartRequest</code> – produkt złożony z pozycji <code>PartItem</code>. Jego
+          konstruktor i metoda <code>addItem()</code> mają widoczność pakietową, więc zamówienie
+          może utworzyć tylko budowniczy. Nowe zamówienie ma status <code>PENDING</code>.
+        </li>
+        <li>
+          <code>existingRequests</code> – zamówienia już złożone (np. pobrane przez
+          <code>WarehouseService.findPendingRequests()</code>). Budowniczy sprawdza w nich, czy
+          część nie została już zamówiona do tego samego zlecenia i nie czeka na wydanie
+          (status <code>PENDING</code>, <code>WAITING</code> lub <code>READY_FOR_ISSUE</code>).
+        </li>
+      </ul>
+      <p>
+        Metody budowniczego zwracają <code>this</code>, więc wywołania można łączyć w łańcuch.
+        Po błędzie walidacji budowniczy pamięta wybrane części, więc mechanik poprawia tylko
+        błędną pozycję i wysyła zamówienie ponownie. Odpowiada to powrotowi do katalogu części
+        (GOTO 6). Zastosowano uproszczoną wersję wzorca z jednym budowniczym, tak jak w
+        przykładzie z materiałów. Klasy <code>SparePart</code> i <code>RepairOrder</code> są w
+        kodzie uproszczone do pól potrzebnych w zamówieniu.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Budowniczy - zamowienie czesci u magazyniera
+
+      class PartRequestBuilder {
+        -repairOrder: RepairOrder
+        -existingRequests: List&lt;PartRequest&gt;
+        -selectedParts: Map&lt;SparePart, Integer&gt;
+        +PartRequestBuilder(repairOrder: RepairOrder, existingRequests: List&lt;PartRequest&gt;)
+        +selectPart(part: SparePart, quantity: int): PartRequestBuilder
+        +removePart(part: SparePart): PartRequestBuilder
+        +build(): PartRequest
+        -validate(): void
+        -isAlreadyOrdered(part: SparePart): boolean
+      }
+      class PartRequest {
+        -{static} nextId: int
+        -id: int
+        -repairOrder: RepairOrder
+        -items: List&lt;PartItem&gt;
+        -status: PartRequestStatus
+        ~PartRequest(repairOrder: RepairOrder)
+        ~addItem(part: SparePart, quantity: int): void
+        +containsPart(part: SparePart): boolean
+        +isNotIssued(): boolean
+        +markFulfilled(): void
+      }
+      class PartItem {
+        -part: SparePart
+        -quantity: int
+        +PartItem(part: SparePart, quantity: int)
+      }
+      class SparePart {
+        -catalogNumber: String
+        -name: String
+        +SparePart(catalogNumber: String, name: String)
+      }
+      class RepairOrder {
+        -id: int
+        +RepairOrder(id: int)
+      }
+      enum PartRequestStatus {
+        PENDING
+        WAITING
+        READY_FOR_ISSUE
+        FULFILLED
+        CANCELLED
+      }
+      PartRequestBuilder ..&gt; PartRequest : &lt;&lt; create &gt;&gt;
+      PartRequestBuilder "0..*" --&gt; "1" RepairOrder : dla zlecenia
+      PartRequestBuilder "0..*" --&gt; "0..*" PartRequest : sprawdza zlozone
+      PartRequestBuilder "0..*" --&gt; "0..*" SparePart : wybrane czesci
+      PartRequest "1" *--&gt; "1..*" PartItem : zawiera
+      PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
+      PartRequest --&gt; "1" PartRequestStatus : ma
+      PartItem "0..*" --&gt; "1" SparePart : dotyczy
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+// Budowniczy zamówienia części (przypadek użycia "Zamów części u magazyniera")
+public class PartRequestBuilder {
+    private final RepairOrder repairOrder;
+    private final List&lt;PartRequest&gt; existingRequests;   // zamówienia już złożone do zleceń
+    private final Map&lt;SparePart, Integer&gt; selectedParts = new LinkedHashMap&lt;&gt;();
+
+    public PartRequestBuilder(RepairOrder repairOrder, List&lt;PartRequest&gt; existingRequests) {
+        this.repairOrder = repairOrder;
+        this.existingRequests = existingRequests;
+    }
+
+    // Krok 7: mechanik wybiera część z katalogu i podaje ilość.
+    // Ponowny wybór tej samej części zmienia jej ilość.
+    public PartRequestBuilder selectPart(SparePart part, int quantity) {
+        selectedParts.put(part, quantity);
+        return this;
+    }
+
+    // Poprawa zamówienia po błędzie walidacji (GOTO 6) - rezygnacja z wybranej części
+    public PartRequestBuilder removePart(SparePart part) {
+        selectedParts.remove(part);
+        return this;
+    }
+
+    // Kroki 8-10: wysłanie zamówienia, walidacja i utworzenie zamówienia przypisanego do zlecenia
+    public PartRequest build() {
+        validate();
+        PartRequest request = new PartRequest(repairOrder);
+        for (Map.Entry&lt;SparePart, Integer&gt; entry : selectedParts.entrySet()) {
+            request.addItem(entry.getKey(), entry.getValue());
+        }
+        return request;
+    }
+
+    // Krok 9 i przepływy alternatywne z kroku 9
+    private void validate() {
+        if (selectedParts.isEmpty()) {
+            throw new IllegalStateException("Nie wybrano żadnej części");
+        }
+        for (Map.Entry&lt;SparePart, Integer&gt; entry : selectedParts.entrySet()) {
+            SparePart part = entry.getKey();
+            if (entry.getValue() &lt;= 0) {
+                throw new IllegalStateException(
+                        "Niepoprawna ilość części " + part.getName() + ": " + entry.getValue());
+            }
+            if (isAlreadyOrdered(part)) {
+                throw new IllegalStateException("Część " + part.getName()
+                        + " została już zamówiona do tego zlecenia i nie została jeszcze wydana");
+            }
+        }
+    }
+
+    private boolean isAlreadyOrdered(SparePart part) {
+        for (PartRequest request : existingRequests) {
+            if (request.getRepairOrder() == repairOrder &amp;&amp; request.isNotIssued() &amp;&amp; request.containsPart(part)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Zamówienie części - produkt budowniczego
+public class PartRequest {
+    private static int nextId = 1;
+
+    private final int id;
+    private final RepairOrder repairOrder;
+    private final List&lt;PartItem&gt; items = new ArrayList&lt;&gt;();
+    private PartRequestStatus status;
+
+    // Konstruktor i addItem są pakietowe - zamówienie tworzy tylko PartRequestBuilder
+    PartRequest(RepairOrder repairOrder) {
+        this.id = nextId++;
+        this.repairOrder = repairOrder;
+        this.status = PartRequestStatus.PENDING;
+    }
+
+    void addItem(SparePart part, int quantity) {
+        items.add(new PartItem(part, quantity));
+    }
+
+    public boolean containsPart(SparePart part) {
+        for (PartItem item : items) {
+            if (item.getPart() == part) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Zamówienie złożone, ale części jeszcze nie zostały wydane mechanikowi
+    public boolean isNotIssued() {
+        return status == PartRequestStatus.PENDING
+                || status == PartRequestStatus.WAITING
+                || status == PartRequestStatus.READY_FOR_ISSUE;
+    }
+
+    public void markFulfilled() {
+        status = PartRequestStatus.FULFILLED;
+    }
+
+    public int getId() { return id; }
+
+    public RepairOrder getRepairOrder() { return repairOrder; }
+
+    public List&lt;PartItem&gt; getItems() { return Collections.unmodifiableList(items); }
+
+    public PartRequestStatus getStatus() { return status; }
+}
+
+// Pozycja zamówienia: część i zamawiana ilość
+public class PartItem {
+    private final SparePart part;
+    private final int quantity;
+
+    public PartItem(SparePart part, int quantity) {
+        this.part = part;
+        this.quantity = quantity;
+    }
+
+    public SparePart getPart() { return part; }
+
+    public int getQuantity() { return quantity; }
+}
+
+// Część zamienna z katalogu magazynu (uproszczona)
+public class SparePart {
+    private final String catalogNumber;
+    private final String name;
+
+    public SparePart(String catalogNumber, String name) {
+        this.catalogNumber = catalogNumber;
+        this.name = name;
+    }
+
+    public String getName() { return name; }
+}
+
+// Zlecenie naprawy (uproszczone - tylko numer zlecenia)
+public class RepairOrder {
+    private final int id;
+
+    public RepairOrder(int id) {
+        this.id = id;
+    }
+
+    public int getId() { return id; }
+}
+
+public enum PartRequestStatus {
+    PENDING,
+    WAITING,
+    READY_FOR_ISSUE,
+    FULFILLED,
+    CANCELLED
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class PartRequestBuilderTest {
+    private RepairOrder order;
+    private SparePart oilFilter;
+    private SparePart brakePads;
+    private List&lt;PartRequest&gt; existingRequests;
+
+    @BeforeEach
+    public void setUp() {
+        order = new RepairOrder(15);
+        oilFilter = new SparePart("FO-101", "Filtr oleju");
+        brakePads = new SparePart("KL-10", "Klocki hamulcowe");
+        existingRequests = new ArrayList&lt;&gt;();
+    }
+
+    @Test
+    public void testBuildRequestWithSelectedParts() {
+        PartRequest request = new PartRequestBuilder(order, existingRequests)
+                .selectPart(oilFilter, 1)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertSame(order, request.getRepairOrder());
+        assertEquals(PartRequestStatus.PENDING, request.getStatus());
+        assertEquals(2, request.getItems().size());
+        assertEquals(4, request.getItems().get(1).getQuantity());
+    }
+
+    @Test
+    public void testSelectingSamePartAgainChangesQuantity() {
+        PartRequest request = new PartRequestBuilder(order, existingRequests)
+                .selectPart(brakePads, 2)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertEquals(1, request.getItems().size());
+        assertEquals(4, request.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    public void testRequestWithoutPartsIsRejected() {
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, builder::build);
+        assertEquals("Nie wybrano żadnej części", e.getMessage());
+    }
+
+    @Test
+    public void testInvalidQuantityIsRejectedAndCanBeCorrected() {
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests)
+                .selectPart(oilFilter, 0);
+
+        assertThrows(IllegalStateException.class, builder::build);
+
+        // GOTO 6: mechanik poprawia ilość
+        PartRequest request = builder.selectPart(oilFilter, 1).build();
+        assertEquals(1, request.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    public void testPartAlreadyOrderedAndNotIssuedIsRejected() {
+        existingRequests.add(new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build());
+
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests)
+                .selectPart(brakePads, 2)
+                .selectPart(oilFilter, 1);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, builder::build);
+        assertTrue(e.getMessage().contains("została już zamówiona"));
+
+        // GOTO 6: mechanik rezygnuje z klocków, zamawia tylko filtr
+        PartRequest request = builder.removePart(brakePads).build();
+        assertEquals(1, request.getItems().size());
+        assertSame(oilFilter, request.getItems().get(0).getPart());
+    }
+
+    @Test
+    public void testIssuedPartCanBeOrderedAgain() {
+        PartRequest issued = new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build();
+        issued.markFulfilled();
+        existingRequests.add(issued);
+
+        PartRequest request = new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 2).build();
+
+        assertTrue(request.containsPart(brakePads));
+    }
+
+    @Test
+    public void testSamePartForOtherOrderIsAllowed() {
+        existingRequests.add(new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build());
+
+        PartRequest request = new PartRequestBuilder(new RepairOrder(16), existingRequests)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertTrue(request.containsPart(brakePads));
+    }
+}</code></pre>
+  </section>
+
+  <section class="pattern">
+    <h5>Metoda fabrykująca</h5>
+    <p class="author">Kacper Bednarz</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        W przypadku użycia „Wydaj części mechanikowi” system po sprawdzeniu dostępności
+        zamówionych części (krok 6) postępuje na jeden z trzech sposobów:
+      </p>
+      <ul>
+        <li>
+          wszystkie części są dostępne – wydanie pełne: stan magazynowy jest pomniejszany, a
+          zamówienie oznaczane jako zrealizowane (kroki 9–11);
+        </li>
+        <li>
+          dostępna ilość jest mniejsza niż zamówiona – wydanie częściowe: brakująca ilość jest
+          usuwana z zamówienia, a mechanik musi zamówić ją ponownie (przepływ alternatywny 6,
+          GOTO 7);
+        </li>
+        <li>
+          części nie ma w magazynie – nic nie jest wydawane, zamówienie dostaje status
+          oczekującego, a zlecenie status „oczekuje na części” (przepływ alternatywny 6,
+          END FLOW).
+        </li>
+      </ul>
+      <p>
+        Każdy sposób inaczej tworzy podsumowanie wydania (krok 7) i inaczej zmienia stan
+        systemu. Gdyby <code>WarehouseServiceImpl</code> rozróżniał te przypadki instrukcjami
+        warunkowymi w każdym miejscu, w którym ich potrzebuje (podsumowanie, zapis wydania),
+        logika wydania byłaby rozproszona, a dodanie nowego sposobu wydania wymagałoby zmian w
+        wielu metodach.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Metoda fabrykująca definiuje sposób tworzenia obiektu, ale zwalnia kod klienta z
+        decyzji, jaki konkretny obiekt ma powstać. Tutaj decyzja zależy od stanu magazynu, a nie
+        od kodu, który wydaje części.
+      </p>
+      <ul>
+        <li>
+          <code>PartIssue</code> – produkt abstrakcyjny. <code>getSummary()</code> zwraca treść
+          podsumowania wydania, a <code>execute()</code> zapisuje skutki wydania w systemie.
+        </li>
+        <li>
+          <code>FullIssue</code>, <code>PartialIssue</code>, <code>WaitingIssue</code> –
+          produkty konkretne dla trzech sposobów ze scenariusza. Ich konstruktory są pakietowe,
+          więc tworzy je tylko fabryka.
+        </li>
+        <li>
+          <code>PartIssueFactory.createIssue()</code> – metoda fabrykująca. Sprawdza wolną
+          ilość każdej części (stan magazynowy minus ilość zarezerwowana) i zwraca odpowiedni
+          produkt. Brak którejkolwiek części oznacza, że całe zamówienie czeka na dostawę.
+        </li>
+        <li>
+          <code>WarehouseServiceImpl</code> – klient. W metodach <code>getIssueSummary()</code>
+          i <code>issueParts()</code> korzysta tylko z typu <code>PartIssue</code>.
+        </li>
+      </ul>
+      <p>
+        Przepływ alternatywny 9 (zlecenie zakończone lub rozliczone w międzyczasie) dotyczy
+        zarówno wydania pełnego, jak i częściowego, dlatego metoda
+        <code>cancelIfOrderClosed()</code> znajduje się w klasie bazowej. Wydanie częściowe
+        korzysta z metody <code>PartItem.reduceQuantity()</code> z diagramu klas. Struktura
+        odpowiada schematowi metody fabrykującej z instrukcji (fabryka, produkt abstrakcyjny,
+        produkty konkretne). Klasy <code>SparePart</code>, <code>PartRequest</code> i
+        <code>RepairOrder</code> są w kodzie uproszczone do pól potrzebnych przy wydaniu.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Metoda fabrykujaca - wydanie czesci mechanikowi
+
+      class PartIssueFactory {
+        -PartIssueFactory()
+        +{static} createIssue(request: PartRequest): PartIssue
+      }
+      abstract class PartIssue {
+        #request: PartRequest
+        #PartIssue(request: PartRequest)
+        +{abstract} getSummary(): String
+        +{abstract} execute(): void
+        #cancelIfOrderClosed(): boolean
+      }
+      class FullIssue {
+        ~FullIssue(request: PartRequest)
+        +getSummary(): String
+        +execute(): void
+      }
+      class PartialIssue {
+        -missingQuantities: Map&lt;PartItem, Integer&gt;
+        ~PartialIssue(request: PartRequest, missingQuantities: Map&lt;PartItem, Integer&gt;)
+        +getSummary(): String
+        +execute(): void
+      }
+      class WaitingIssue {
+        ~WaitingIssue(request: PartRequest)
+        +getSummary(): String
+        +execute(): void
+      }
+      class WarehouseServiceImpl {
+        -partRequests: List&lt;PartRequest&gt;
+        +addPartRequest(request: PartRequest): void
+        +getIssueSummary(requestId: int): String
+        +issueParts(requestId: int): void
+        -findRequest(requestId: int): PartRequest
+      }
+      class PartRequest {
+        -{static} nextId: int
+        -id: int
+        -repairOrder: RepairOrder
+        -items: List&lt;PartItem&gt;
+        -status: PartRequestStatus
+        +PartRequest(repairOrder: RepairOrder)
+        +addItem(part: SparePart, quantity: int): void
+        +markWaiting(): void
+        +markFulfilled(): void
+        +cancel(): void
+      }
+      class PartItem {
+        -part: SparePart
+        -quantity: int
+        +PartItem(part: SparePart, quantity: int)
+        +reduceQuantity(quantity: int): void
+      }
+      class SparePart {
+        -catalogNumber: String
+        -name: String
+        -stockQuantity: int
+        -reservedQuantity: int
+        +SparePart(catalogNumber: String, name: String, stockQuantity: int)
+        +getAvailableQuantity(): int
+        +isAvailable(quantity: int): boolean
+        +decreaseStock(quantity: int): void
+      }
+      class RepairOrder {
+        -id: int
+        -status: RepairOrderStatus
+        +RepairOrder(id: int, status: RepairOrderStatus)
+        +changeStatus(status: RepairOrderStatus, comment: String): void
+      }
+      enum PartRequestStatus {
+        PENDING
+        WAITING
+        READY_FOR_ISSUE
+        FULFILLED
+        CANCELLED
+      }
+      enum RepairOrderStatus {
+        ACCEPTED
+        IN_PROGRESS
+        WAITING_FOR_PARTS
+        WAITING_FOR_ESTIMATE_APPROVAL
+        COMPLETED
+        SETTLED
+      }
+      PartIssue &lt;|-- FullIssue : to
+      PartIssue &lt;|-- PartialIssue : to
+      PartIssue &lt;|-- WaitingIssue : to
+      PartIssueFactory ..&gt; FullIssue : &lt;&lt; create &gt;&gt;
+      PartIssueFactory ..&gt; PartialIssue : &lt;&lt; create &gt;&gt;
+      PartIssueFactory ..&gt; WaitingIssue : &lt;&lt; create &gt;&gt;
+      WarehouseServiceImpl ..&gt; PartIssueFactory : uzywa
+      WarehouseServiceImpl ..&gt; PartIssue : uzywa
+      WarehouseServiceImpl "1" --&gt; "0..*" PartRequest : przechowuje
+      PartIssue "0..*" --&gt; "1" PartRequest : wydanie dla
+      PartialIssue "0..*" --&gt; "1..*" PartItem : brakujace ilosci
+      PartRequest "1" *--&gt; "1..*" PartItem : zawiera
+      PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
+      PartRequest --&gt; "1" PartRequestStatus : ma
+      PartItem "0..*" --&gt; "1" SparePart : dotyczy
+      RepairOrder --&gt; "1" RepairOrderStatus : ma
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">import java.util.LinkedHashMap;
+import java.util.Map;
+
+// Fabryka z metodą fabrykującą - decyduje, jaki rodzaj wydania utworzyć
+public final class PartIssueFactory {
+
+    private PartIssueFactory() {
+    }
+
+    // Krok 6: na podstawie dostępności zamówionych części tworzy odpowiedni rodzaj wydania
+    public static PartIssue createIssue(PartRequest request) {
+        Map&lt;PartItem, Integer&gt; missingQuantities = new LinkedHashMap&lt;&gt;();
+        for (PartItem item : request.getItems()) {
+            int available = item.getPart().getAvailableQuantity();
+            if (available &lt;= 0) {
+                return new WaitingIssue(request);   // część niedostępna w magazynie
+            }
+            if (available &lt; item.getQuantity()) {
+                missingQuantities.put(item, item.getQuantity() - available);
+            }
+        }
+        if (missingQuantities.isEmpty()) {
+            return new FullIssue(request);
+        }
+        return new PartialIssue(request, missingQuantities);
+    }
+}
+
+// Produkt abstrakcyjny - sposób wydania części dla zamówienia
+public abstract class PartIssue {
+    protected final PartRequest request;
+
+    protected PartIssue(PartRequest request) {
+        this.request = request;
+    }
+
+    // Krok 7: treść podsumowania wydania pokazywana magazynierowi
+    public abstract String getSummary();
+
+    // Skutki wydania w systemie (wywoływane po potwierdzeniu przez magazyniera)
+    public abstract void execute();
+
+    // Przepływ alternatywny 9: zlecenie zostało w międzyczasie zakończone lub rozliczone
+    protected boolean cancelIfOrderClosed() {
+        RepairOrderStatus orderStatus = request.getRepairOrder().getStatus();
+        if (orderStatus == RepairOrderStatus.COMPLETED || orderStatus == RepairOrderStatus.SETTLED) {
+            request.cancel();   // stan magazynowy pozostaje bez zmian
+            return true;
+        }
+        return false;
+    }
+}
+
+// Produkt konkretny - wydanie wszystkich zamówionych części
+public class FullIssue extends PartIssue {
+
+    FullIssue(PartRequest request) {
+        super(request);
+    }
+
+    @Override
+    public String getSummary() {
+        return "Wydanie pełne - liczba pozycji zamówienia: " + request.getItems().size();
+    }
+
+    @Override
+    public void execute() {
+        if (cancelIfOrderClosed()) {
+            return;
+        }
+        for (PartItem item : request.getItems()) {
+            item.getPart().decreaseStock(item.getQuantity());   // krok 10
+        }
+        request.markFulfilled();                                 // krok 11
+    }
+}
+
+import java.util.Map;
+
+// Produkt konkretny - wydanie dostępnej ilości, brakująca ilość jest usuwana z zamówienia
+public class PartialIssue extends PartIssue {
+    private final Map&lt;PartItem, Integer&gt; missingQuantities;
+
+    PartialIssue(PartRequest request, Map&lt;PartItem, Integer&gt; missingQuantities) {
+        super(request);
+        this.missingQuantities = missingQuantities;
+    }
+
+    @Override
+    public String getSummary() {
+        StringBuilder summary = new StringBuilder("Wydanie częściowe:");
+        for (Map.Entry&lt;PartItem, Integer&gt; entry : missingQuantities.entrySet()) {
+            PartItem item = entry.getKey();
+            summary.append(" ").append(item.getPart().getName())
+                    .append(" - brakuje ").append(entry.getValue()).append(" szt.;");
+        }
+        return summary.append(" brakująca ilość zostanie usunięta z zamówienia,")
+                .append(" mechanik musi zamówić ją ponownie").toString();
+    }
+
+    @Override
+    public void execute() {
+        if (cancelIfOrderClosed()) {
+            return;
+        }
+        for (Map.Entry&lt;PartItem, Integer&gt; entry : missingQuantities.entrySet()) {
+            entry.getKey().reduceQuantity(entry.getValue());
+        }
+        for (PartItem item : request.getItems()) {
+            item.getPart().decreaseStock(item.getQuantity());
+        }
+        request.markFulfilled();
+    }
+}
+
+// Produkt konkretny - części nie można wydać, zamówienie czeka na dostawę
+public class WaitingIssue extends PartIssue {
+
+    WaitingIssue(PartRequest request) {
+        super(request);
+    }
+
+    @Override
+    public String getSummary() {
+        return "Brak części w magazynie: zamówienie oczekuje,"
+                + " magazynier może zamówić część u dostawcy";
+    }
+
+    // Przepływ alternatywny 6: stan magazynowy się nie zmienia
+    @Override
+    public void execute() {
+        request.markWaiting();
+        request.getRepairOrder().changeStatus(RepairOrderStatus.WAITING_FOR_PARTS, "Oczekiwanie na części");
+    }
+}
+
+import java.util.ArrayList;
+import java.util.List;
+
+// Klient metody fabrykującej - działa tylko na typie PartIssue
+public class WarehouseServiceImpl {
+    private final List&lt;PartRequest&gt; partRequests = new ArrayList&lt;&gt;();
+
+    public void addPartRequest(PartRequest request) {
+        partRequests.add(request);
+    }
+
+    // Krok 7: podsumowanie wydania pokazywane magazynierowi przed potwierdzeniem
+    public String getIssueSummary(int requestId) {
+        return PartIssueFactory.createIssue(findRequest(requestId)).getSummary();
+    }
+
+    // Wydanie części: pełne, częściowe albo oznaczenie zamówienia jako oczekującego
+    public void issueParts(int requestId) {
+        PartIssue issue = PartIssueFactory.createIssue(findRequest(requestId));
+        issue.execute();
+    }
+
+    private PartRequest findRequest(int requestId) {
+        for (PartRequest request : partRequests) {
+            if (request.getId() == requestId) {
+                return request;
+            }
+        }
+        throw new IllegalArgumentException("Nie ma zamówienia części o numerze " + requestId);
+    }
+}
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Zamówienie części złożone przez mechanika
+public class PartRequest {
+    private static int nextId = 1;
+
+    private final int id;
+    private final RepairOrder repairOrder;
+    private final List&lt;PartItem&gt; items = new ArrayList&lt;&gt;();
+    private PartRequestStatus status;
+
+    public PartRequest(RepairOrder repairOrder) {
+        this.id = nextId++;
+        this.repairOrder = repairOrder;
+        this.status = PartRequestStatus.PENDING;
+    }
+
+    public void addItem(SparePart part, int quantity) {
+        items.add(new PartItem(part, quantity));
+    }
+
+    public void markWaiting() { status = PartRequestStatus.WAITING; }
+
+    public void markFulfilled() { status = PartRequestStatus.FULFILLED; }
+
+    public void cancel() { status = PartRequestStatus.CANCELLED; }
+
+    public int getId() { return id; }
+
+    public RepairOrder getRepairOrder() { return repairOrder; }
+
+    public List&lt;PartItem&gt; getItems() { return Collections.unmodifiableList(items); }
+
+    public PartRequestStatus getStatus() { return status; }
+}
+
+// Pozycja zamówienia: część i zamawiana ilość
+public class PartItem {
+    private final SparePart part;
+    private int quantity;
+
+    public PartItem(SparePart part, int quantity) {
+        this.part = part;
+        this.quantity = quantity;
+    }
+
+    // Częściowe wydanie: brakująca ilość jest usuwana z zamówienia
+    public void reduceQuantity(int quantity) {
+        if (quantity &lt;= 0 || quantity &gt;= this.quantity) {
+            throw new IllegalArgumentException("Niepoprawna ilość do usunięcia: " + quantity);
+        }
+        this.quantity -= quantity;
+    }
+
+    public SparePart getPart() { return part; }
+
+    public int getQuantity() { return quantity; }
+}
+
+// Część zamienna w magazynie (uproszczona)
+public class SparePart {
+    private final String catalogNumber;
+    private final String name;
+    private int stockQuantity;
+    private int reservedQuantity;   // ilość zarezerwowana dla zleceń (rezerwację pominięto w przykładzie)
+
+    public SparePart(String catalogNumber, String name, int stockQuantity) {
+        this.catalogNumber = catalogNumber;
+        this.name = name;
+        this.stockQuantity = stockQuantity;
+    }
+
+    // Wolna ilość: stan magazynowy minus ilość zarezerwowana dla zleceń
+    public int getAvailableQuantity() {
+        return stockQuantity - reservedQuantity;
+    }
+
+    public boolean isAvailable(int quantity) {
+        return getAvailableQuantity() &gt;= quantity;
+    }
+
+    public void decreaseStock(int quantity) {
+        if (!isAvailable(quantity)) {
+            throw new IllegalStateException("Za mało części " + name + " w magazynie");
+        }
+        stockQuantity -= quantity;
+    }
+
+    public String getName() { return name; }
+
+    public int getStockQuantity() { return stockQuantity; }
+}
+
+// Zlecenie naprawy (uproszczone - numer i status)
+public class RepairOrder {
+    private final int id;
+    private RepairOrderStatus status;
+
+    public RepairOrder(int id, RepairOrderStatus status) {
+        this.id = id;
+        this.status = status;
+    }
+
+    public void changeStatus(RepairOrderStatus status, String comment) {
+        this.status = status;
+    }
+
+    public int getId() { return id; }
+
+    public RepairOrderStatus getStatus() { return status; }
+}
+
+public enum PartRequestStatus {
+    PENDING,
+    WAITING,
+    READY_FOR_ISSUE,
+    FULFILLED,
+    CANCELLED
+}
+
+public enum RepairOrderStatus {
+    ACCEPTED,
+    IN_PROGRESS,
+    WAITING_FOR_PARTS,
+    WAITING_FOR_ESTIMATE_APPROVAL,
+    COMPLETED,
+    SETTLED
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class PartIssueFactoryTest {
+    private RepairOrder order;
+    private SparePart oilFilter;
+    private SparePart brakePads;
+    private PartRequest request;
+
+    @BeforeEach
+    public void setUp() {
+        order = new RepairOrder(15, RepairOrderStatus.IN_PROGRESS);
+        oilFilter = new SparePart("FO-101", "Filtr oleju", 10);
+        brakePads = new SparePart("KL-10", "Klocki hamulcowe", 10);
+        request = new PartRequest(order);
+        request.addItem(oilFilter, 1);
+        request.addItem(brakePads, 4);
+    }
+
+    @Test
+    public void testFullIssueWhenAllPartsAvailable() {
+        PartIssue issue = PartIssueFactory.createIssue(request);
+        assertInstanceOf(FullIssue.class, issue);
+
+        issue.execute();
+
+        assertEquals(9, oilFilter.getStockQuantity());
+        assertEquals(6, brakePads.getStockQuantity());
+        assertEquals(PartRequestStatus.FULFILLED, request.getStatus());
+    }
+
+    @Test
+    public void testPartialIssueRemovesMissingQuantity() {
+        brakePads.decreaseStock(7);   // w magazynie zostały 3 komplety klocków, zamówiono 4
+
+        PartIssue issue = PartIssueFactory.createIssue(request);
+        assertInstanceOf(PartialIssue.class, issue);
+        assertTrue(issue.getSummary().contains("mechanik musi zamówić ją ponownie"));
+
+        issue.execute();
+
+        assertEquals(3, request.getItems().get(1).getQuantity(), "Brakująca ilość usunięta z zamówienia");
+        assertEquals(0, brakePads.getStockQuantity());
+        assertEquals(9, oilFilter.getStockQuantity());
+        assertEquals(PartRequestStatus.FULFILLED, request.getStatus());
+    }
+
+    @Test
+    public void testWaitingIssueWhenPartUnavailable() {
+        brakePads.decreaseStock(10);   // brak klocków w magazynie
+
+        PartIssue issue = PartIssueFactory.createIssue(request);
+        assertInstanceOf(WaitingIssue.class, issue);
+
+        issue.execute();
+
+        assertEquals(PartRequestStatus.WAITING, request.getStatus());
+        assertEquals(RepairOrderStatus.WAITING_FOR_PARTS, order.getStatus());
+        assertEquals(10, oilFilter.getStockQuantity(), "Stan magazynowy bez zmian");
+    }
+
+    @Test
+    public void testRequestCancelledWhenOrderClosedInMeantime() {
+        PartIssue issue = PartIssueFactory.createIssue(request);
+        order.changeStatus(RepairOrderStatus.COMPLETED, "Naprawa zakończona");
+
+        issue.execute();
+
+        assertEquals(PartRequestStatus.CANCELLED, request.getStatus());
+        assertEquals(10, oilFilter.getStockQuantity(), "Stan magazynowy bez zmian");
+        assertEquals(10, brakePads.getStockQuantity());
+    }
+
+    @Test
+    public void testWarehouseServiceUsesFactory() {
+        WarehouseServiceImpl warehouse = new WarehouseServiceImpl();
+        warehouse.addPartRequest(request);
+
+        assertTrue(warehouse.getIssueSummary(request.getId()).startsWith("Wydanie pełne"));
+        warehouse.issueParts(request.getId());
+
+        assertEquals(PartRequestStatus.FULFILLED, request.getStatus());
+    }
+}</code></pre>
+  </section>
+
+  <section class="pattern">
+    <h5>Singleton</h5>
+    <p class="author">Dawid Woźniak</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        Z cennika usług korzysta wiele przypadków użycia. Manager dodaje do niego usługi
+        („Dodaj usługę do cennika”), mechanik wybiera z niego usługi w formularzu naprawy
+        („Wprowadź wykonaną naprawę”) i w zgłoszeniu dodatkowej usterki, na podstawie stawek z
+        cennika wyliczane są kosztorysy („Zgłoś dodatkową usterkę”) i faktury („Wystaw
+        fakturę”). Warunek końcowy przypadku użycia „Dodaj usługę do cennika” mówi, że nowa
+        stawka jest stosowana przy wyliczaniu kosztorysów i faktur.
+      </p>
+      <p>
+        W warsztacie obowiązuje jeden cennik. Gdyby każdy serwis tworzył własny obiekt
+        <code>PriceList</code>, usługa dodana przez managera nie byłaby widoczna w formularzu
+        mechanika, a kosztorys i faktura za te same prace mogłyby zostać policzone według
+        różnych stawek. Z cennika korzysta jednocześnie wielu użytkowników, więc jego
+        utworzenie i zmiany muszą być bezpieczne przy pracy wielu wątków. Wzorzec nie dotyczy
+        tu sposobu przechowywania danych, tylko reguły biznesowej: w całym systemie obowiązuje
+        jeden cennik z jednolitymi stawkami.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Singleton zapewnia, że klasa ma tylko jedną instancję, i daje pojedynczy punkt dostępu
+        do niej.
+      </p>
+      <ul>
+        <li>
+          <code>PriceList</code> ma prywatny konstruktor i statyczne pole
+          <code>instance</code>. Jedyną instancję zwraca statyczna metoda
+          <code>getInstance()</code>. Synchronizacja z podwójnym sprawdzeniem i słowo
+          <code>volatile</code> zapewniają jedną instancję także przy wielu wątkach.
+        </li>
+        <li>
+          W odróżnieniu od przykładu z materiałów cennik się zmienia, bo manager dodaje usługi.
+          Dlatego metody <code>addService()</code>, <code>findService()</code> i
+          <code>getServices()</code> są synchronizowane, a <code>getServices()</code> zwraca
+          niemodyfikowalną kopię listy.
+        </li>
+        <li>
+          <code>addService()</code> realizuje krok 8: zapisuje usługę z datą obowiązywania
+          stawki albo zwraca <code>false</code>, gdy usługa o tej nazwie już istnieje (przepływ
+          alternatywny 7). Pozostałe błędy z kroku 7, czyli brak nazwy i stawkę zerową lub
+          ujemną, odrzuca konstruktor <code>ServiceItem</code>.
+        </li>
+        <li>
+          <code>BillingServiceImpl</code> – klient Singletona. Jego pole <code>priceList</code>
+          (asocjacja „zarządza” z diagramu klas) wskazuje jedyną instancję cennika, więc każdy
+          obiekt serwisu korzysta z tego samego cennika. Dlatego na diagramie wzorca liczność
+          po stronie serwisu wynosi 0..*: wiele obiektów serwisu wskazuje jeden cennik.
+        </li>
+      </ul>
+      <p>
+        Wzorzec pasuje do problemu, bo cennik musi istnieć w systemie dokładnie raz, a dostęp
+        do niego jest potrzebny w wielu miejscach.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Singleton - cennik uslug
+
+      class PriceList {
+        -{static} instance: PriceList
+        -services: List&lt;ServiceItem&gt;
+        -PriceList()
+        +{static} getInstance(): PriceList
+        +addService(service: ServiceItem): boolean
+        +findService(name: String): ServiceItem
+        +getServices(): List&lt;ServiceItem&gt;
+      }
+      class ServiceItem {
+        -name: String
+        -description: String
+        -rate: double
+        -fixedPrice: boolean
+        -estimatedTime: double
+        -validFrom: LocalDate
+        +ServiceItem(name: String, rate: double, fixedPrice: boolean)
+        +calculatePrice(workTime: double): double
+        ~setValidFrom(validFrom: LocalDate): void
+        +setDescription(description: String): void
+        +setEstimatedTime(estimatedTime: double): void
+      }
+      class BillingServiceImpl {
+        -priceList: PriceList
+        +getPriceList(): PriceList
+      }
+      PriceList ..&gt; PriceList : &lt;&lt; create &gt;&gt;
+      PriceList "1" o--&gt; "0..*" ServiceItem : sklada sie z
+      BillingServiceImpl "0..*" --&gt; "1" PriceList : zarzadza
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+// Cennik usług warsztatu - Singleton
+public final class PriceList {
+    private static volatile PriceList instance;
+
+    private final List&lt;ServiceItem&gt; services = new ArrayList&lt;&gt;();
+
+    // Prywatny konstruktor - cennika nie można utworzyć spoza klasy
+    private PriceList() {
+    }
+
+    public static PriceList getInstance() {
+        if (instance == null) {
+            synchronized (PriceList.class) {
+                if (instance == null) {
+                    instance = new PriceList();
+                }
+            }
+        }
+        return instance;
+    }
+
+    // Krok 8 przypadku użycia "Dodaj usługę do cennika".
+    // Zwraca false, gdy usługa o tej nazwie już istnieje (przepływ alternatywny 7).
+    public synchronized boolean addService(ServiceItem service) {
+        if (findService(service.getName()) != null) {
+            return false;
+        }
+        service.setValidFrom(LocalDate.now());
+        services.add(service);
+        return true;
+    }
+
+    // Zwraca usługę o podanej nazwie albo null, gdy takiej usługi nie ma w cenniku
+    public synchronized ServiceItem findService(String name) {
+        for (ServiceItem service : services) {
+            if (service.getName().equalsIgnoreCase(name.trim())) {
+                return service;
+            }
+        }
+        return null;
+    }
+
+    // Lista usług do formularza naprawy, kosztorysu i faktury (tylko do odczytu)
+    public synchronized List&lt;ServiceItem&gt; getServices() {
+        return List.copyOf(services);
+    }
+}
+
+import java.time.LocalDate;
+
+// Usługa serwisowa - pozycja cennika
+public class ServiceItem {
+    private final String name;
+    private String description;
+    private final double rate;           // stawka za roboczogodzinę albo cena stała
+    private final boolean fixedPrice;
+    private double estimatedTime;
+    private LocalDate validFrom;
+
+    public ServiceItem(String name, double rate, boolean fixedPrice) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Nazwa usługi jest wymagana");
+        }
+        if (rate &lt;= 0) {
+            throw new IllegalArgumentException("Stawka musi być dodatnia (podano: " + rate + ")");
+        }
+        this.name = name.trim();
+        this.rate = rate;
+        this.fixedPrice = fixedPrice;
+    }
+
+    public double calculatePrice(double workTime) {
+        return fixedPrice ? rate : rate * workTime;
+    }
+
+    // Datę obowiązywania stawki ustawia cennik w chwili dodania usługi
+    void setValidFrom(LocalDate validFrom) { this.validFrom = validFrom; }
+
+    public void setDescription(String description) { this.description = description; }
+
+    public void setEstimatedTime(double estimatedTime) { this.estimatedTime = estimatedTime; }
+
+    public String getName() { return name; }
+
+    public String getDescription() { return description; }
+
+    public double getEstimatedTime() { return estimatedTime; }
+
+    public LocalDate getValidFrom() { return validFrom; }
+}
+
+// Klient Singletona - serwis managera korzysta z jedynego cennika warsztatu
+public class BillingServiceImpl {
+    private final PriceList priceList = PriceList.getInstance();
+
+    public PriceList getPriceList() {
+        return priceList;
+    }
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.junit.jupiter.api.Test;
+
+// Cennik jest wspólny dla wszystkich testów, dlatego każdy test używa innych nazw usług
+public class PriceListTest {
+
+    @Test
+    public void testSingletonInstance() {
+        PriceList instance1 = PriceList.getInstance();
+        PriceList instance2 = PriceList.getInstance();
+
+        assertSame(instance1, instance2, "Obie referencje powinny wskazywać na ten sam cennik");
+        assertSame(instance1, new BillingServiceImpl().getPriceList());
+    }
+
+    @Test
+    public void testServiceAddedByManagerIsVisibleEverywhere() {
+        ServiceItem oilChange = new ServiceItem("Wymiana oleju", 120.0, true);
+
+        // Manager dodaje usługę przez swój serwis
+        assertTrue(new BillingServiceImpl().getPriceList().addService(oilChange));
+
+        // Formularz naprawy mechanika korzysta z tego samego cennika
+        assertSame(oilChange, PriceList.getInstance().findService("Wymiana oleju"));
+        assertEquals(LocalDate.now(), oilChange.getValidFrom());
+    }
+
+    @Test
+    public void testServiceWithExistingNameIsRejected() {
+        PriceList priceList = PriceList.getInstance();
+        assertTrue(priceList.addService(new ServiceItem("Geometria kół", 200.0, true)));
+        int count = priceList.getServices().size();
+
+        assertFalse(priceList.addService(new ServiceItem("geometria KÓŁ", 250.0, true)));
+        assertEquals(count, priceList.getServices().size());
+        assertEquals(200.0, priceList.findService("Geometria kół").calculatePrice(1.0), 0.001);
+    }
+
+    @Test
+    public void testServiceWithInvalidDataIsRejected() {
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem("Diagnostyka komputerowa", 0.0, false));
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem("Diagnostyka komputerowa", -50.0, false));
+        assertThrows(IllegalArgumentException.class, () -&gt; new ServiceItem(" ", 100.0, false));
+        assertNull(PriceList.getInstance().findService("Diagnostyka komputerowa"));
+    }
+
+    @Test
+    public void testPriceDependsOnRateType() {
+        ServiceItem brakeRepair = new ServiceItem("Naprawa układu hamulcowego", 150.0, false);
+        ServiceItem tyreChange = new ServiceItem("Wymiana opon", 100.0, true);
+        PriceList.getInstance().addService(brakeRepair);
+        PriceList.getInstance().addService(tyreChange);
+
+        assertEquals(300.0, PriceList.getInstance().findService("Naprawa układu hamulcowego").calculatePrice(2.0), 0.001);
+        assertEquals(100.0, PriceList.getInstance().findService("Wymiana opon").calculatePrice(2.0), 0.001);
+    }
+
+    @Test
+    public void testServicesListIsReadOnly() {
+        List&lt;ServiceItem&gt; services = PriceList.getInstance().getServices();
+
+        assertThrows(UnsupportedOperationException.class,
+                () -&gt; services.add(new ServiceItem("Wymiana akumulatora", 80.0, true)));
+    }
+
+    @Test
+    public void testOneInstanceForManyThreads() throws Exception {
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+        List&lt;Callable&lt;PriceList&gt;&gt; tasks = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; 50; i++) {
+            tasks.add(PriceList::getInstance);
+        }
+
+        Set&lt;PriceList&gt; instances = new HashSet&lt;&gt;();
+        for (Future&lt;PriceList&gt; result : executor.invokeAll(tasks)) {
+            instances.add(result.get());
+        }
+        executor.shutdown();
+
+        assertEquals(1, instances.size(), "Wszystkie wątki powinny dostać ten sam cennik");
+    }
+}</code></pre>
+  </section>
+</article>
 </body>
 </html>

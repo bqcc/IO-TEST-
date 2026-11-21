@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wzorce projektowe – Klient</title>
+
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix />
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix />
+</head>
+<body>
+
+<article>
+  <h4>Wzorce projektowe</h4>
+
+  <section class="pattern">
+    <h5>Prototyp</h5>
+    <p class="author">Jakub Banasiewicz</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        W przypadku użycia „Zaakceptuj kosztorys dodatkowych prac” klient ogląda kosztorys
+        (krok 2), wybiera opcję Akceptuj i potwierdza decyzję (kroki 3–5). W tym czasie
+        mechanik może zmienić kosztorys, np. dodać usługę albo zmienić ilość części. Dlatego
+        w kroku 6 system sprawdza, czy kosztorys nie został w międzyczasie zmieniony, a jeśli
+        tak, wyświetla go ponownie (przepływ alternatywny 6, GOTO 2). Klient może zaakceptować
+        tylko taki kosztorys, jaki faktycznie widział.
+      </p>
+      <p>
+        Żeby to sprawdzić, system musi zapamiętać kosztorys dokładnie w tej postaci, w jakiej
+        został pokazany klientowi. Zapamiętanie samej referencji nic nie daje, bo wskazuje ten
+        sam obiekt, który zmienia mechanik. Przepisywanie pól poza klasą
+        <code>CostEstimate</code> jest podatne na błędy: kosztorys zawiera listę usług i listę
+        pozycji części (<code>PartItem</code>). Kopia płytka dzieliłaby z oryginałem te same
+        pozycje części, więc zmiana ilości przez mechanika zmieniłaby też zapamiętaną kopię i
+        zmiana nie zostałaby wykryta.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Prototyp pozwala tworzyć nowe obiekty przez klonowanie istniejącego obiektu, zamiast
+        budować je od zera. Obiekt sam wie, jak utworzyć swoją kopię, więc kod, który z niej
+        korzysta, nie musi znać jego budowy.
+      </p>
+      <ul>
+        <li>
+          <code>Prototype</code> – klasa abstrakcyjna z metodą <code>clone()</code>.
+        </li>
+        <li>
+          <code>CostEstimate</code> i <code>PartItem</code> – prototypy konkretne (klasy z
+          diagramu klas). Kopię tworzą prywatne konstruktory kopiujące wywoływane w
+          <code>clone()</code>.
+        </li>
+        <li>
+          <code>EstimateReview</code> – klient prototypu. Przy wyświetleniu kosztorysu
+          (<code>display()</code>) zapamiętuje jego klon, a przy potwierdzeniu
+          (<code>confirmAcceptance()</code>) porównuje klon z aktualnym kosztorysem metodą
+          <code>hasSameContentAs()</code>. Jeśli treść się różni, akceptacja nie jest
+          zapisywana i kosztorys trzeba wyświetlić ponownie.
+        </li>
+      </ul>
+      <p>
+        Kopia jest głęboka tam, gdzie wymaga tego diagram klas. Pozycje części należą do
+        kosztorysu (kompozycja <code>CostEstimate</code>–<code>PartItem</code>), więc każda
+        jest klonowana. Usługi pochodzą z cennika (asocjacja), dlatego kopia dostaje nową
+        listę z tymi samymi obiektami <code>ServiceItem</code>. Kopia zachowuje identyfikator,
+        bo jest obrazem tego samego kosztorysu, a nie nowym kosztorysem. Tak jak w materiałach,
+        <code>clone()</code> nie korzysta z mechanizmu <code>Cloneable</code>, tylko jawnie
+        wywołuje konstruktor kopiujący.
+      </p>
+      <p>
+        Wzorzec pasuje do problemu, bo w chwili wyświetlenia potrzebna jest wierna i niezależna
+        kopia obiektu o złożonej strukturze. Klasy <code>ServiceItem</code> i
+        <code>SparePart</code> są w kodzie uproszczone do pól potrzebnych w kosztorysie.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Prototyp - kosztorys dodatkowych prac
+
+      abstract class Prototype {
+        +{abstract} clone(): Prototype
+      }
+      class CostEstimate {
+        -{static} nextId: int
+        -id: int
+        -faultDescription: String
+        -services: List&lt;ServiceItem&gt;
+        -parts: List&lt;PartItem&gt;
+        -status: EstimateStatus
+        +CostEstimate(faultDescription: String)
+        -CostEstimate(other: CostEstimate)
+        +clone(): CostEstimate
+        +addService(service: ServiceItem): void
+        +addPart(part: SparePart, quantity: int): void
+        +calculateLaborCost(): double
+        +calculatePartsCost(): double
+        +calculateTotal(): double
+        +accept(): void
+        +reject(): void
+        +hasSameContentAs(other: CostEstimate): boolean
+      }
+      class PartItem {
+        -part: SparePart
+        -quantity: int
+        +PartItem(part: SparePart, quantity: int)
+        -PartItem(other: PartItem)
+        +clone(): PartItem
+        +reduceQuantity(quantity: int): void
+        +calculateCost(): double
+        +hasSameContentAs(other: PartItem): boolean
+      }
+      class EstimateReview {
+        -estimate: CostEstimate
+        -displayedCopy: CostEstimate
+        +EstimateReview(estimate: CostEstimate)
+        +display(): CostEstimate
+        +confirmAcceptance(): boolean
+      }
+      class ServiceItem {
+        -name: String
+        -rate: double
+        -fixedPrice: boolean
+        -estimatedTime: double
+        +ServiceItem(name: String, rate: double, fixedPrice: boolean)
+        +calculatePrice(workTime: double): double
+      }
+      class SparePart {
+        -catalogNumber: String
+        -name: String
+        -price: double
+        +SparePart(catalogNumber: String, name: String, price: double)
+      }
+      enum EstimateStatus {
+        PENDING
+        ACCEPTED
+        REJECTED
+      }
+      Prototype &lt;|-- CostEstimate : to
+      Prototype &lt;|-- PartItem : to
+      CostEstimate ..&gt; CostEstimate : &lt;&lt; create &gt;&gt;
+      PartItem ..&gt; PartItem : &lt;&lt; create &gt;&gt;
+      CostEstimate "1" *--&gt; "0..*" PartItem : wycenia
+      CostEstimate "0..*" --&gt; "1..*" ServiceItem : wycenia
+      CostEstimate --&gt; "1" EstimateStatus : ma
+      PartItem "0..*" --&gt; "1" SparePart : dotyczy
+      EstimateReview "0..*" --&gt; "1" CostEstimate : sprawdza
+      EstimateReview "1" --&gt; "0..1" CostEstimate : kopia pokazana klientowi
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">// Prototyp abstrakcyjny - obiekt, który potrafi utworzyć swoją kopię
+public abstract class Prototype {
+
+    public abstract Prototype clone();
+}
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Kosztorys dodatkowych prac - prototyp konkretny
+public class CostEstimate extends Prototype {
+    private static int nextId = 1;
+
+    private final int id;
+    private final String faultDescription;
+    private final List&lt;ServiceItem&gt; services;
+    private final List&lt;PartItem&gt; parts;
+    private EstimateStatus status;
+
+    public CostEstimate(String faultDescription) {
+        this.id = nextId++;
+        this.faultDescription = faultDescription;
+        this.services = new ArrayList&lt;&gt;();
+        this.parts = new ArrayList&lt;&gt;();
+        this.status = EstimateStatus.PENDING;
+    }
+
+    // Konstruktor kopiujący - używa go metoda clone()
+    private CostEstimate(CostEstimate other) {
+        this.id = other.id;
+        this.faultDescription = other.faultDescription;
+        // Nowa lista, ale te same usługi - usługi należą do cennika, a nie do kosztorysu
+        this.services = new ArrayList&lt;&gt;(other.services);
+        // KOPIA GŁĘBOKA: pozycje części należą do kosztorysu (kompozycja), więc każda jest klonowana
+        this.parts = new ArrayList&lt;&gt;();
+        for (PartItem item : other.parts) {
+            this.parts.add(item.clone());
+        }
+        this.status = other.status;
+    }
+
+    @Override
+    public CostEstimate clone() {
+        return new CostEstimate(this);
+    }
+
+    public void addService(ServiceItem service) {
+        services.add(service);
+    }
+
+    public void addPart(SparePart part, int quantity) {
+        parts.add(new PartItem(part, quantity));
+    }
+
+    // Koszt robocizny liczony według cennika dla szacowanego czasu wykonania usług
+    public double calculateLaborCost() {
+        double cost = 0;
+        for (ServiceItem service : services) {
+            cost += service.calculatePrice(service.getEstimatedTime());
+        }
+        return cost;
+    }
+
+    public double calculatePartsCost() {
+        double cost = 0;
+        for (PartItem item : parts) {
+            cost += item.calculateCost();
+        }
+        return cost;
+    }
+
+    public double calculateTotal() {
+        return calculateLaborCost() + calculatePartsCost();
+    }
+
+    public void accept() {
+        checkPending();
+        status = EstimateStatus.ACCEPTED;
+    }
+
+    public void reject() {
+        checkPending();
+        status = EstimateStatus.REJECTED;
+    }
+
+    private void checkPending() {
+        if (status != EstimateStatus.PENDING) {
+            throw new IllegalStateException("Decyzja o kosztorysie została już zapisana");
+        }
+    }
+
+    // Porównanie treści dwóch kosztorysów (opis usterki, usługi, części i ich ilości)
+    public boolean hasSameContentAs(CostEstimate other) {
+        if (id != other.id
+                || !faultDescription.equals(other.faultDescription)
+                || !services.equals(other.services)
+                || parts.size() != other.parts.size()) {
+            return false;
+        }
+        for (int i = 0; i &lt; parts.size(); i++) {
+            if (!parts.get(i).hasSameContentAs(other.parts.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public List&lt;ServiceItem&gt; getServices() { return Collections.unmodifiableList(services); }
+
+    public List&lt;PartItem&gt; getParts() { return Collections.unmodifiableList(parts); }
+
+    public EstimateStatus getStatus() { return status; }
+}
+
+// Pozycja "część + ilość" - prototyp konkretny
+public class PartItem extends Prototype {
+    private final SparePart part;
+    private int quantity;
+
+    public PartItem(SparePart part, int quantity) {
+        this.part = part;
+        this.quantity = quantity;
+    }
+
+    // Konstruktor kopiujący - używa go metoda clone()
+    private PartItem(PartItem other) {
+        this.part = other.part;          // ta sama część z katalogu
+        this.quantity = other.quantity;
+    }
+
+    @Override
+    public PartItem clone() {
+        return new PartItem(this);
+    }
+
+    // Mechanik zmniejsza ilość części w kosztorysie
+    public void reduceQuantity(int quantity) {
+        if (quantity &lt;= 0 || quantity &gt;= this.quantity) {
+            throw new IllegalArgumentException("Niepoprawna ilość do usunięcia: " + quantity);
+        }
+        this.quantity -= quantity;
+    }
+
+    public double calculateCost() {
+        return part.getPrice() * quantity;
+    }
+
+    public boolean hasSameContentAs(PartItem other) {
+        return part == other.part &amp;&amp; quantity == other.quantity;
+    }
+
+    public SparePart getPart() { return part; }
+
+    public int getQuantity() { return quantity; }
+}
+
+// Przegląd kosztorysu przez klienta (przypadek użycia "Zaakceptuj kosztorys dodatkowych prac")
+public class EstimateReview {
+    private final CostEstimate estimate;   // kosztorys zapisany w zleceniu - mechanik może go zmienić
+    private CostEstimate displayedCopy;    // kopia kosztorysu w postaci pokazanej klientowi
+
+    public EstimateReview(CostEstimate estimate) {
+        this.estimate = estimate;
+    }
+
+    // Krok 2: system wyświetla kosztorys i zapamiętuje jego kopię
+    public CostEstimate display() {
+        displayedCopy = estimate.clone();
+        return displayedCopy;
+    }
+
+    // Kroki 5-7: klient potwierdza akceptację, system sprawdza, czy kosztorys się nie zmienił
+    public boolean confirmAcceptance() {
+        if (displayedCopy == null) {
+            throw new IllegalStateException("Kosztorys nie został wyświetlony klientowi");
+        }
+        if (!estimate.hasSameContentAs(displayedCopy)) {
+            // Przepływ alternatywny 6: kosztorys zmieniony przez mechanika - trzeba go wyświetlić ponownie (GOTO 2)
+            return false;
+        }
+        estimate.accept();
+        return true;
+    }
+}
+
+// Usługa z cennika (uproszczona - tylko pola potrzebne w kosztorysie)
+public class ServiceItem {
+    private final String name;
+    private final double rate;
+    private final boolean fixedPrice;
+    private double estimatedTime;
+
+    public ServiceItem(String name, double rate, boolean fixedPrice) {
+        this.name = name;
+        this.rate = rate;
+        this.fixedPrice = fixedPrice;
+    }
+
+    public void setEstimatedTime(double estimatedTime) { this.estimatedTime = estimatedTime; }
+
+    public double getEstimatedTime() { return estimatedTime; }
+
+    // Cena stała albo stawka za roboczogodzinę razy czas pracy
+    public double calculatePrice(double workTime) {
+        return fixedPrice ? rate : rate * workTime;
+    }
+}
+
+// Część zamienna z katalogu magazynu (uproszczona - tylko pola potrzebne w kosztorysie)
+public class SparePart {
+    private final String catalogNumber;
+    private final String name;
+    private final double price;
+
+    public SparePart(String catalogNumber, String name, double price) {
+        this.catalogNumber = catalogNumber;
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() { return name; }
+
+    public double getPrice() { return price; }
+}
+
+public enum EstimateStatus {
+    PENDING,
+    ACCEPTED,
+    REJECTED
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class CostEstimatePrototypeTest {
+    private ServiceItem brakeDiscReplacement;
+    private SparePart brakeDisc;
+    private CostEstimate estimate;
+
+    @BeforeEach
+    public void setUp() {
+        brakeDiscReplacement = new ServiceItem("Wymiana tarcz hamulcowych", 150.0, false);
+        brakeDiscReplacement.setEstimatedTime(2.0);
+        brakeDisc = new SparePart("TH-200", "Tarcza hamulcowa", 180.0);
+
+        estimate = new CostEstimate("Zużyte tarcze hamulcowe");
+        estimate.addService(brakeDiscReplacement);
+        estimate.addPart(brakeDisc, 2);
+    }
+
+    @Test
+    public void testCloneCreatesSeparateObjectWithSameContent() {
+        CostEstimate copy = estimate.clone();
+
+        assertNotSame(estimate, copy, "Kopia powinna być nowym obiektem");
+        assertTrue(copy.hasSameContentAs(estimate), "Kopia powinna mieć tę samą treść");
+        // 150 zł/h * 2 h + 2 * 180 zł = 660 zł
+        assertEquals(660.0, copy.calculateTotal(), 0.001);
+    }
+
+    @Test
+    public void testCloneCopiesPartItemsDeeply() {
+        CostEstimate copy = estimate.clone();
+
+        assertNotSame(estimate.getParts().get(0), copy.getParts().get(0), "Pozycje części powinny być sklonowane");
+
+        // Mechanik zmienia oryginał: zmniejsza ilość tarcz i dodaje nową część
+        estimate.getParts().get(0).reduceQuantity(1);
+        estimate.addPart(new SparePart("KL-10", "Klocki hamulcowe", 120.0), 1);
+
+        assertEquals(2, copy.getParts().get(0).getQuantity(), "Zmiana oryginału nie może zmienić kopii");
+        assertEquals(1, copy.getParts().size());
+    }
+
+    @Test
+    public void testCloneSharesServicesFromPriceList() {
+        CostEstimate copy = estimate.clone();
+
+        assertSame(brakeDiscReplacement, copy.getServices().get(0), "Usługa z cennika nie jest kopiowana");
+    }
+
+    @Test
+    public void testAcceptWhenEstimateNotChanged() {
+        EstimateReview review = new EstimateReview(estimate);
+        review.display();
+
+        assertTrue(review.confirmAcceptance());
+        assertEquals(EstimateStatus.ACCEPTED, estimate.getStatus());
+    }
+
+    @Test
+    public void testChangeByMechanicIsDetected() {
+        EstimateReview review = new EstimateReview(estimate);
+        review.display();
+
+        // Mechanik zmienia kosztorys, zanim klient potwierdzi decyzję
+        estimate.addService(new ServiceItem("Odpowietrzenie układu hamulcowego", 80.0, true));
+
+        assertFalse(review.confirmAcceptance(), "Zmiana kosztorysu powinna zostać wykryta");
+        assertEquals(EstimateStatus.PENDING, estimate.getStatus());
+
+        // GOTO 2: kosztorys wyświetlony ponownie, teraz akceptacja się udaje
+        review.display();
+        assertTrue(review.confirmAcceptance());
+        assertEquals(EstimateStatus.ACCEPTED, estimate.getStatus());
+    }
+
+    @Test
+    public void testConfirmWithoutDisplayIsNotAllowed() {
+        EstimateReview review = new EstimateReview(estimate);
+
+        assertThrows(IllegalStateException.class, review::confirmAcceptance);
+    }
+}</code></pre>
+  </section>
+</article>
+
+</body>
+</html>
