@@ -142,7 +142,8 @@ import java.util.Map;
 // Budowniczy zamówienia części (przypadek użycia "Zamów części u magazyniera")
 public class PartRequestBuilder {
     private final RepairOrder repairOrder;
-    private final List&lt;PartRequest&gt; existingRequests;   // zamówienia już złożone do zleceń
+    // Zamówienia już złożone do zleceń
+    private final List&lt;PartRequest&gt; existingRequests;
     private final Map&lt;SparePart, Integer&gt; selectedParts = new LinkedHashMap&lt;&gt;();
 
     public PartRequestBuilder(RepairOrder repairOrder, List&lt;PartRequest&gt; existingRequests) {

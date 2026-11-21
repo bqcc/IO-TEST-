@@ -283,7 +283,8 @@ public class PartItem extends Prototype {
 
     // Konstruktor kopiujący - używa go metoda clone()
     private PartItem(PartItem other) {
-        this.part = other.part;          // ta sama część z katalogu
+        // Ta sama część z katalogu - części katalogowej się nie kopiuje
+        this.part = other.part;
         this.quantity = other.quantity;
     }
 
@@ -315,8 +316,10 @@ public class PartItem extends Prototype {
 
 // Przegląd kosztorysu przez klienta (przypadek użycia "Zaakceptuj kosztorys dodatkowych prac")
 public class EstimateReview {
-    private final CostEstimate estimate;   // kosztorys zapisany w zleceniu - mechanik może go zmienić
-    private CostEstimate displayedCopy;    // kopia kosztorysu w postaci pokazanej klientowi
+    // Kosztorys zapisany w zleceniu - mechanik może go zmienić
+    private final CostEstimate estimate;
+    // Kopia kosztorysu w postaci pokazanej klientowi
+    private CostEstimate displayedCopy;
 
     public EstimateReview(CostEstimate estimate) {
         this.estimate = estimate;

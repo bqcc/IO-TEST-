@@ -23,68 +23,58 @@
     <h6>Problem</h6>
     <div class="pattern-problem">
       <p>
-        W przypadku użycia „Wydaj części mechanikowi” system po sprawdzeniu dostępności
-        zamówionych części (krok 6) postępuje na jeden z trzech sposobów:
+        W przypadku użycia „Wydaj części mechanikowi” system sprawdza dostępność zamówionych
+        części (krok 6) i postępuje na jeden z trzech sposobów:
       </p>
       <ul>
         <li>
           wszystkie części są dostępne – wydanie pełne: stan magazynowy jest pomniejszany, a
-          zamówienie oznaczane jako zrealizowane (kroki 9–11);
+          zamówienie oznaczane jako zrealizowane (kroki 10–11);
         </li>
         <li>
-          dostępna ilość jest mniejsza niż zamówiona – wydanie częściowe: brakująca ilość jest
-          usuwana z zamówienia, a mechanik musi zamówić ją ponownie (przepływ alternatywny 6,
-          GOTO 7);
+          części jest mniej, niż zamówiono – wydanie częściowe: brakująca ilość jest usuwana z
+          zamówienia, a mechanik musi zamówić ją ponownie (przepływ alternatywny 6);
         </li>
         <li>
-          części nie ma w magazynie – nic nie jest wydawane, zamówienie dostaje status
-          oczekującego, a zlecenie status „oczekuje na części” (przepływ alternatywny 6,
-          END FLOW).
+          części nie ma w magazynie – nic nie jest wydawane, zamówienie czeka, a zlecenie
+          dostaje status „oczekuje na części” (przepływ alternatywny 6).
         </li>
       </ul>
       <p>
-        Każdy sposób inaczej tworzy podsumowanie wydania (krok 7) i inaczej zmienia stan
-        systemu. Gdyby <code>WarehouseServiceImpl</code> rozróżniał te przypadki instrukcjami
-        warunkowymi w każdym miejscu, w którym ich potrzebuje (podsumowanie, zapis wydania),
-        logika wydania byłaby rozproszona, a dodanie nowego sposobu wydania wymagałoby zmian w
-        wielu metodach.
+        Gdyby serwis magazynu sam rozróżniał te przypadki rozbudowanymi instrukcjami
+        warunkowymi, logika wydania byłaby w jednym dużym miejscu, a dodanie nowego sposobu
+        wydania wymagałoby zmiany istniejącego kodu.
       </p>
     </div>
     <h6>Rozwiązanie</h6>
     <div class="pattern-description">
       <p>
-        Metoda fabrykująca definiuje sposób tworzenia obiektu, ale zwalnia kod klienta z
-        decyzji, jaki konkretny obiekt ma powstać. Tutaj decyzja zależy od stanu magazynu, a nie
-        od kodu, który wydaje części.
+        Metoda fabrykująca tworzy obiekt, ale zwalnia kod, który z niego korzysta, z decyzji,
+        jaki konkretny obiekt ma powstać. Tutaj o rodzaju wydania decyduje stan magazynu.
       </p>
       <ul>
         <li>
-          <code>PartIssue</code> – produkt abstrakcyjny. <code>getSummary()</code> zwraca treść
-          podsumowania wydania, a <code>execute()</code> zapisuje skutki wydania w systemie.
+          <code>PartIssue</code> – produkt abstrakcyjny z metodą <code>execute()</code>, która
+          zapisuje skutki wydania.
         </li>
         <li>
           <code>FullIssue</code>, <code>PartialIssue</code>, <code>WaitingIssue</code> –
-          produkty konkretne dla trzech sposobów ze scenariusza. Ich konstruktory są pakietowe,
-          więc tworzy je tylko fabryka.
+          produkty konkretne, po jednym dla każdego sposobu ze scenariusza.
         </li>
         <li>
-          <code>PartIssueFactory.createIssue()</code> – metoda fabrykująca. Sprawdza wolną
-          ilość każdej części (stan magazynowy minus ilość zarezerwowana) i zwraca odpowiedni
-          produkt. Brak którejkolwiek części oznacza, że całe zamówienie czeka na dostawę.
-        </li>
-        <li>
-          <code>WarehouseServiceImpl</code> – klient. W metodach <code>getIssueSummary()</code>
-          i <code>issueParts()</code> korzysta tylko z typu <code>PartIssue</code>.
+          <code>PartIssueFactory.createIssue()</code> – metoda fabrykująca. Porównuje stan
+          magazynowy każdej części z zamówioną ilością i zwraca odpowiedni produkt. Brak
+          którejkolwiek części oznacza, że całe zamówienie czeka.
         </li>
       </ul>
       <p>
-        Przepływ alternatywny 9 (zlecenie zakończone lub rozliczone w międzyczasie) dotyczy
-        zarówno wydania pełnego, jak i częściowego, dlatego metoda
-        <code>cancelIfOrderClosed()</code> znajduje się w klasie bazowej. Wydanie częściowe
-        korzysta z metody <code>PartItem.reduceQuantity()</code> z diagramu klas. Struktura
-        odpowiada schematowi metody fabrykującej z instrukcji (fabryka, produkt abstrakcyjny,
-        produkty konkretne). Klasy <code>SparePart</code>, <code>PartRequest</code> i
-        <code>RepairOrder</code> są w kodzie uproszczone do pól potrzebnych przy wydaniu.
+        Z fabryki korzysta metoda <code>WarehouseService.issueParts()</code> z diagramu klas:
+        tworzy wydanie przez <code>createIssue()</code> i wywołuje <code>execute()</code>, nie
+        wiedząc, który rodzaj wydania powstał. Wydanie częściowe korzysta z metody
+        <code>PartItem.reduceQuantity()</code> z diagramu klas. Struktura odpowiada schematowi
+        metody fabrykującej z instrukcji: fabryka, produkt abstrakcyjny i produkty konkretne.
+        Klasy <code>SparePart</code>, <code>PartRequest</code> i <code>RepairOrder</code> są w
+        kodzie uproszczone do pól potrzebnych przy wydaniu.
       </p>
     </div>
     <h6>Diagram klas</h6>
@@ -94,42 +84,26 @@
       title Metoda fabrykujaca - wydanie czesci mechanikowi
 
       class PartIssueFactory {
-        -PartIssueFactory()
         +{static} createIssue(request: PartRequest): PartIssue
       }
       abstract class PartIssue {
         #request: PartRequest
         #PartIssue(request: PartRequest)
-        +{abstract} getSummary(): String
         +{abstract} execute(): void
-        #cancelIfOrderClosed(): boolean
       }
       class FullIssue {
-        ~FullIssue(request: PartRequest)
-        +getSummary(): String
+        +FullIssue(request: PartRequest)
         +execute(): void
       }
       class PartialIssue {
-        -missingQuantities: Map&lt;PartItem, Integer&gt;
-        ~PartialIssue(request: PartRequest, missingQuantities: Map&lt;PartItem, Integer&gt;)
-        +getSummary(): String
+        +PartialIssue(request: PartRequest)
         +execute(): void
       }
       class WaitingIssue {
-        ~WaitingIssue(request: PartRequest)
-        +getSummary(): String
+        +WaitingIssue(request: PartRequest)
         +execute(): void
       }
-      class WarehouseServiceImpl {
-        -partRequests: List&lt;PartRequest&gt;
-        +addPartRequest(request: PartRequest): void
-        +getIssueSummary(requestId: int): String
-        +issueParts(requestId: int): void
-        -findRequest(requestId: int): PartRequest
-      }
       class PartRequest {
-        -{static} nextId: int
-        -id: int
         -repairOrder: RepairOrder
         -items: List&lt;PartItem&gt;
         -status: PartRequestStatus
@@ -137,7 +111,6 @@
         +addItem(part: SparePart, quantity: int): void
         +markWaiting(): void
         +markFulfilled(): void
-        +cancel(): void
       }
       class PartItem {
         -part: SparePart
@@ -146,20 +119,14 @@
         +reduceQuantity(quantity: int): void
       }
       class SparePart {
-        -catalogNumber: String
         -name: String
         -stockQuantity: int
-        -reservedQuantity: int
-        +SparePart(catalogNumber: String, name: String, stockQuantity: int)
-        +getAvailableQuantity(): int
-        +isAvailable(quantity: int): boolean
+        +SparePart(name: String, stockQuantity: int)
         +decreaseStock(quantity: int): void
       }
       class RepairOrder {
-        -id: int
         -status: RepairOrderStatus
-        +RepairOrder(id: int, status: RepairOrderStatus)
-        +changeStatus(status: RepairOrderStatus, comment: String): void
+        +changeStatus(status: RepairOrderStatus): void
       }
       enum PartRequestStatus {
         PENDING
@@ -182,11 +149,7 @@
       PartIssueFactory ..&gt; FullIssue : &lt;&lt; create &gt;&gt;
       PartIssueFactory ..&gt; PartialIssue : &lt;&lt; create &gt;&gt;
       PartIssueFactory ..&gt; WaitingIssue : &lt;&lt; create &gt;&gt;
-      WarehouseServiceImpl ..&gt; PartIssueFactory : uzywa
-      WarehouseServiceImpl ..&gt; PartIssue : uzywa
-      WarehouseServiceImpl "1" --&gt; "0..*" PartRequest : przechowuje
       PartIssue "0..*" --&gt; "1" PartRequest : wydanie dla
-      PartialIssue "0..*" --&gt; "1..*" PartItem : brakujace ilosci
       PartRequest "1" *--&gt; "1..*" PartItem : zawiera
       PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
       PartRequest --&gt; "1" PartRequestStatus : ma
@@ -195,35 +158,30 @@
       @enduml
     </p>
     <h6>Kod wzorca</h6>
-    <pre class="pattern-code"><code class="lang-java">import java.util.LinkedHashMap;
-import java.util.Map;
+    <pre class="pattern-code"><code class="lang-java">// Fabryka z metodą fabrykującą
+public class PartIssueFactory {
 
-// Fabryka z metodą fabrykującą - decyduje, jaki rodzaj wydania utworzyć
-public final class PartIssueFactory {
-
-    private PartIssueFactory() {
-    }
-
-    // Krok 6: na podstawie dostępności zamówionych części tworzy odpowiedni rodzaj wydania
+    // Na podstawie stanu magazynu wybiera, jaki rodzaj wydania utworzyć
     public static PartIssue createIssue(PartRequest request) {
-        Map&lt;PartItem, Integer&gt; missingQuantities = new LinkedHashMap&lt;&gt;();
+        boolean missingParts = false;
         for (PartItem item : request.getItems()) {
-            int available = item.getPart().getAvailableQuantity();
-            if (available &lt;= 0) {
-                return new WaitingIssue(request);   // część niedostępna w magazynie
+            int stock = item.getPart().getStockQuantity();
+            // Brak części w magazynie - całe zamówienie czeka
+            if (stock == 0) {
+                return new WaitingIssue(request);
             }
-            if (available &lt; item.getQuantity()) {
-                missingQuantities.put(item, item.getQuantity() - available);
+            if (stock &lt; item.getQuantity()) {
+                missingParts = true;
             }
         }
-        if (missingQuantities.isEmpty()) {
-            return new FullIssue(request);
+        if (missingParts) {
+            return new PartialIssue(request);
         }
-        return new PartialIssue(request, missingQuantities);
+        return new FullIssue(request);
     }
 }
 
-// Produkt abstrakcyjny - sposób wydania części dla zamówienia
+// Produkt abstrakcyjny - sposób wydania części
 public abstract class PartIssue {
     protected final PartRequest request;
 
@@ -231,78 +189,20 @@ public abstract class PartIssue {
         this.request = request;
     }
 
-    // Krok 7: treść podsumowania wydania pokazywana magazynierowi
-    public abstract String getSummary();
-
-    // Skutki wydania w systemie (wywoływane po potwierdzeniu przez magazyniera)
+    // Zapisuje w systemie skutki wydania
     public abstract void execute();
-
-    // Przepływ alternatywny 9: zlecenie zostało w międzyczasie zakończone lub rozliczone
-    protected boolean cancelIfOrderClosed() {
-        RepairOrderStatus orderStatus = request.getRepairOrder().getStatus();
-        if (orderStatus == RepairOrderStatus.COMPLETED || orderStatus == RepairOrderStatus.SETTLED) {
-            request.cancel();   // stan magazynowy pozostaje bez zmian
-            return true;
-        }
-        return false;
-    }
 }
 
-// Produkt konkretny - wydanie wszystkich zamówionych części
+// Produkt konkretny - wszystkie części są dostępne
 public class FullIssue extends PartIssue {
 
-    FullIssue(PartRequest request) {
+    public FullIssue(PartRequest request) {
         super(request);
     }
 
     @Override
-    public String getSummary() {
-        return "Wydanie pełne - liczba pozycji zamówienia: " + request.getItems().size();
-    }
-
-    @Override
     public void execute() {
-        if (cancelIfOrderClosed()) {
-            return;
-        }
-        for (PartItem item : request.getItems()) {
-            item.getPart().decreaseStock(item.getQuantity());   // krok 10
-        }
-        request.markFulfilled();                                 // krok 11
-    }
-}
-
-import java.util.Map;
-
-// Produkt konkretny - wydanie dostępnej ilości, brakująca ilość jest usuwana z zamówienia
-public class PartialIssue extends PartIssue {
-    private final Map&lt;PartItem, Integer&gt; missingQuantities;
-
-    PartialIssue(PartRequest request, Map&lt;PartItem, Integer&gt; missingQuantities) {
-        super(request);
-        this.missingQuantities = missingQuantities;
-    }
-
-    @Override
-    public String getSummary() {
-        StringBuilder summary = new StringBuilder("Wydanie częściowe:");
-        for (Map.Entry&lt;PartItem, Integer&gt; entry : missingQuantities.entrySet()) {
-            PartItem item = entry.getKey();
-            summary.append(" ").append(item.getPart().getName())
-                    .append(" - brakuje ").append(entry.getValue()).append(" szt.;");
-        }
-        return summary.append(" brakująca ilość zostanie usunięta z zamówienia,")
-                .append(" mechanik musi zamówić ją ponownie").toString();
-    }
-
-    @Override
-    public void execute() {
-        if (cancelIfOrderClosed()) {
-            return;
-        }
-        for (Map.Entry&lt;PartItem, Integer&gt; entry : missingQuantities.entrySet()) {
-            entry.getKey().reduceQuantity(entry.getValue());
-        }
+        // Pomniejszenie stanu magazynowego o zamówione ilości
         for (PartItem item : request.getItems()) {
             item.getPart().decreaseStock(item.getQuantity());
         }
@@ -310,76 +210,53 @@ public class PartialIssue extends PartIssue {
     }
 }
 
-// Produkt konkretny - części nie można wydać, zamówienie czeka na dostawę
-public class WaitingIssue extends PartIssue {
+// Produkt konkretny - części jest mniej, niż zamówiono
+public class PartialIssue extends PartIssue {
 
-    WaitingIssue(PartRequest request) {
+    public PartialIssue(PartRequest request) {
         super(request);
     }
 
     @Override
-    public String getSummary() {
-        return "Brak części w magazynie: zamówienie oczekuje,"
-                + " magazynier może zamówić część u dostawcy";
+    public void execute() {
+        for (PartItem item : request.getItems()) {
+            int stock = item.getPart().getStockQuantity();
+            // Brakująca ilość jest usuwana z zamówienia - mechanik musi zamówić ją ponownie
+            if (stock &lt; item.getQuantity()) {
+                item.reduceQuantity(item.getQuantity() - stock);
+            }
+            item.getPart().decreaseStock(item.getQuantity());
+        }
+        request.markFulfilled();
+    }
+}
+
+// Produkt konkretny - części nie ma w magazynie
+public class WaitingIssue extends PartIssue {
+
+    public WaitingIssue(PartRequest request) {
+        super(request);
     }
 
-    // Przepływ alternatywny 6: stan magazynowy się nie zmienia
     @Override
     public void execute() {
+        // Nic nie jest wydawane - zamówienie i zlecenie czekają na części
         request.markWaiting();
-        request.getRepairOrder().changeStatus(RepairOrderStatus.WAITING_FOR_PARTS, "Oczekiwanie na części");
+        request.getRepairOrder().changeStatus(RepairOrderStatus.WAITING_FOR_PARTS);
     }
 }
 
 import java.util.ArrayList;
-import java.util.List;
-
-// Klient metody fabrykującej - działa tylko na typie PartIssue
-public class WarehouseServiceImpl {
-    private final List&lt;PartRequest&gt; partRequests = new ArrayList&lt;&gt;();
-
-    public void addPartRequest(PartRequest request) {
-        partRequests.add(request);
-    }
-
-    // Krok 7: podsumowanie wydania pokazywane magazynierowi przed potwierdzeniem
-    public String getIssueSummary(int requestId) {
-        return PartIssueFactory.createIssue(findRequest(requestId)).getSummary();
-    }
-
-    // Wydanie części: pełne, częściowe albo oznaczenie zamówienia jako oczekującego
-    public void issueParts(int requestId) {
-        PartIssue issue = PartIssueFactory.createIssue(findRequest(requestId));
-        issue.execute();
-    }
-
-    private PartRequest findRequest(int requestId) {
-        for (PartRequest request : partRequests) {
-            if (request.getId() == requestId) {
-                return request;
-            }
-        }
-        throw new IllegalArgumentException("Nie ma zamówienia części o numerze " + requestId);
-    }
-}
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 // Zamówienie części złożone przez mechanika
 public class PartRequest {
-    private static int nextId = 1;
-
-    private final int id;
     private final RepairOrder repairOrder;
     private final List&lt;PartItem&gt; items = new ArrayList&lt;&gt;();
-    private PartRequestStatus status;
+    private PartRequestStatus status = PartRequestStatus.PENDING;
 
     public PartRequest(RepairOrder repairOrder) {
-        this.id = nextId++;
         this.repairOrder = repairOrder;
-        this.status = PartRequestStatus.PENDING;
     }
 
     public void addItem(SparePart part, int quantity) {
@@ -390,13 +267,9 @@ public class PartRequest {
 
     public void markFulfilled() { status = PartRequestStatus.FULFILLED; }
 
-    public void cancel() { status = PartRequestStatus.CANCELLED; }
-
-    public int getId() { return id; }
-
     public RepairOrder getRepairOrder() { return repairOrder; }
 
-    public List&lt;PartItem&gt; getItems() { return Collections.unmodifiableList(items); }
+    public List&lt;PartItem&gt; getItems() { return items; }
 
     public PartRequestStatus getStatus() { return status; }
 }
@@ -411,11 +284,8 @@ public class PartItem {
         this.quantity = quantity;
     }
 
-    // Częściowe wydanie: brakująca ilość jest usuwana z zamówienia
+    // Usuwa z pozycji brakującą ilość
     public void reduceQuantity(int quantity) {
-        if (quantity &lt;= 0 || quantity &gt;= this.quantity) {
-            throw new IllegalArgumentException("Niepoprawna ilość do usunięcia: " + quantity);
-        }
         this.quantity -= quantity;
     }
 
@@ -424,32 +294,17 @@ public class PartItem {
     public int getQuantity() { return quantity; }
 }
 
-// Część zamienna w magazynie (uproszczona)
+// Część zamienna w magazynie
 public class SparePart {
-    private final String catalogNumber;
     private final String name;
     private int stockQuantity;
-    private int reservedQuantity;   // ilość zarezerwowana dla zleceń (rezerwację pominięto w przykładzie)
 
-    public SparePart(String catalogNumber, String name, int stockQuantity) {
-        this.catalogNumber = catalogNumber;
+    public SparePart(String name, int stockQuantity) {
         this.name = name;
         this.stockQuantity = stockQuantity;
     }
 
-    // Wolna ilość: stan magazynowy minus ilość zarezerwowana dla zleceń
-    public int getAvailableQuantity() {
-        return stockQuantity - reservedQuantity;
-    }
-
-    public boolean isAvailable(int quantity) {
-        return getAvailableQuantity() &gt;= quantity;
-    }
-
     public void decreaseStock(int quantity) {
-        if (!isAvailable(quantity)) {
-            throw new IllegalStateException("Za mało części " + name + " w magazynie");
-        }
         stockQuantity -= quantity;
     }
 
@@ -458,21 +313,13 @@ public class SparePart {
     public int getStockQuantity() { return stockQuantity; }
 }
 
-// Zlecenie naprawy (uproszczone - numer i status)
+// Zlecenie naprawy (tylko status potrzebny przy wydaniu części)
 public class RepairOrder {
-    private final int id;
-    private RepairOrderStatus status;
+    private RepairOrderStatus status = RepairOrderStatus.IN_PROGRESS;
 
-    public RepairOrder(int id, RepairOrderStatus status) {
-        this.id = id;
+    public void changeStatus(RepairOrderStatus status) {
         this.status = status;
     }
-
-    public void changeStatus(RepairOrderStatus status, String comment) {
-        this.status = status;
-    }
-
-    public int getId() { return id; }
 
     public RepairOrderStatus getStatus() { return status; }
 }
@@ -507,16 +354,16 @@ public class PartIssueFactoryTest {
 
     @BeforeEach
     public void setUp() {
-        order = new RepairOrder(15, RepairOrderStatus.IN_PROGRESS);
-        oilFilter = new SparePart("FO-101", "Filtr oleju", 10);
-        brakePads = new SparePart("KL-10", "Klocki hamulcowe", 10);
+        order = new RepairOrder();
+        oilFilter = new SparePart("Filtr oleju", 10);
+        brakePads = new SparePart("Klocki hamulcowe", 10);
         request = new PartRequest(order);
         request.addItem(oilFilter, 1);
         request.addItem(brakePads, 4);
     }
 
     @Test
-    public void testFullIssueWhenAllPartsAvailable() {
+    public void testFullIssue() {
         PartIssue issue = PartIssueFactory.createIssue(request);
         assertInstanceOf(FullIssue.class, issue);
 
@@ -528,56 +375,33 @@ public class PartIssueFactoryTest {
     }
 
     @Test
-    public void testPartialIssueRemovesMissingQuantity() {
-        brakePads.decreaseStock(7);   // w magazynie zostały 3 komplety klocków, zamówiono 4
+    public void testPartialIssue() {
+        // W magazynie zostają 3 komplety klocków, a zamówiono 4
+        brakePads.decreaseStock(7);
 
         PartIssue issue = PartIssueFactory.createIssue(request);
         assertInstanceOf(PartialIssue.class, issue);
-        assertTrue(issue.getSummary().contains("mechanik musi zamówić ją ponownie"));
 
         issue.execute();
 
-        assertEquals(3, request.getItems().get(1).getQuantity(), "Brakująca ilość usunięta z zamówienia");
+        assertEquals(3, request.getItems().get(1).getQuantity());
         assertEquals(0, brakePads.getStockQuantity());
-        assertEquals(9, oilFilter.getStockQuantity());
         assertEquals(PartRequestStatus.FULFILLED, request.getStatus());
     }
 
     @Test
-    public void testWaitingIssueWhenPartUnavailable() {
-        brakePads.decreaseStock(10);   // brak klocków w magazynie
+    public void testWaitingIssue() {
+        // Klocków nie ma w magazynie
+        brakePads.decreaseStock(10);
 
         PartIssue issue = PartIssueFactory.createIssue(request);
         assertInstanceOf(WaitingIssue.class, issue);
 
         issue.execute();
 
+        assertEquals(10, oilFilter.getStockQuantity());
         assertEquals(PartRequestStatus.WAITING, request.getStatus());
         assertEquals(RepairOrderStatus.WAITING_FOR_PARTS, order.getStatus());
-        assertEquals(10, oilFilter.getStockQuantity(), "Stan magazynowy bez zmian");
-    }
-
-    @Test
-    public void testRequestCancelledWhenOrderClosedInMeantime() {
-        PartIssue issue = PartIssueFactory.createIssue(request);
-        order.changeStatus(RepairOrderStatus.COMPLETED, "Naprawa zakończona");
-
-        issue.execute();
-
-        assertEquals(PartRequestStatus.CANCELLED, request.getStatus());
-        assertEquals(10, oilFilter.getStockQuantity(), "Stan magazynowy bez zmian");
-        assertEquals(10, brakePads.getStockQuantity());
-    }
-
-    @Test
-    public void testWarehouseServiceUsesFactory() {
-        WarehouseServiceImpl warehouse = new WarehouseServiceImpl();
-        warehouse.addPartRequest(request);
-
-        assertTrue(warehouse.getIssueSummary(request.getId()).startsWith("Wydanie pełne"));
-        warehouse.issueParts(request.getId());
-
-        assertEquals(PartRequestStatus.FULFILLED, request.getStatus());
     }
 }</code></pre>
   </section>
