@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Wzorce projektowe – Mechanik</title>
+
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/base64.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/rawdeflate.js"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/vendor/prism.js" type="text/javascript"></script>
+  <script src="https://kronos.tu.kielce.pl/uml/js/plantuml-drawer.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/vendor/prism.css" data-noprefix />
+  <link rel="stylesheet" href="https://kronos.tu.kielce.pl/uml/css/raport.css" data-noprefix />
+</head>
+<body>
+
+<article>
+  <h4>Wzorce projektowe</h4>
+
+  <section class="pattern">
+    <h5>Budowniczy</h5>
+    <p class="author">Łukasz Bera</p>
+    <h6>Problem</h6>
+    <div class="pattern-problem">
+      <p>
+        W przypadku użycia „Zamów części u magazyniera” mechanik składa zamówienie stopniowo:
+        przegląda katalog, wybiera kolejne części i podaje ich ilości (krok 7), a dopiero potem
+        wysyła zamówienie (krok 8). System waliduje je w kroku 9 i odrzuca, gdy nie wybrano
+        żadnej części, ilość jest niepoprawna albo ta sama część została już zamówiona do tego
+        zlecenia i nie została jeszcze wydana (przepływy alternatywne 9, GOTO 6). Dopiero
+        poprawne zamówienie jest tworzone, przypisywane do zlecenia i przekazywane
+        magazynierowi (kroki 10–11).
+      </p>
+      <p>
+        Gdyby obiekt <code>PartRequest</code> tworzyć od razu i dopisywać do niego pozycje w
+        trakcie wybierania części, w systemie istniałyby zamówienia niepełne lub błędne, np.
+        bez żadnej pozycji, choć diagram klas wymaga co najmniej jednej (kompozycja
+        <code>PartRequest</code>–<code>PartItem</code>, 1..*). Walidacja byłaby rozproszona po
+        kodzie, a magazynier mógłby zobaczyć zamówienie, którego mechanik jeszcze nie wysłał.
+      </p>
+    </div>
+    <h6>Rozwiązanie</h6>
+    <div class="pattern-description">
+      <p>
+        Budowniczy oddziela proces tworzenia złożonego obiektu z części od jego reprezentacji.
+        Obiekt jest składany krok po kroku, a powstaje dopiero w metodzie <code>build()</code>,
+        po sprawdzeniu, że wszystkie jego części są poprawne.
+      </p>
+      <ul>
+        <li>
+          <code>PartRequestBuilder</code> – budowniczy. <code>selectPart()</code> odpowiada
+          wyborowi części z katalogu i podaniu ilości (ponowny wybór tej samej części zmienia
+          ilość), <code>removePart()</code> – rezygnacji z części przy poprawianiu zamówienia.
+          <code>build()</code> wykonuje walidację z kroku 9 i tworzy zamówienie.
+        </li>
+        <li>
+          <code>PartRequest</code> – produkt złożony z pozycji <code>PartItem</code>. Jego
+          konstruktor i metoda <code>addItem()</code> mają widoczność pakietową, więc zamówienie
+          może utworzyć tylko budowniczy. Nowe zamówienie ma status <code>PENDING</code>.
+        </li>
+        <li>
+          <code>existingRequests</code> – zamówienia już złożone (np. pobrane przez
+          <code>WarehouseService.findPendingRequests()</code>). Budowniczy sprawdza w nich, czy
+          część nie została już zamówiona do tego samego zlecenia i nie czeka na wydanie
+          (status <code>PENDING</code>, <code>WAITING</code> lub <code>READY_FOR_ISSUE</code>).
+        </li>
+      </ul>
+      <p>
+        Metody budowniczego zwracają <code>this</code>, więc wywołania można łączyć w łańcuch.
+        Po błędzie walidacji budowniczy pamięta wybrane części, więc mechanik poprawia tylko
+        błędną pozycję i wysyła zamówienie ponownie. Odpowiada to powrotowi do katalogu części
+        (GOTO 6). Zastosowano uproszczoną wersję wzorca z jednym budowniczym, tak jak w
+        przykładzie z materiałów. Klasy <code>SparePart</code> i <code>RepairOrder</code> są w
+        kodzie uproszczone do pól potrzebnych w zamówieniu.
+      </p>
+    </div>
+    <h6>Diagram klas</h6>
+    <p class="uml pattern-diagram">
+      @startuml
+      skinparam classAttributeIconSize 0
+      title Budowniczy - zamowienie czesci u magazyniera
+
+      class PartRequestBuilder {
+        -repairOrder: RepairOrder
+        -existingRequests: List&lt;PartRequest&gt;
+        -selectedParts: Map&lt;SparePart, Integer&gt;
+        +PartRequestBuilder(repairOrder: RepairOrder, existingRequests: List&lt;PartRequest&gt;)
+        +selectPart(part: SparePart, quantity: int): PartRequestBuilder
+        +removePart(part: SparePart): PartRequestBuilder
+        +build(): PartRequest
+        -validate(): void
+        -isAlreadyOrdered(part: SparePart): boolean
+      }
+      class PartRequest {
+        -{static} nextId: int
+        -id: int
+        -repairOrder: RepairOrder
+        -items: List&lt;PartItem&gt;
+        -status: PartRequestStatus
+        ~PartRequest(repairOrder: RepairOrder)
+        ~addItem(part: SparePart, quantity: int): void
+        +containsPart(part: SparePart): boolean
+        +isNotIssued(): boolean
+        +markFulfilled(): void
+      }
+      class PartItem {
+        -part: SparePart
+        -quantity: int
+        +PartItem(part: SparePart, quantity: int)
+      }
+      class SparePart {
+        -catalogNumber: String
+        -name: String
+        +SparePart(catalogNumber: String, name: String)
+      }
+      class RepairOrder {
+        -id: int
+        +RepairOrder(id: int)
+      }
+      enum PartRequestStatus {
+        PENDING
+        WAITING
+        READY_FOR_ISSUE
+        FULFILLED
+        CANCELLED
+      }
+      PartRequestBuilder ..&gt; PartRequest : &lt;&lt; create &gt;&gt;
+      PartRequestBuilder "0..*" --&gt; "1" RepairOrder : dla zlecenia
+      PartRequestBuilder "0..*" --&gt; "0..*" PartRequest : sprawdza zlozone
+      PartRequestBuilder "0..*" --&gt; "0..*" SparePart : wybrane czesci
+      PartRequest "1" *--&gt; "1..*" PartItem : zawiera
+      PartRequest "0..*" --&gt; "1" RepairOrder : dotyczy
+      PartRequest --&gt; "1" PartRequestStatus : ma
+      PartItem "0..*" --&gt; "1" SparePart : dotyczy
+      @enduml
+    </p>
+    <h6>Kod wzorca</h6>
+    <pre class="pattern-code"><code class="lang-java">import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+// Budowniczy zamówienia części (przypadek użycia "Zamów części u magazyniera")
+public class PartRequestBuilder {
+    private final RepairOrder repairOrder;
+    private final List&lt;PartRequest&gt; existingRequests;   // zamówienia już złożone do zleceń
+    private final Map&lt;SparePart, Integer&gt; selectedParts = new LinkedHashMap&lt;&gt;();
+
+    public PartRequestBuilder(RepairOrder repairOrder, List&lt;PartRequest&gt; existingRequests) {
+        this.repairOrder = repairOrder;
+        this.existingRequests = existingRequests;
+    }
+
+    // Krok 7: mechanik wybiera część z katalogu i podaje ilość.
+    // Ponowny wybór tej samej części zmienia jej ilość.
+    public PartRequestBuilder selectPart(SparePart part, int quantity) {
+        selectedParts.put(part, quantity);
+        return this;
+    }
+
+    // Poprawa zamówienia po błędzie walidacji (GOTO 6) - rezygnacja z wybranej części
+    public PartRequestBuilder removePart(SparePart part) {
+        selectedParts.remove(part);
+        return this;
+    }
+
+    // Kroki 8-10: wysłanie zamówienia, walidacja i utworzenie zamówienia przypisanego do zlecenia
+    public PartRequest build() {
+        validate();
+        PartRequest request = new PartRequest(repairOrder);
+        for (Map.Entry&lt;SparePart, Integer&gt; entry : selectedParts.entrySet()) {
+            request.addItem(entry.getKey(), entry.getValue());
+        }
+        return request;
+    }
+
+    // Krok 9 i przepływy alternatywne z kroku 9
+    private void validate() {
+        if (selectedParts.isEmpty()) {
+            throw new IllegalStateException("Nie wybrano żadnej części");
+        }
+        for (Map.Entry&lt;SparePart, Integer&gt; entry : selectedParts.entrySet()) {
+            SparePart part = entry.getKey();
+            if (entry.getValue() &lt;= 0) {
+                throw new IllegalStateException(
+                        "Niepoprawna ilość części " + part.getName() + ": " + entry.getValue());
+            }
+            if (isAlreadyOrdered(part)) {
+                throw new IllegalStateException("Część " + part.getName()
+                        + " została już zamówiona do tego zlecenia i nie została jeszcze wydana");
+            }
+        }
+    }
+
+    private boolean isAlreadyOrdered(SparePart part) {
+        for (PartRequest request : existingRequests) {
+            if (request.getRepairOrder() == repairOrder &amp;&amp; request.isNotIssued() &amp;&amp; request.containsPart(part)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+// Zamówienie części - produkt budowniczego
+public class PartRequest {
+    private static int nextId = 1;
+
+    private final int id;
+    private final RepairOrder repairOrder;
+    private final List&lt;PartItem&gt; items = new ArrayList&lt;&gt;();
+    private PartRequestStatus status;
+
+    // Konstruktor i addItem są pakietowe - zamówienie tworzy tylko PartRequestBuilder
+    PartRequest(RepairOrder repairOrder) {
+        this.id = nextId++;
+        this.repairOrder = repairOrder;
+        this.status = PartRequestStatus.PENDING;
+    }
+
+    void addItem(SparePart part, int quantity) {
+        items.add(new PartItem(part, quantity));
+    }
+
+    public boolean containsPart(SparePart part) {
+        for (PartItem item : items) {
+            if (item.getPart() == part) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Zamówienie złożone, ale części jeszcze nie zostały wydane mechanikowi
+    public boolean isNotIssued() {
+        return status == PartRequestStatus.PENDING
+                || status == PartRequestStatus.WAITING
+                || status == PartRequestStatus.READY_FOR_ISSUE;
+    }
+
+    public void markFulfilled() {
+        status = PartRequestStatus.FULFILLED;
+    }
+
+    public int getId() { return id; }
+
+    public RepairOrder getRepairOrder() { return repairOrder; }
+
+    public List&lt;PartItem&gt; getItems() { return Collections.unmodifiableList(items); }
+
+    public PartRequestStatus getStatus() { return status; }
+}
+
+// Pozycja zamówienia: część i zamawiana ilość
+public class PartItem {
+    private final SparePart part;
+    private final int quantity;
+
+    public PartItem(SparePart part, int quantity) {
+        this.part = part;
+        this.quantity = quantity;
+    }
+
+    public SparePart getPart() { return part; }
+
+    public int getQuantity() { return quantity; }
+}
+
+// Część zamienna z katalogu magazynu (uproszczona)
+public class SparePart {
+    private final String catalogNumber;
+    private final String name;
+
+    public SparePart(String catalogNumber, String name) {
+        this.catalogNumber = catalogNumber;
+        this.name = name;
+    }
+
+    public String getName() { return name; }
+}
+
+// Zlecenie naprawy (uproszczone - tylko numer zlecenia)
+public class RepairOrder {
+    private final int id;
+
+    public RepairOrder(int id) {
+        this.id = id;
+    }
+
+    public int getId() { return id; }
+}
+
+public enum PartRequestStatus {
+    PENDING,
+    WAITING,
+    READY_FOR_ISSUE,
+    FULFILLED,
+    CANCELLED
+}</code></pre>
+    <h6>Kod testowy wzorca</h6>
+    <pre class="pattern-test-code"><code class="lang-java">import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class PartRequestBuilderTest {
+    private RepairOrder order;
+    private SparePart oilFilter;
+    private SparePart brakePads;
+    private List&lt;PartRequest&gt; existingRequests;
+
+    @BeforeEach
+    public void setUp() {
+        order = new RepairOrder(15);
+        oilFilter = new SparePart("FO-101", "Filtr oleju");
+        brakePads = new SparePart("KL-10", "Klocki hamulcowe");
+        existingRequests = new ArrayList&lt;&gt;();
+    }
+
+    @Test
+    public void testBuildRequestWithSelectedParts() {
+        PartRequest request = new PartRequestBuilder(order, existingRequests)
+                .selectPart(oilFilter, 1)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertSame(order, request.getRepairOrder());
+        assertEquals(PartRequestStatus.PENDING, request.getStatus());
+        assertEquals(2, request.getItems().size());
+        assertEquals(4, request.getItems().get(1).getQuantity());
+    }
+
+    @Test
+    public void testSelectingSamePartAgainChangesQuantity() {
+        PartRequest request = new PartRequestBuilder(order, existingRequests)
+                .selectPart(brakePads, 2)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertEquals(1, request.getItems().size());
+        assertEquals(4, request.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    public void testRequestWithoutPartsIsRejected() {
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, builder::build);
+        assertEquals("Nie wybrano żadnej części", e.getMessage());
+    }
+
+    @Test
+    public void testInvalidQuantityIsRejectedAndCanBeCorrected() {
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests)
+                .selectPart(oilFilter, 0);
+
+        assertThrows(IllegalStateException.class, builder::build);
+
+        // GOTO 6: mechanik poprawia ilość
+        PartRequest request = builder.selectPart(oilFilter, 1).build();
+        assertEquals(1, request.getItems().get(0).getQuantity());
+    }
+
+    @Test
+    public void testPartAlreadyOrderedAndNotIssuedIsRejected() {
+        existingRequests.add(new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build());
+
+        PartRequestBuilder builder = new PartRequestBuilder(order, existingRequests)
+                .selectPart(brakePads, 2)
+                .selectPart(oilFilter, 1);
+
+        IllegalStateException e = assertThrows(IllegalStateException.class, builder::build);
+        assertTrue(e.getMessage().contains("została już zamówiona"));
+
+        // GOTO 6: mechanik rezygnuje z klocków, zamawia tylko filtr
+        PartRequest request = builder.removePart(brakePads).build();
+        assertEquals(1, request.getItems().size());
+        assertSame(oilFilter, request.getItems().get(0).getPart());
+    }
+
+    @Test
+    public void testIssuedPartCanBeOrderedAgain() {
+        PartRequest issued = new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build();
+        issued.markFulfilled();
+        existingRequests.add(issued);
+
+        PartRequest request = new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 2).build();
+
+        assertTrue(request.containsPart(brakePads));
+    }
+
+    @Test
+    public void testSamePartForOtherOrderIsAllowed() {
+        existingRequests.add(new PartRequestBuilder(order, existingRequests).selectPart(brakePads, 4).build());
+
+        PartRequest request = new PartRequestBuilder(new RepairOrder(16), existingRequests)
+                .selectPart(brakePads, 4)
+                .build();
+
+        assertTrue(request.containsPart(brakePads));
+    }
+}</code></pre>
+  </section>
+</article>
+
+</body>
+</html>

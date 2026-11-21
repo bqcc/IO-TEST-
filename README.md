@@ -40,3 +40,12 @@ Odpowiedzialność za klasy:
 | Mechanik | Łukasz Bera | `RepairOrderService`, `RepairOrderServiceImpl`, `Mechanic`, `RepairOrder`, `RepairOrderStatus`, `StatusChange`, `Repair`, `CostEstimate`, `EstimateStatus` | [klasy-bera.md](diagram-klas/klasy-bera.md) |
 | Magazynier | Kacper Bednarz | `WarehouseService`, `WarehouseServiceImpl`, `Storekeeper`, `SparePart`, `PartItem`, `PartRequest`, `PartRequestStatus`, `Supplier`, `SupplierOrder`, `SupplierOrderStatus` | [klasy-bednarz.md](diagram-klas/klasy-bednarz.md) |
 | Manager warsztatu | Dawid Woźniak | `BillingService`, `BillingServiceImpl`, `WorkshopManager`, `PriceList`, `ServiceItem`, `Invoice`, `PaymentMethod`, `Report` | [klasy-wozniak.md](diagram-klas/klasy-wozniak.md) |
+
+## Wzorce projektowe
+
+| Aktor | Autor | Wzorzec | Plik |
+|---|---|---|---|
+| Klient | Jakub Banasiewicz | Prototyp | [wzorce-klient.html](https://bqcc.github.io/IO-TEST-/wzorce/wzorce-klient.html) |
+| Mechanik | Łukasz Bera | Budowniczy | [wzorce-mechanik.html](https://bqcc.github.io/IO-TEST-/wzorce/wzorce-mechanik.html) |
+| Magazynier | Kacper Bednarz | Metoda fabrykująca | [wzorce-magazynier.html](https://bqcc.github.io/IO-TEST-/wzorce/wzorce-magazynier.html) |
+| Manager warsztatu | Dawid Woźniak | Singleton | [wzorce-manager.html](https://bqcc.github.io/IO-TEST-/wzorce/wzorce-manager.html) |
